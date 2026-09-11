@@ -160,18 +160,16 @@ export function HomePage() {
             Tuesday.
           </h2>
           <p className="text-lg text-gray-600 leading-relaxed mb-6">
-            Twelve tabs and a shared spreadsheet will get you a plan. What they
-            won&rsquo;t tell you is that day 2 has six hours of walking after a
-            red-eye, or that the museum, the market and the dinner across town
-            don&rsquo;t fit in the same afternoon. That&rsquo;s the trip where
-            you come home needing a vacation from the vacation.
+            A shared spreadsheet will get you a plan. What it won&rsquo;t tell
+            you is that day 2 has six hours of walking after a red-eye, or that
+            the museum, the market and the dinner across town won&rsquo;t fit in
+            one afternoon. That&rsquo;s how you come home needing a vacation from
+            the vacation.
           </p>
           <p className="text-lg text-gray-600 leading-relaxed mb-8">
-            Jarvis reads every day of your plan while you build it and calls it
-            what it is: chill, balanced, or packed. When a day comes up packed,
-            you&rsquo;ll know before you&rsquo;re standing in it, and Jarvis
-            offers a lighter version of the same day. Fixing it takes one tap
-            instead of a family argument.
+            So Jarvis rates every day while you build it: chill, balanced, or
+            packed. A packed day shows up before you&rsquo;re standing in it,
+            with a lighter version one tap away.
           </p>
           <Link
             to="/features"
