@@ -109,10 +109,9 @@ export function FeaturesPage() {
               if the filing lapses. */}
           <p className="text-sm font-medium text-gray-500 mb-6">Patent pending</p>
           <p className="text-lg text-gray-600 leading-relaxed mb-8">
-            As you build a plan, Jarvis rates each day chill, balanced,
-            or packed. The rating comes from how far your body clock
-            moves, how long you&rsquo;re in transit, how far you walk, how much
-            is packed in, and how much downtime is left.
+            As you build a plan, Jarvis rates each day. The rating comes from
+            how far your body clock moves, how long you&rsquo;re in transit, how
+            far you walk, how much is packed in, and how much downtime is left.
           </p>
 
           {/* The scale, as the app displays it: numbered chips tinted by the
@@ -141,9 +140,8 @@ export function FeaturesPage() {
           </div>
 
           <p className="text-gray-600 leading-relaxed">
-            When a day comes up packed, one tap shows you a lighter version of
-            it. And that&rsquo;s all the Fatigue Index is: a rating for how each
-            day will feel, not medical advice.
+            That&rsquo;s all the Fatigue Index is: a rating for how each day will
+            feel, not medical advice.
           </p>
         </div>
       </section>
