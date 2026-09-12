@@ -104,3 +104,12 @@ jobs:
         run: npm run lint
       - name: Build
         run: npm run build
+      # AFTER the build, because it is a claim about the build OUTPUT. The
+      # Unsplash key is used only by scripts/fetch-unsplash-manifest.mjs, which
+      # runs with the secret and writes a manifest; nothing it produces may
+      # carry the key into dist/. Run here rather than beside the other
+      # guards — there is no bundle to inspect until the build has made one,
+      # and the guard exits 2 rather than passing when dist/ is absent
+      # (JAR-1431).
+      - name: The Unsplash key is not in the shipped bundle
+        run: npm run lint:unsplash-key
