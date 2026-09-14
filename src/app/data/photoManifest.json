@@ -1,4 +1,35 @@
 {
-  "generatedAt": null,
-  "slots": {}
+  "generatedAt": "2026-09-14T14:19:52.868Z",
+  "slots": {
+    "home.hero": {
+      "photoId": "kFtX_bm8g50",
+      "url": "https://images.unsplash.com/photo-1776592996355-5d05a1dbb3ab?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDQxOTkxfDB8MXxhbGx8fHx8fHx8fHwxNzg5Mzk1NTkzfA&ixlib=rb-4.1.0&q=80&w=1080",
+      "alt": "Golden hour light on a rocky coastline, waves breaking below palm trees and a hillside town",
+      "credit": {
+        "name": "⚜ Venetum",
+        "profileUrl": "https://unsplash.com/@venetum?utm_source=jarvistravel&utm_medium=referral",
+        "unsplashUrl": "https://unsplash.com/photos/rocky-coastline-with-gentle-waves-at-sunset-kFtX_bm8g50?utm_source=jarvistravel&utm_medium=referral"
+      }
+    },
+    "home.planning": {
+      "photoId": "98WPMlTl5xo",
+      "url": "https://images.unsplash.com/photo-1578894381163-e72c17f2d45f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDQxOTkxfDB8MXxhbGx8fHx8fHx8fHwxNzg5Mzk1NTkzfA&ixlib=rb-4.1.0&q=80&w=1080",
+      "alt": "Trip planning flat lay: a world map with a passport, cameras, sunglasses and string lights",
+      "credit": {
+        "name": "Charlotte Noelle",
+        "profileUrl": "https://unsplash.com/@charlottenoelle_?utm_source=jarvistravel&utm_medium=referral",
+        "unsplashUrl": "https://unsplash.com/photos/black-dslr-camera-near-passport-98WPMlTl5xo?utm_source=jarvistravel&utm_medium=referral"
+      }
+    },
+    "home.journal": {
+      "photoId": "2Jv5KvC45uc",
+      "url": "https://images.unsplash.com/photo-1550622485-860e9d423364?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDQxOTkxfDB8MXxhbGx8fHx8fHx8fHwxNzg5Mzk1NTkzfA&ixlib=rb-4.1.0&q=80&w=1080",
+      "alt": "Hands leafing through a well-used travel journal of photos and handwritten notes beside a film camera",
+      "credit": {
+        "name": "Emma Dau",
+        "profileUrl": "https://unsplash.com/@daugirl?utm_source=jarvistravel&utm_medium=referral",
+        "unsplashUrl": "https://unsplash.com/photos/person-with-hand-on-notepad-page-with-pictures-and-writing-2Jv5KvC45uc?utm_source=jarvistravel&utm_medium=referral"
+      }
+    }
+  }
 }
