@@ -74,7 +74,7 @@ const MOMENTS: Moment[] = [
     soWhat: 'So the budget is a decision you make, not news you get.',
     capture: {
       image: TRIP_HOME,
-      alt: "A trip's home screen with $4,266 of the budget left and 22% spent, along with the day's schedule and the week's pacing.",
+      alt: "A trip's home screen showing what is left of the budget and how much is spent, along with the day's schedule and the week's pacing.",
     },
   },
   {

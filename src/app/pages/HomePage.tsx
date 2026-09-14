@@ -222,7 +222,7 @@ export function HomePage() {
             <ContourArcs className="absolute -bottom-56 -right-40 w-[520px] h-[520px]" />
             <AppCapture
               image={TRIP_HOME}
-              alt="A trip's home screen for a week in Rome: today's schedule, $4,266 of the budget left, and the week's pacing, with two days running packed."
+              alt="A trip's home screen for a week in Rome: today's schedule, what is left of the budget, and the week's pacing, with two days running packed."
               sizes="(min-width: 1152px) 992px, calc(100vw - 160px)"
               className="relative"
             />
