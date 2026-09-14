@@ -40,6 +40,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # JAR-1518: refresh the photo manifest immediately before the build that
+      # bakes it in. The script re-fetches the SAME curated photo ids committed
+      # in photoManifest.json (curation is a human act, reviewed once) and
+      # re-registers each download as Unsplash's terms require. It refuses to
+      # run without the key, so a missing secret fails the deploy instead of
+      # silently shipping a site with the photography removed. Never put this
+      # on a schedule: the key shares core's 50/hour tier (JAR-1083), and a
+      # run costs 2 requests per slot.
+      - name: Fetch photo manifest
+        env:
+          UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
+        run: node scripts/fetch-unsplash-manifest.mjs
+
       # Stripe-side drift happens after merge: a price edited in the dashboard
       # makes no PR, so a green PR check says nothing about what is about to be
       # deployed. Reconcile again here, immediately before shipping.
