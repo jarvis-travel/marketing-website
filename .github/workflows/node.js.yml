@@ -90,6 +90,15 @@ jobs:
         run: npm run lint:prices -- --network-warn
         env:
           STRIPE_READ_API_KEY: ${{ secrets.STRIPE_READ_API_KEY }}
+      # JAR-1518: same photo-manifest refresh the droplet deploy runs (both are
+      # shipping paths - the pricing guard needed this exact symmetry once
+      # already, deleg_dd2f886e). Without it this path bakes the committed
+      # manifest verbatim: URLs age while the droplet's stay refreshed, and the
+      # same 2-requests-per-slot registration story forks per surface.
+      - name: Fetch photo manifest
+        env:
+          UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
+        run: node scripts/fetch-unsplash-manifest.mjs
       - name: Build
         run: npm run build
       - name: Setup Pages
