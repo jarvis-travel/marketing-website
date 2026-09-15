@@ -45,7 +45,6 @@ const UTM_MEDIUM = 'referral';
 const SLOTS = [
   { slot: 'home.hero', query: 'golden hour coastal travel landscape', orientation: 'landscape' },
   { slot: 'home.planning', query: 'traveller planning map table', orientation: 'landscape' },
-  { slot: 'home.journal', query: 'travel journal notebook window light', orientation: 'landscape' },
 ];
 
 const key = (process.env.UNSPLASH_ACCESS_KEY || '').trim();
