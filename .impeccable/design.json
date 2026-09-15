@@ -1,0 +1,622 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-15T17:08:12+00:00",
+  "title": "Design System: JarvisTravel",
+  "extensions": {
+    "colorMeta": {
+      "buckthorn-amber": {
+        "role": "primary",
+        "displayName": "Sea Buckthorn Amber",
+        "canonical": "oklch(84.6% 0.130 73.8)",
+        "tonalRamp": [
+          "#321C01",
+          "#673C02",
+          "#9A5B00",
+          "#C98A2E",
+          "#F0A94D",
+          "#FFBF65",
+          "#FFCC85",
+          "#FEECD1"
+        ]
+      },
+      "buckthorn-light": {
+        "role": "primary",
+        "displayName": "Buckthorn Light",
+        "canonical": "oklch(87.5% 0.106 74.8)",
+        "tonalRamp": [
+          "#321C01",
+          "#673C02",
+          "#9A5B00",
+          "#C98A2E",
+          "#F0A94D",
+          "#FFBF65",
+          "#FFCC85",
+          "#FEECD1"
+        ]
+      },
+      "buckthorn-deep": {
+        "role": "primary",
+        "displayName": "Buckthorn Deep",
+        "canonical": "oklch(53.1% 0.119 65.1)",
+        "tonalRamp": [
+          "#321C01",
+          "#673C02",
+          "#9A5B00",
+          "#C98A2E",
+          "#F0A94D",
+          "#FFBF65",
+          "#FFCC85",
+          "#FEECD1"
+        ]
+      },
+      "ateneo-navy": {
+        "role": "secondary",
+        "displayName": "Ateneo Navy",
+        "canonical": "oklch(34.6% 0.102 251.5)",
+        "tonalRamp": [
+          "#081E33",
+          "#0E2A47",
+          "#083258",
+          "#003A6C",
+          "#2E6FA3",
+          "#5E9DD1",
+          "#B7D3E9",
+          "#EDF4FA"
+        ]
+      },
+      "ateneo-deep": {
+        "role": "secondary",
+        "displayName": "Ateneo Deep",
+        "canonical": "oklch(31.2% 0.081 250.7)",
+        "tonalRamp": [
+          "#081E33",
+          "#0E2A47",
+          "#083258",
+          "#003A6C",
+          "#2E6FA3",
+          "#5E9DD1",
+          "#B7D3E9",
+          "#EDF4FA"
+        ]
+      },
+      "midnight-navy": {
+        "role": "secondary",
+        "displayName": "Midnight Navy",
+        "canonical": "oklch(28.0% 0.063 251.8)",
+        "tonalRamp": [
+          "#081E33",
+          "#0E2A47",
+          "#083258",
+          "#003A6C",
+          "#2E6FA3",
+          "#5E9DD1",
+          "#B7D3E9",
+          "#EDF4FA"
+        ]
+      },
+      "harbor-blue": {
+        "role": "secondary",
+        "displayName": "Harbor Blue",
+        "canonical": "oklch(52.5% 0.105 246.0)",
+        "tonalRamp": [
+          "#081E33",
+          "#0E2A47",
+          "#083258",
+          "#003A6C",
+          "#2E6FA3",
+          "#5E9DD1",
+          "#B7D3E9",
+          "#EDF4FA"
+        ]
+      },
+      "navy-glint": {
+        "role": "secondary",
+        "displayName": "Navy Glint",
+        "canonical": "oklch(78.6% 0.079 242.1)",
+        "tonalRamp": [
+          "#081E33",
+          "#0E2A47",
+          "#083258",
+          "#003A6C",
+          "#2E6FA3",
+          "#5E9DD1",
+          "#B7D3E9",
+          "#EDF4FA"
+        ]
+      },
+      "navy-haze": {
+        "role": "secondary",
+        "displayName": "Navy Haze",
+        "canonical": "oklch(85.3% 0.043 241.8)",
+        "tonalRamp": [
+          "#081E33",
+          "#0E2A47",
+          "#083258",
+          "#003A6C",
+          "#2E6FA3",
+          "#5E9DD1",
+          "#B7D3E9",
+          "#EDF4FA"
+        ]
+      },
+      "navy-mist": {
+        "role": "secondary",
+        "displayName": "Navy Mist",
+        "canonical": "oklch(92.7% 0.021 241.4)",
+        "tonalRamp": [
+          "#081E33",
+          "#0E2A47",
+          "#083258",
+          "#003A6C",
+          "#2E6FA3",
+          "#5E9DD1",
+          "#B7D3E9",
+          "#EDF4FA"
+        ]
+      },
+      "journal-coral": {
+        "role": "tertiary",
+        "displayName": "Journal Coral",
+        "canonical": "oklch(52.7% 0.153 31.8)",
+        "tonalRamp": [
+          "#380400",
+          "#670C00",
+          "#8F3223",
+          "#B23F2C",
+          "#C94F36",
+          "#FD8973",
+          "#FCCABD",
+          "#FFE9E3"
+        ]
+      },
+      "moonlight": {
+        "role": "neutral",
+        "displayName": "Magical Moonlight",
+        "canonical": "oklch(95.0% 0.005 78.3)",
+        "tonalRamp": [
+          "#13181B",
+          "#3A444C",
+          "#4A5560",
+          "#5C6B77",
+          "#8E9AA4",
+          "#C7C1B8",
+          "#DAD5CD",
+          "#F0EEEB"
+        ]
+      },
+      "paper-white": {
+        "role": "neutral",
+        "displayName": "Paper White",
+        "canonical": "oklch(100.0% 0.000 0.0)",
+        "tonalRamp": [
+          "#13181B",
+          "#3A444C",
+          "#4A5560",
+          "#5C6B77",
+          "#8E9AA4",
+          "#DAD5CD",
+          "#F0EEEB",
+          "#FFFFFF"
+        ]
+      },
+      "neverything-ink": {
+        "role": "neutral",
+        "displayName": "Neverything Ink",
+        "canonical": "oklch(20.5% 0.010 234.3)",
+        "tonalRamp": [
+          "#13181B",
+          "#3A444C",
+          "#4A5560",
+          "#5C6B77",
+          "#8E9AA4",
+          "#C7C1B8",
+          "#DAD5CD",
+          "#F0EEEB"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Soft Ink",
+        "canonical": "oklch(44.4% 0.023 248.3)",
+        "tonalRamp": [
+          "#13181B",
+          "#3A444C",
+          "#4A5560",
+          "#5C6B77",
+          "#8E9AA4",
+          "#C7C1B8",
+          "#DAD5CD",
+          "#F0EEEB"
+        ]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "canonical": "oklch(52.0% 0.026 242.3)",
+        "tonalRamp": [
+          "#13181B",
+          "#3A444C",
+          "#4A5560",
+          "#5C6B77",
+          "#8E9AA4",
+          "#C7C1B8",
+          "#DAD5CD",
+          "#F0EEEB"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "oklch(87.5% 0.012 79.8)",
+        "tonalRamp": [
+          "#13181B",
+          "#3A444C",
+          "#4A5560",
+          "#5C6B77",
+          "#8E9AA4",
+          "#C7C1B8",
+          "#DAD5CD",
+          "#F0EEEB"
+        ]
+      },
+      "hairline-strong": {
+        "role": "neutral",
+        "displayName": "Hairline Strong",
+        "canonical": "oklch(81.3% 0.014 78.2)",
+        "tonalRamp": [
+          "#13181B",
+          "#3A444C",
+          "#4A5560",
+          "#5C6B77",
+          "#8E9AA4",
+          "#C7C1B8",
+          "#DAD5CD",
+          "#F0EEEB"
+        ]
+      },
+      "fatigue-chill": {
+        "role": "data",
+        "displayName": "Fatigue Index Chill",
+        "canonical": "oklch(68.5% 0.148 237.3)",
+        "tonalRamp": [
+          "#000D18",
+          "#01273B",
+          "#024564",
+          "#046591",
+          "#0787BF",
+          "#0EA5E9",
+          "#82CEFE",
+          "#DFF2FE"
+        ]
+      },
+      "fatigue-balanced": {
+        "role": "data",
+        "displayName": "Fatigue Index Balanced",
+        "canonical": "oklch(59.6% 0.127 163.2)",
+        "tonalRamp": [
+          "#000F07",
+          "#012C1C",
+          "#014C34",
+          "#006F4D",
+          "#059669",
+          "#40B788",
+          "#6BDEAD",
+          "#C2FFE1"
+        ]
+      },
+      "fatigue-packed": {
+        "role": "data",
+        "displayName": "Fatigue Index Packed",
+        "canonical": "oklch(68.1% 0.142 75.8)",
+        "tonalRamp": [
+          "#130900",
+          "#332000",
+          "#573902",
+          "#7E5402",
+          "#A67107",
+          "#CA8A04",
+          "#F9B64C",
+          "#FFEBD1"
+        ]
+      },
+      "fatigue-peak": {
+        "role": "data",
+        "displayName": "Fatigue Index Peak",
+        "canonical": "oklch(61.0% 0.163 29.0)",
+        "tonalRamp": [
+          "#1F0000",
+          "#4B0101",
+          "#7D0101",
+          "#A6291F",
+          "#D35446",
+          "#F37161",
+          "#FEAC9F",
+          "#FEE9E6"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Page headlines in the navy header bands and the home hero. Moonlight on navy, balanced wrapping, 768px wide at most in a header band."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headlines on Moonlight, white and navy bands. Data Security's sub-sections step down to 24px/32px, then 30px/36px from 768px."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Row titles in hairline lists and legal section titles. Panel titles and promise rows hold at 20px/28px."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "The paragraph under a headline, and long-form reading (About, legal). The home hero and photo band step to 20px/28px from 768px."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Row descriptions, card text and list items."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Button labels, card titles and footer column titles."
+      },
+      "label-medium": {
+        "displayName": "Label Medium",
+        "purpose": "Navigation links, standalone links, and the benefit line that closes a How it works row."
+      },
+      "label-caps": {
+        "displayName": "Label Caps",
+        "purpose": "The page label above a header band's headline, and the offer names on Pricing."
+      },
+      "figure": {
+        "displayName": "Figure",
+        "purpose": "Prices."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "A note attached to a feature, such as \"Patent pending\". The copyright line and the legal date line use the same size at 400."
+      },
+      "badge": {
+        "displayName": "Badge",
+        "purpose": "The saving badge inside a billing option."
+      },
+      "credit": {
+        "displayName": "Credit",
+        "purpose": "Photo credits over a photograph."
+      }
+    },
+    "shadows": [
+      {
+        "name": "phone-on-ledge",
+        "value": "0 28px 56px -20px rgba(4, 16, 30, 0.6)",
+        "purpose": "The phone screenshot in front of the desktop screenshot on a navy ledge; the one authored depth cue."
+      },
+      {
+        "name": "phone-on-page",
+        "value": "0 24px 48px -18px rgba(14, 42, 71, 0.32)",
+        "purpose": "The same phone screenshot on a light ground, lighter because the whole silhouette shows."
+      },
+      {
+        "name": "nav-scrolled",
+        "value": "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)",
+        "purpose": "Structural: the fixed navigation once it turns white over content, with a 16px backdrop blur."
+      },
+      {
+        "name": "menu-panel",
+        "value": "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+        "purpose": "Structural: the mobile navigation panel."
+      },
+      {
+        "name": "credit-text-shadow",
+        "value": "0 1px 3px rgba(0, 0, 0, 0.6)",
+        "purpose": "text-shadow that keeps an 11px photo credit legible over a photograph."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Every state transition on the site."
+      },
+      {
+        "name": "duration-state",
+        "value": "150ms",
+        "purpose": "Color changes on links, buttons and billing options."
+      },
+      {
+        "name": "duration-highlight",
+        "value": "200ms",
+        "purpose": "The traveling highlight moving between pricing offers."
+      },
+      {
+        "name": "duration-nav",
+        "value": "300ms",
+        "purpose": "The navigation turning from transparent to white after 20px of scroll on the home page."
+      },
+      {
+        "name": "skip-link-reveal",
+        "value": "transform 150ms ease",
+        "purpose": "The skip link sliding into view on keyboard focus."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The sign-up action: Sea Buckthorn fill, ink label, squared 2px corners; lightens on hover.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\">Join Now</a>",
+      "css": ".ds-btn-primary { display: inline-block; padding: 16px 32px; background: #FFBF65; color: #13181B; font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif; font-size: 16px; line-height: 24px; font-weight: 600; text-decoration: none; border-radius: 2px; transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-primary:hover { background: #FFCC85; } .ds-btn-primary:focus-visible { outline: 2px solid #003A6C; outline-offset: 3px; }"
+    },
+    {
+      "name": "Text Link",
+      "kind": "custom",
+      "refersTo": "link-inline",
+      "description": "A standalone link on a light ground: Ateneo Navy, 1px underline 4px below, deeper navy on hover.",
+      "html": "<div class=\"ds-link-demo\"><p class=\"ds-link-copy\">So Jarvis rates every day while you build it: chill, balanced, or packed.</p><a class=\"ds-link\" href=\"#\">See how it works</a></div>",
+      "css": ".ds-link-demo { padding: 24px; background: #F0EEEB; font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif; } .ds-link-copy { margin: 0 0 16px; color: #4A5560; font-size: 18px; line-height: 1.625; } .ds-link { color: #003A6C; font-size: 16px; line-height: 24px; font-weight: 500; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-link:hover { color: #083258; } .ds-link:focus-visible { outline: 2px solid #003A6C; outline-offset: 3px; border-radius: 4px; }"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "refersTo": "nav-bar",
+      "description": "The fixed bar in its scrolled state: lockup in ink, Soft Ink links, current page in Harbor Blue with a 2px underline, compact Join Now; a labelled menu button below 768px.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Main\"><a class=\"ds-nav-brand\" href=\"#\" aria-label=\"JarvisTravel home\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1920 598.08\" fill=\"currentColor\" aria-hidden=\"true\"><g><path d=\"M254.69,205.11c-.06-4.45,2.28-8.6,6.12-10.85,3.85-2.25,8.61-2.25,12.46,0,3.85,2.25,6.19,6.39,6.12,10.85v152.7h.05c0,39.65-19.87,65.2-45.32,76.55-19.97,8.82-42.72,8.81-62.69-.01-25.5-11.37-45.43-36.95-45.43-76.54,0-6.85,5.55-12.4,12.4-12.4s12.4,5.55,12.4,12.4c0,28.34,13.47,46.29,30.71,53.98,13.55,5.99,28.99,5.99,42.55.01,17.18-7.66,30.6-25.6,30.6-53.98h.05v-152.72Z\"/><path d=\"M429.99,267.78c-.06-4.45,2.28-8.59,6.12-10.84,3.85-2.25,8.61-2.25,12.45,0,3.85,2.25,6.19,6.39,6.13,10.84v61.16c.06.72.06,1.44,0,2.16v34.13c.06.72.06,1.44,0,2.15v61.16c0,6.82-5.53,12.35-12.35,12.35s-12.35-5.52-12.35-12.35v-9.52l-.35.32c-14.96,13.62-34.4,21.29-54.64,21.54-38.72.5-63.58-23.5-74.62-54.59-8.45-24.56-8.5-51.24-.15-75.84,10.91-31.17,35.68-55.34,74.4-55.01,20.31.16,39.85,7.79,54.9,21.43l.45.42v-9.52ZM430,365.25v-34.19c-.96-13.74-7.11-26.61-17.21-35.98-10.51-9.52-24.15-14.84-38.33-14.95-26.27-.22-43.25,16.68-50.88,38.46-6.54,19.29-6.49,40.21.15,59.47,7.71,21.69,24.73,38.48,50.99,38.13,14.14-.17,27.72-5.53,38.17-15.05,10.04-9.36,16.15-22.18,17.09-35.87h.01Z\"/><path d=\"M495.25,428.53c-.1,6.75-5.6,12.17-12.35,12.17s-12.25-5.42-12.35-12.17v-87.7c-.01-.27-.01-.55,0-.83v-72.24c0-6.82,5.53-12.35,12.35-12.35s12.35,5.53,12.35,12.35v15.12c13.66-15.19,34.78-27.51,67.39-27.51,6.85,0,12.4,5.55,12.4,12.4s-5.55,12.4-12.4,12.4c-59.14,0-66.76,55.25-67.39,60.92v87.45Z\"/><path d=\"M592.7,272.46c-2.6-6.31.42-13.53,6.73-16.13,6.31-2.59,13.53.42,16.12,6.73l54.75,133.01,54.75-133.01c2.65-6.22,9.81-9.14,16.06-6.58,6.25,2.57,9.28,9.69,6.8,15.97l-66.18,160.76-.02.04v.02l-.1.23-.02.04-.04.09c-.43.96-.99,1.86-1.66,2.68v.02s-.17.19-.17.19l-.04.05-.16.18-.03.04-.17.18-.03.04-.14.15-.05.05-.12.12-.15.15-.04.03-.19.17-.03.03-.18.16-.05.04-.19.16h-.02c-.82.67-1.72,1.22-2.68,1.66l-.09.04-.04.02-.23.1h-.06s-.1.05-.1.05l-.17.07h-.03l-.19.07h-.03l-.18.07-.12.04-.19.06-.07.03c-.27.09-.55.16-.82.22h-.01c-.29.06-.58.12-.87.17-.3.05-.59.08-.89.11l-.28.02h-1.45l-.28-.02c-.29-.03-.59-.06-.89-.11-.29-.05-.58-.11-.87-.17-.28-.06-.55-.14-.82-.22l-.07-.03-.19-.06-.12-.04-.18-.07h-.03l-.2-.07h-.03l-.17-.07-.1-.04h-.04s-.02-.01-.02-.01l-.23-.1-.04-.02-.09-.04c-.96-.43-1.86-.99-2.68-1.66h-.02l-.19-.16-.05-.04-.19-.16-.03-.03-.19-.17-.03-.03-.15-.15-.05-.05-.08-.07-.05-.05-.15-.15-.03-.04-.17-.18-.03-.04-.16-.18-.05-.05-.16-.19v-.02c-.68-.82-1.24-1.72-1.67-2.68l-.04-.09-.02-.04-.1-.23v-.02l-.02-.04-66.24-160.76Z\"/><path d=\"M796.63,204.02c2.82,6.81,1.26,14.64-3.95,19.85l-.02.02.02.02c-3.41,3.41-8.04,5.34-12.87,5.34s-9.46-1.92-12.87-5.34l-.03-.04c-3.42-3.41-5.34-8.04-5.34-12.87s1.92-9.46,5.34-12.87c.23-.23.46-.45.72-.65,3.33-3.02,7.67-4.69,12.17-4.69,7.37-.01,14.02,4.43,16.84,11.23ZM767.44,267.76c0-6.82,5.53-12.35,12.35-12.35s12.35,5.53,12.35,12.35v160.76c-.1,6.75-5.6,12.17-12.35,12.17s-12.25-5.42-12.35-12.17v-160.76Z\"/><path d=\"M958.52,306.75c.57,6.74-4.38,12.68-11.11,13.34-6.73.67-12.74-4.2-13.49-10.92,0-.08-2.5-29.01-49.04-29.01-24.11,0-39.02,7.81-45.1,17.79-3.86,6.11-3.86,13.89,0,20,6.08,9.99,20.99,17.8,45.1,17.8,33.86,0,56.06,13.03,66.21,29.7,8.76,13.99,8.76,31.76,0,45.76-10.15,16.68-32.35,29.7-66.21,29.7-69.08,0-73.62-51.23-73.64-51.37-.67-6.8,4.29-12.84,11.09-13.51s12.84,4.3,13.51,11.09c0,.08,2.5,29,49.04,29,24.11,0,39.02-7.81,45.1-17.79,3.86-6.11,3.86-13.89,0-20-6.08-9.99-20.99-17.79-45.1-17.79-33.86,0-56.06-13.03-66.21-29.7-8.77-13.99-8.77-31.76,0-45.76,10.15-16.68,32.35-29.7,66.21-29.7,69.08,0,73.62,51.23,73.64,51.38h0Z\"/><path d=\"M1056.48,217.51v211c0,6.82-5.53,12.35-12.35,12.35s-12.35-5.53-12.35-12.35v-211h-59.33c-6.85,0-12.4-5.55-12.4-12.4s5.55-12.4,12.4-12.4h143.34c6.84,0,12.39,5.55,12.39,12.4s-5.55,12.4-12.39,12.4h-59.31Z\"/><path d=\"M1126.2,428.53c-.1,6.75-5.6,12.17-12.35,12.17s-12.25-5.42-12.35-12.17v-87.7c-.01-.27-.01-.55,0-.83v-72.24c0-6.82,5.53-12.35,12.35-12.35s12.35,5.53,12.35,12.35v15.12c13.66-15.19,34.78-27.51,67.39-27.51,6.85,0,12.4,5.55,12.4,12.4s-5.55,12.4-12.4,12.4c-59.14,0-66.76,55.25-67.39,60.92v87.45Z\"/><path d=\"M1334.59,267.78c-.06-4.45,2.28-8.59,6.12-10.84,3.85-2.25,8.61-2.25,12.45,0,3.85,2.25,6.19,6.39,6.13,10.84v61.16c.06.72.06,1.44,0,2.16v34.13c.06.72.06,1.44,0,2.15v61.16c0,6.82-5.53,12.35-12.35,12.35s-12.35-5.52-12.35-12.35v-9.52l-.35.32c-14.96,13.62-34.4,21.29-54.64,21.54-38.72.5-63.58-23.5-74.62-54.59-8.45-24.56-8.5-51.24-.15-75.84,10.91-31.17,35.68-55.34,74.4-55.01,20.31.16,39.85,7.79,54.9,21.43l.45.42v-9.52ZM1334.6,365.25v-34.19c-.96-13.74-7.11-26.61-17.21-35.98-10.51-9.52-24.15-14.84-38.33-14.95-26.27-.22-43.25,16.68-50.88,38.46-6.54,19.29-6.49,40.21.15,59.47,7.71,21.69,24.73,38.48,50.99,38.13,14.14-.17,27.72-5.53,38.17-15.05,10.04-9.36,16.15-22.18,17.09-35.87h.01Z\"/><path d=\"M1381.39,272.46c-2.59-6.31.42-13.53,6.73-16.13,6.31-2.59,13.53.42,16.13,6.73l54.75,133.01,54.75-133.01c2.66-6.22,9.81-9.14,16.06-6.58,6.25,2.57,9.28,9.69,6.8,15.97l-66.18,160.76-.02.04v.02l-.1.23-.02.04-.04.09c-.44.96-1,1.86-1.66,2.68v.02s-.17.19-.17.19l-.04.05-.16.18-.03.04-.17.18-.03.04-.15.15-.05.05-.12.12-.15.15-.03.03-.19.17-.04.03-.18.16-.05.04-.19.16h-.02c-.82.67-1.72,1.22-2.68,1.66l-.09.04-.04.02-.23.1h-.06s-.1.05-.1.05l-.17.07h-.03l-.2.07h-.03l-.19.07-.12.04-.19.06-.07.03c-.27.09-.55.16-.82.22h-.01c-.29.06-.58.12-.87.17-.3.05-.59.08-.89.11l-.28.02h-1.45l-.28-.02c-.29-.03-.59-.06-.89-.11s-.58-.11-.87-.17c-.28-.06-.55-.14-.83-.22l-.07-.03-.19-.06-.12-.04-.18-.07h-.03l-.19-.07h-.03l-.16-.07-.1-.04h-.04s-.03-.01-.03-.01l-.23-.1-.04-.02-.09-.04c-.96-.43-1.86-.99-2.69-1.66h-.01l-.19-.16-.05-.04-.18-.16-.03-.03-.19-.17-.03-.03-.15-.15-.05-.05-.08-.07-.04-.05-.15-.15-.03-.04-.17-.18-.03-.04-.16-.18-.04-.05-.16-.19v-.02c-.68-.82-1.24-1.72-1.68-2.68l-.04-.09-.02-.04-.1-.23v-.02l-.02-.04-66.24-160.76Z\"/><path d=\"M1694.65,348.01v.14c0,6.82-5.53,12.35-12.35,12.35l-123.22.12c.76,5.88,2.13,11.68,4.09,17.28,7.63,21.69,24.61,38.5,50.85,38.28h.19c9.63.27,19.14-2.23,27.4-7.18,8.38-5.39,15.13-12.96,19.51-21.91,3.13-6.07,10.59-8.46,16.66-5.33,6.07,3.13,8.46,10.59,5.33,16.66-6.43,12.94-16.3,23.87-28.52,31.59-12.21,7.43-26.28,11.19-40.57,10.86-38.56.26-63.27-23.8-74.19-54.84-4.14-11.99-6.25-24.59-6.24-37.28v-.48c-.03-12.51,1.98-24.94,5.97-36.8,10.78-31.47,35.6-56.09,74.56-56.09,22.33-.47,43.66,9.23,57.99,26.36,14.94,17.59,22.46,42,22.54,66.28ZM1669.12,335.81c-1.59-13.95-7.1-27.16-15.9-38.09-9.69-11.49-24.08-17.95-39.1-17.56-26.52,0-43.58,17.22-51.12,39.24-1.82,5.36-3.12,10.89-3.87,16.51l109.99-.09Z\"/><path d=\"M1715.08,205.13c0-6.82,5.53-12.35,12.35-12.35s12.35,5.53,12.35,12.35v223.4c-.1,6.75-5.6,12.17-12.35,12.17s-12.25-5.42-12.35-12.17v-223.4Z\"/></g><g><path d=\"M1453.77,233.36l-163.73-4.14-28.14-.36,1.36-2.46,198.87-24.83,28.76-42.71c3.52-5.23,17.22-6.73,24.71-5.52l-27.02,57.16c-5.39,11.41-13.93,22.23-24.18,28.68l-10.64-5.83Z\"/><path d=\"M1631.94,170.54l-138.66,51.99,10.96-28.06,99.5-23.11,66.18-15.37c-11.9,6.6-23.82,9.24-37.98,14.55Z\"/></g></svg></a><div class=\"ds-nav-links\"><a class=\"ds-nav-link\" href=\"#\" aria-current=\"page\">How it works</a><a class=\"ds-nav-link\" href=\"#\">Pricing</a><a class=\"ds-nav-link\" href=\"#\">About</a><a class=\"ds-nav-link\" href=\"#\">Contact</a><a class=\"ds-nav-cta\" href=\"#\">Join Now</a></div><button class=\"ds-nav-menu\" type=\"button\" aria-label=\"Open menu\" aria-expanded=\"false\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><line x1=\"4\" x2=\"20\" y1=\"12\" y2=\"12\"/><line x1=\"4\" x2=\"20\" y1=\"6\" y2=\"6\"/><line x1=\"4\" x2=\"20\" y1=\"18\" y2=\"18\"/></svg></button></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; justify-content: space-between; height: 96px; padding: 0 32px; background: rgba(255, 255, 255, 0.95); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1); font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif; } .ds-nav-brand { display: flex; align-items: center; color: #13181B; } .ds-nav-brand svg { display: block; height: 64px; width: auto; } .ds-nav-links { display: flex; align-items: center; gap: 32px; } .ds-nav-link { position: relative; color: #4A5560; font-size: 16px; line-height: 24px; font-weight: 500; text-decoration: none; transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-nav-link:hover { color: #13181B; } .ds-nav-link[aria-current=\"page\"] { color: #2E6FA3; } .ds-nav-link[aria-current=\"page\"]::after { content: \"\"; position: absolute; left: 0; right: 0; bottom: -4px; height: 2px; background: #2E6FA3; } .ds-nav-cta { padding: 10px 20px; background: #FFBF65; color: #13181B; font-size: 16px; line-height: 24px; font-weight: 500; text-decoration: none; border-radius: 2px; transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-nav-cta:hover { background: #FFCC85; } .ds-nav-menu { display: none; padding: 8px; border: 0; border-radius: 8px; background: transparent; color: #13181B; cursor: pointer; } .ds-nav-menu svg { display: block; width: 24px; height: 24px; } .ds-nav-brand:focus-visible, .ds-nav-link:focus-visible { outline: 2px solid #003A6C; outline-offset: 3px; border-radius: 4px; } .ds-nav-cta:focus-visible, .ds-nav-menu:focus-visible { outline: 2px solid #003A6C; outline-offset: 3px; } @media (max-width: 767px) { .ds-nav { padding: 0 16px; } .ds-nav-links { display: none; } .ds-nav-menu { display: block; } }"
+    },
+    {
+      "name": "Header Band",
+      "kind": "custom",
+      "refersTo": "header-band",
+      "description": "The flat Ateneo Navy band that opens every page without a hero: a Sea Buckthorn page label, the Display headline in Moonlight and a Navy Mist lead, with no rings.",
+      "html": "<section class=\"ds-band\"><div class=\"ds-band-inner\"><p class=\"ds-band-label\">Pricing</p><h1 class=\"ds-band-title\">Pick the plan that fits the way you travel.</h1><p class=\"ds-band-lead\">Trip Pass covers one trip, start to finish. Explore covers every trip, all year.</p></div></section>",
+      "css": ".ds-band { padding: 96px 32px; background: #003A6C; font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif; } .ds-band-inner { max-width: 1024px; margin: 0 auto; } .ds-band-label { margin: 0 0 24px; color: #FFBF65; font-size: 11px; line-height: 1.5; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; } .ds-band-title { max-width: 768px; margin: 0 0 24px; color: #F0EEEB; font-size: 48px; line-height: 1; font-weight: 700; letter-spacing: normal; text-wrap: balance; } .ds-band-lead { max-width: 672px; margin: 0; color: #DBE9F4; font-size: 18px; line-height: 1.625; } @media (max-width: 767px) { .ds-band { padding: 80px 16px; } .ds-band-title { font-size: 36px; line-height: 1.25; } }"
+    },
+    {
+      "name": "The Ledge",
+      "kind": "custom",
+      "refersTo": "ledge",
+      "description": "Signature: the app's real screen at desktop and phone size, flat on a navy plane. The phone overlaps the lower left with the one depth cue, and contour rings bleed off the corner. The images are small copies of the day-detail capture.",
+      "html": "<div class=\"ds-ledge\"><svg class=\"ds-ledge-arcs\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 440 440\" fill=\"none\" aria-hidden=\"true\"><circle cx=\"220\" cy=\"220\" r=\"110\" stroke=\"#F0EEEB\" stroke-opacity=\"0.13\" stroke-width=\"1\"/><circle cx=\"220\" cy=\"220\" r=\"145\" stroke=\"#F0EEEB\" stroke-opacity=\"0.13\" stroke-width=\"1\"/><circle cx=\"220\" cy=\"220\" r=\"180\" stroke=\"#F0EEEB\" stroke-opacity=\"0.13\" stroke-width=\"1\"/><circle cx=\"220\" cy=\"220\" r=\"215\" stroke=\"#F0EEEB\" stroke-opacity=\"0.13\" stroke-width=\"1\"/></svg><div class=\"ds-pair\" role=\"img\" aria-label=\"A week in Rome in the trip plan. Day one is rated balanced, with a note on why it is full but manageable, and its stops in order from a 9:30 airport arrival.\"><img class=\"ds-pair-desktop\" src=\"data:image/jpeg;base64,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\" width=\"480\" height=\"300\" alt=\"\"><img class=\"ds-pair-phone\" src=\"data:image/jpeg;base64,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\" width=\"160\" height=\"346\" alt=\"\"></div></div>",
+      "css": ".ds-ledge { position: relative; overflow: hidden; max-width: 760px; padding: 32px; border-radius: 20px; background: #003A6C; } .ds-ledge-arcs { position: absolute; right: -128px; bottom: -160px; width: 440px; height: 440px; pointer-events: none; } .ds-pair { position: relative; padding: 3% 0 6% 14%; } .ds-pair-desktop { display: block; width: 100%; height: auto; border-radius: 14px; } .ds-pair-phone { position: absolute; left: 0; bottom: 0; display: block; width: 26%; height: auto; border-radius: 18px; box-shadow: 0 28px 56px -20px rgba(4, 16, 30, 0.6); } @media (max-width: 639px) { .ds-ledge { padding: 16px; } .ds-pair { padding: 0; } .ds-pair-desktop { display: none; } .ds-pair-phone { position: static; width: 100%; max-width: 300px; margin: 0 auto; } }"
+    },
+    {
+      "name": "Hairline Rows",
+      "kind": "custom",
+      "refersTo": "hairline-row",
+      "description": "The default structure for parallel points: a rule on top, a rule under each row, a Title and Soft Ink body; no icons, numbers or cards.",
+      "html": "<div class=\"ds-rows-band\"><ul class=\"ds-rows\"><li class=\"ds-row\"><h3 class=\"ds-row-title\">Nobody pays to be in your plan.</h3><p class=\"ds-row-body\">Every suggestion is there because it fits your trip, never because a hotel or tour paid us.</p></li><li class=\"ds-row\"><h3 class=\"ds-row-title\">No ads.</h3><p class=\"ds-row-body\">Your plan doesn’t need billboards.</p></li><li class=\"ds-row\"><h3 class=\"ds-row-title\">Your memories belong to you.</h3><p class=\"ds-row-body\">Your journal is yours: the notes, the photos, the places. We do not sell it.</p></li></ul></div>",
+      "css": ".ds-rows-band { max-width: 768px; padding: 64px 32px; background: #F0EEEB; font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif; } .ds-rows { margin: 0; padding: 0; list-style: none; border-top: 1px solid #DAD5CD; } .ds-row { padding: 24px 0; border-bottom: 1px solid #DAD5CD; } .ds-row-title { margin: 0 0 8px; color: #13181B; font-size: 20px; line-height: 28px; font-weight: 600; } .ds-row-body { margin: 0; color: #4A5560; font-size: 16px; line-height: 1.625; }"
+    },
+    {
+      "name": "Panel Card",
+      "kind": "card",
+      "refersTo": "card-panel",
+      "description": "A white panel on Moonlight with a 1px Hairline and 14px corners, holding icon rows with Ateneo tiles and standalone links.",
+      "html": "<div class=\"ds-panel-band\"><div class=\"ds-panel\"><h2 class=\"ds-panel-title\">Email</h2><ul class=\"ds-panel-list\"><li class=\"ds-icon-row\"><span class=\"ds-icon-tile\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect width=\"20\" height=\"16\" x=\"2\" y=\"4\" rx=\"2\"/><path d=\"m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7\"/></svg></span><div><p class=\"ds-icon-row-label\">General</p><a class=\"ds-panel-link\" href=\"#\">hello@jarvistravel.com</a></div></li><li class=\"ds-icon-row\"><span class=\"ds-icon-tile\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect width=\"20\" height=\"16\" x=\"2\" y=\"4\" rx=\"2\"/><path d=\"m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7\"/></svg></span><div><p class=\"ds-icon-row-label\">Press</p><a class=\"ds-panel-link\" href=\"#\">press@jarvistravel.com</a></div></li></ul></div></div>",
+      "css": ".ds-panel-band { padding: 32px; background: #F0EEEB; font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif; } .ds-panel { max-width: 704px; padding: 32px; background: #FFFFFF; border: 1px solid #DAD5CD; border-radius: 14px; } .ds-panel-title { margin: 0 0 24px; color: #13181B; font-size: 20px; line-height: 28px; font-weight: 600; } .ds-panel-list { margin: 0; padding: 0; list-style: none; } .ds-icon-row { display: flex; align-items: center; gap: 16px; } .ds-icon-row + .ds-icon-row { margin-top: 20px; } .ds-icon-tile { display: flex; flex-shrink: 0; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; background: rgba(0, 58, 108, 0.1); color: #003A6C; } .ds-icon-tile svg { width: 20px; height: 20px; } .ds-icon-row-label { margin: 0; color: #13181B; font-size: 16px; line-height: 24px; font-weight: 500; } .ds-panel-link { color: #003A6C; font-size: 16px; line-height: 24px; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-panel-link:hover { color: #083258; } .ds-panel-link:focus-visible { outline: 2px solid #003A6C; outline-offset: 3px; border-radius: 4px; }"
+    },
+    {
+      "name": "Icon Tile",
+      "kind": "chip",
+      "refersTo": "icon-tile",
+      "description": "Lucide glyphs at 20px and 2px stroke in a 36px tile, 10% tint of the voice color: Ateneo Navy everywhere, Journal Coral only for the journal.",
+      "html": "<ul class=\"ds-tiles\"><li class=\"ds-tile-item\"><span class=\"ds-tile\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z\"/><path d=\"M20 3v4\"/><path d=\"M22 5h-4\"/><path d=\"M4 17v2\"/><path d=\"M5 18H3\"/></svg></span><span class=\"ds-tile-name\">Trip planning</span></li><li class=\"ds-tile-item\"><span class=\"ds-tile ds-tile--journal\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 7v14\"/><path d=\"M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z\"/></svg></span><span class=\"ds-tile-name\">Trip journal</span></li></ul>",
+      "css": ".ds-tiles { display: flex; flex-wrap: wrap; gap: 24px; margin: 0; padding: 24px; list-style: none; background: #F0EEEB; font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif; } .ds-tile-item { display: flex; align-items: center; gap: 12px; } .ds-tile { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; background: rgba(0, 58, 108, 0.1); color: #003A6C; } .ds-tile--journal { background: rgba(178, 63, 44, 0.1); color: #B23F2C; } .ds-tile svg { width: 20px; height: 20px; } .ds-tile-name { color: #13181B; font-size: 16px; line-height: 24px; font-weight: 600; }"
+    },
+    {
+      "name": "Offer Cards",
+      "kind": "card",
+      "refersTo": "offer-card-highlight",
+      "description": "Signature traveling highlight: exactly one offer wears navy, and hovering or focusing the single-trip offer moves it there over 200ms. Prices come from src/app/data/pricing.ts.",
+      "html": "<div class=\"ds-offers\"><div class=\"ds-offer ds-offer--trip\"><h2 class=\"ds-offer-name\">Trip Pass</h2><p class=\"ds-offer-price\"><span class=\"ds-offer-amount\">$24.99</span><span class=\"ds-offer-period\">per trip</span></p><p class=\"ds-offer-lead\">One trip. Full access. No subscription required.</p><ul class=\"ds-offer-points\"><li class=\"ds-offer-point\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg><span>Full access to plan and execute one trip</span></li><li class=\"ds-offer-point\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg><span>Your trip journal stays with you after the trip</span></li></ul><a class=\"ds-offer-cta\" href=\"#\">Join Now</a></div><div class=\"ds-offer ds-offer--explore\"><h2 class=\"ds-offer-name\">Explore</h2><p class=\"ds-offer-lead\">The full JarvisTravel subscription for travelers who want ongoing access.</p><div class=\"ds-offer-options\" role=\"group\" aria-label=\"Explore billing options\"><button class=\"ds-offer-option\" type=\"button\" aria-pressed=\"true\"><span class=\"ds-offer-option-label\">Annual<span class=\"ds-offer-badge\">Save 31%</span></span><span class=\"ds-offer-option-price\">$99/year</span></button><button class=\"ds-offer-option\" type=\"button\" aria-pressed=\"false\"><span class=\"ds-offer-option-label\">Monthly</span><span class=\"ds-offer-option-price\">$11.95/month</span></button></div><p class=\"ds-offer-price\"><span class=\"ds-offer-amount\">$99</span><span class=\"ds-offer-period\">per year</span></p><ul class=\"ds-offer-points\"><li class=\"ds-offer-point\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg><span>Full subscription access</span></li><li class=\"ds-offer-point\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg><span>Best choice for travelers planning more than one trip</span></li></ul><a class=\"ds-offer-cta ds-offer-cta--wide\" href=\"#\">Join Now</a></div></div>",
+      "css": ".ds-offers { display: grid; grid-template-columns: 2fr 3fr; gap: 24px; align-items: stretch; padding: 32px; background: #F0EEEB; font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif; } .ds-offer { --ds-bg: #FFFFFF; --ds-border: #DAD5CD; --ds-ink: #13181B; --ds-soft: #4A5560; --ds-muted: #5C6B77; --ds-check: #003A6C; --ds-cta-bg: transparent; --ds-cta-border: #C7C1B8; --ds-badge: #9A5B00; --ds-opt-border: #C7C1B8; --ds-opt-hover-border: #003A6C; --ds-opt-hover-bg: rgba(0, 58, 108, 0.06); --ds-opt-sel-border: #003A6C; --ds-opt-sel-bg: rgba(0, 58, 108, 0.1); --ds-opt-price: #4A5560; --ds-focus: #003A6C; --ds-name: #9A5B00; display: flex; flex-direction: column; padding: 32px; border: 1px solid var(--ds-border); border-radius: 14px; background: var(--ds-bg); color: var(--ds-ink); transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1), border-color 200ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-offer--explore, .ds-offers:has(.ds-offer--trip:hover, .ds-offer--trip:focus-within) .ds-offer--trip { --ds-bg: #003A6C; --ds-border: #003A6C; --ds-ink: #F0EEEB; --ds-soft: #DBE9F4; --ds-muted: #B7D3E9; --ds-check: #8CC0E8; --ds-cta-bg: #FFBF65; --ds-cta-border: #FFBF65; --ds-badge: #FFBF65; --ds-opt-border: #5E9DD1; --ds-opt-hover-border: #8CC0E8; --ds-opt-hover-bg: rgba(46, 111, 163, 0.2); --ds-opt-sel-border: #8CC0E8; --ds-opt-sel-bg: rgba(46, 111, 163, 0.3); --ds-opt-price: #DBE9F4; --ds-focus: #F0EEEB; --ds-name: #FFBF65; } .ds-offers:has(.ds-offer--trip:hover, .ds-offer--trip:focus-within) .ds-offer--explore { --ds-bg: #FFFFFF; --ds-border: #DAD5CD; --ds-ink: #13181B; --ds-soft: #4A5560; --ds-muted: #5C6B77; --ds-check: #003A6C; --ds-cta-bg: transparent; --ds-cta-border: #C7C1B8; --ds-badge: #9A5B00; --ds-opt-border: #C7C1B8; --ds-opt-hover-border: #003A6C; --ds-opt-hover-bg: rgba(0, 58, 108, 0.06); --ds-opt-sel-border: #003A6C; --ds-opt-sel-bg: rgba(0, 58, 108, 0.1); --ds-opt-price: #4A5560; --ds-focus: #003A6C; --ds-name: #9A5B00; } .ds-offer-name { margin: 0 0 16px; color: var(--ds-name); font-size: 11px; line-height: 1.5; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-offer-price { margin: 0 0 8px; font-variant-numeric: tabular-nums; } .ds-offer-amount { color: var(--ds-ink); font-size: 36px; line-height: 40px; font-weight: 700; transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-offer-period { margin-left: 8px; color: var(--ds-muted); font-size: 16px; transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-offer-lead { margin: 0 0 24px; color: var(--ds-ink); font-size: 18px; line-height: 28px; font-weight: 600; transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-offer-options { display: grid; gap: 8px; margin-bottom: 24px; } .ds-offer-option { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border: 1px solid var(--ds-opt-border); border-radius: 12px; background: transparent; color: var(--ds-ink); font: inherit; font-size: 16px; text-align: left; cursor: pointer; transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), border-color 150ms cubic-bezier(0.4, 0, 0.2, 1), color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-offer-option:hover { border-color: var(--ds-opt-hover-border); background: var(--ds-opt-hover-bg); } .ds-offer-option[aria-pressed=\"true\"] { border-color: var(--ds-opt-sel-border); background: var(--ds-opt-sel-bg); } .ds-offer-option-label { display: flex; align-items: center; gap: 12px; font-weight: 500; } .ds-offer-option-price { color: var(--ds-opt-price); font-variant-numeric: tabular-nums; } .ds-offer-badge { padding: 2px 8px; border: 1px solid rgba(255, 191, 101, 0.3); border-radius: 2px; background: rgba(255, 191, 101, 0.12); color: var(--ds-badge); font-size: 11px; line-height: 1.5; font-weight: 600; letter-spacing: 0.025em; text-transform: uppercase; } .ds-offer-points { margin: 0 0 32px; padding: 0; list-style: none; } .ds-offer-point { display: flex; align-items: flex-start; gap: 12px; color: var(--ds-soft); font-size: 16px; line-height: 24px; } .ds-offer-point + .ds-offer-point { margin-top: 12px; } .ds-offer-point svg { flex-shrink: 0; width: 16px; height: 16px; margin-top: 4px; color: var(--ds-check); } .ds-offer-cta { align-self: flex-start; margin-top: auto; padding: 14px 32px; border: 1px solid var(--ds-cta-border); border-radius: 2px; background: var(--ds-cta-bg); color: #13181B; font-size: 16px; line-height: 24px; font-weight: 600; text-align: center; text-decoration: none; transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), border-color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-offer-cta--wide { align-self: stretch; } .ds-offer--explore .ds-offer-cta:hover, .ds-offers:has(.ds-offer--trip:hover, .ds-offer--trip:focus-within) .ds-offer--trip .ds-offer-cta:hover { background: #FFCC85; border-color: #FFCC85; } .ds-offer-option:focus-visible, .ds-offer-cta:focus-visible { outline: 2px solid var(--ds-focus); outline-offset: 3px; } @media (max-width: 767px) { .ds-offers { grid-template-columns: 1fr; padding: 16px; } }"
+    },
+    {
+      "name": "Footer",
+      "kind": "nav",
+      "refersTo": "footer",
+      "description": "The Ateneo Navy footer: the Moonlight lockup, a Navy Mist description, 1.75-stroke social glyphs, Navy Mist links that brighten on hover, and a 15% Moonlight rule over the legal lines.",
+      "html": "<footer class=\"ds-footer\"><div class=\"ds-footer-grid\"><div class=\"ds-footer-brand\"><span class=\"ds-footer-lockup\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1920 598.08\" fill=\"currentColor\" aria-hidden=\"true\"><g><path d=\"M254.69,205.11c-.06-4.45,2.28-8.6,6.12-10.85,3.85-2.25,8.61-2.25,12.46,0,3.85,2.25,6.19,6.39,6.12,10.85v152.7h.05c0,39.65-19.87,65.2-45.32,76.55-19.97,8.82-42.72,8.81-62.69-.01-25.5-11.37-45.43-36.95-45.43-76.54,0-6.85,5.55-12.4,12.4-12.4s12.4,5.55,12.4,12.4c0,28.34,13.47,46.29,30.71,53.98,13.55,5.99,28.99,5.99,42.55.01,17.18-7.66,30.6-25.6,30.6-53.98h.05v-152.72Z\"/><path d=\"M429.99,267.78c-.06-4.45,2.28-8.59,6.12-10.84,3.85-2.25,8.61-2.25,12.45,0,3.85,2.25,6.19,6.39,6.13,10.84v61.16c.06.72.06,1.44,0,2.16v34.13c.06.72.06,1.44,0,2.15v61.16c0,6.82-5.53,12.35-12.35,12.35s-12.35-5.52-12.35-12.35v-9.52l-.35.32c-14.96,13.62-34.4,21.29-54.64,21.54-38.72.5-63.58-23.5-74.62-54.59-8.45-24.56-8.5-51.24-.15-75.84,10.91-31.17,35.68-55.34,74.4-55.01,20.31.16,39.85,7.79,54.9,21.43l.45.42v-9.52ZM430,365.25v-34.19c-.96-13.74-7.11-26.61-17.21-35.98-10.51-9.52-24.15-14.84-38.33-14.95-26.27-.22-43.25,16.68-50.88,38.46-6.54,19.29-6.49,40.21.15,59.47,7.71,21.69,24.73,38.48,50.99,38.13,14.14-.17,27.72-5.53,38.17-15.05,10.04-9.36,16.15-22.18,17.09-35.87h.01Z\"/><path d=\"M495.25,428.53c-.1,6.75-5.6,12.17-12.35,12.17s-12.25-5.42-12.35-12.17v-87.7c-.01-.27-.01-.55,0-.83v-72.24c0-6.82,5.53-12.35,12.35-12.35s12.35,5.53,12.35,12.35v15.12c13.66-15.19,34.78-27.51,67.39-27.51,6.85,0,12.4,5.55,12.4,12.4s-5.55,12.4-12.4,12.4c-59.14,0-66.76,55.25-67.39,60.92v87.45Z\"/><path d=\"M592.7,272.46c-2.6-6.31.42-13.53,6.73-16.13,6.31-2.59,13.53.42,16.12,6.73l54.75,133.01,54.75-133.01c2.65-6.22,9.81-9.14,16.06-6.58,6.25,2.57,9.28,9.69,6.8,15.97l-66.18,160.76-.02.04v.02l-.1.23-.02.04-.04.09c-.43.96-.99,1.86-1.66,2.68v.02s-.17.19-.17.19l-.04.05-.16.18-.03.04-.17.18-.03.04-.14.15-.05.05-.12.12-.15.15-.04.03-.19.17-.03.03-.18.16-.05.04-.19.16h-.02c-.82.67-1.72,1.22-2.68,1.66l-.09.04-.04.02-.23.1h-.06s-.1.05-.1.05l-.17.07h-.03l-.19.07h-.03l-.18.07-.12.04-.19.06-.07.03c-.27.09-.55.16-.82.22h-.01c-.29.06-.58.12-.87.17-.3.05-.59.08-.89.11l-.28.02h-1.45l-.28-.02c-.29-.03-.59-.06-.89-.11-.29-.05-.58-.11-.87-.17-.28-.06-.55-.14-.82-.22l-.07-.03-.19-.06-.12-.04-.18-.07h-.03l-.2-.07h-.03l-.17-.07-.1-.04h-.04s-.02-.01-.02-.01l-.23-.1-.04-.02-.09-.04c-.96-.43-1.86-.99-2.68-1.66h-.02l-.19-.16-.05-.04-.19-.16-.03-.03-.19-.17-.03-.03-.15-.15-.05-.05-.08-.07-.05-.05-.15-.15-.03-.04-.17-.18-.03-.04-.16-.18-.05-.05-.16-.19v-.02c-.68-.82-1.24-1.72-1.67-2.68l-.04-.09-.02-.04-.1-.23v-.02l-.02-.04-66.24-160.76Z\"/><path d=\"M796.63,204.02c2.82,6.81,1.26,14.64-3.95,19.85l-.02.02.02.02c-3.41,3.41-8.04,5.34-12.87,5.34s-9.46-1.92-12.87-5.34l-.03-.04c-3.42-3.41-5.34-8.04-5.34-12.87s1.92-9.46,5.34-12.87c.23-.23.46-.45.72-.65,3.33-3.02,7.67-4.69,12.17-4.69,7.37-.01,14.02,4.43,16.84,11.23ZM767.44,267.76c0-6.82,5.53-12.35,12.35-12.35s12.35,5.53,12.35,12.35v160.76c-.1,6.75-5.6,12.17-12.35,12.17s-12.25-5.42-12.35-12.17v-160.76Z\"/><path d=\"M958.52,306.75c.57,6.74-4.38,12.68-11.11,13.34-6.73.67-12.74-4.2-13.49-10.92,0-.08-2.5-29.01-49.04-29.01-24.11,0-39.02,7.81-45.1,17.79-3.86,6.11-3.86,13.89,0,20,6.08,9.99,20.99,17.8,45.1,17.8,33.86,0,56.06,13.03,66.21,29.7,8.76,13.99,8.76,31.76,0,45.76-10.15,16.68-32.35,29.7-66.21,29.7-69.08,0-73.62-51.23-73.64-51.37-.67-6.8,4.29-12.84,11.09-13.51s12.84,4.3,13.51,11.09c0,.08,2.5,29,49.04,29,24.11,0,39.02-7.81,45.1-17.79,3.86-6.11,3.86-13.89,0-20-6.08-9.99-20.99-17.79-45.1-17.79-33.86,0-56.06-13.03-66.21-29.7-8.77-13.99-8.77-31.76,0-45.76,10.15-16.68,32.35-29.7,66.21-29.7,69.08,0,73.62,51.23,73.64,51.38h0Z\"/><path d=\"M1056.48,217.51v211c0,6.82-5.53,12.35-12.35,12.35s-12.35-5.53-12.35-12.35v-211h-59.33c-6.85,0-12.4-5.55-12.4-12.4s5.55-12.4,12.4-12.4h143.34c6.84,0,12.39,5.55,12.39,12.4s-5.55,12.4-12.39,12.4h-59.31Z\"/><path d=\"M1126.2,428.53c-.1,6.75-5.6,12.17-12.35,12.17s-12.25-5.42-12.35-12.17v-87.7c-.01-.27-.01-.55,0-.83v-72.24c0-6.82,5.53-12.35,12.35-12.35s12.35,5.53,12.35,12.35v15.12c13.66-15.19,34.78-27.51,67.39-27.51,6.85,0,12.4,5.55,12.4,12.4s-5.55,12.4-12.4,12.4c-59.14,0-66.76,55.25-67.39,60.92v87.45Z\"/><path d=\"M1334.59,267.78c-.06-4.45,2.28-8.59,6.12-10.84,3.85-2.25,8.61-2.25,12.45,0,3.85,2.25,6.19,6.39,6.13,10.84v61.16c.06.72.06,1.44,0,2.16v34.13c.06.72.06,1.44,0,2.15v61.16c0,6.82-5.53,12.35-12.35,12.35s-12.35-5.52-12.35-12.35v-9.52l-.35.32c-14.96,13.62-34.4,21.29-54.64,21.54-38.72.5-63.58-23.5-74.62-54.59-8.45-24.56-8.5-51.24-.15-75.84,10.91-31.17,35.68-55.34,74.4-55.01,20.31.16,39.85,7.79,54.9,21.43l.45.42v-9.52ZM1334.6,365.25v-34.19c-.96-13.74-7.11-26.61-17.21-35.98-10.51-9.52-24.15-14.84-38.33-14.95-26.27-.22-43.25,16.68-50.88,38.46-6.54,19.29-6.49,40.21.15,59.47,7.71,21.69,24.73,38.48,50.99,38.13,14.14-.17,27.72-5.53,38.17-15.05,10.04-9.36,16.15-22.18,17.09-35.87h.01Z\"/><path d=\"M1381.39,272.46c-2.59-6.31.42-13.53,6.73-16.13,6.31-2.59,13.53.42,16.13,6.73l54.75,133.01,54.75-133.01c2.66-6.22,9.81-9.14,16.06-6.58,6.25,2.57,9.28,9.69,6.8,15.97l-66.18,160.76-.02.04v.02l-.1.23-.02.04-.04.09c-.44.96-1,1.86-1.66,2.68v.02s-.17.19-.17.19l-.04.05-.16.18-.03.04-.17.18-.03.04-.15.15-.05.05-.12.12-.15.15-.03.03-.19.17-.04.03-.18.16-.05.04-.19.16h-.02c-.82.67-1.72,1.22-2.68,1.66l-.09.04-.04.02-.23.1h-.06s-.1.05-.1.05l-.17.07h-.03l-.2.07h-.03l-.19.07-.12.04-.19.06-.07.03c-.27.09-.55.16-.82.22h-.01c-.29.06-.58.12-.87.17-.3.05-.59.08-.89.11l-.28.02h-1.45l-.28-.02c-.29-.03-.59-.06-.89-.11s-.58-.11-.87-.17c-.28-.06-.55-.14-.83-.22l-.07-.03-.19-.06-.12-.04-.18-.07h-.03l-.19-.07h-.03l-.16-.07-.1-.04h-.04s-.03-.01-.03-.01l-.23-.1-.04-.02-.09-.04c-.96-.43-1.86-.99-2.69-1.66h-.01l-.19-.16-.05-.04-.18-.16-.03-.03-.19-.17-.03-.03-.15-.15-.05-.05-.08-.07-.04-.05-.15-.15-.03-.04-.17-.18-.03-.04-.16-.18-.04-.05-.16-.19v-.02c-.68-.82-1.24-1.72-1.68-2.68l-.04-.09-.02-.04-.1-.23v-.02l-.02-.04-66.24-160.76Z\"/><path d=\"M1694.65,348.01v.14c0,6.82-5.53,12.35-12.35,12.35l-123.22.12c.76,5.88,2.13,11.68,4.09,17.28,7.63,21.69,24.61,38.5,50.85,38.28h.19c9.63.27,19.14-2.23,27.4-7.18,8.38-5.39,15.13-12.96,19.51-21.91,3.13-6.07,10.59-8.46,16.66-5.33,6.07,3.13,8.46,10.59,5.33,16.66-6.43,12.94-16.3,23.87-28.52,31.59-12.21,7.43-26.28,11.19-40.57,10.86-38.56.26-63.27-23.8-74.19-54.84-4.14-11.99-6.25-24.59-6.24-37.28v-.48c-.03-12.51,1.98-24.94,5.97-36.8,10.78-31.47,35.6-56.09,74.56-56.09,22.33-.47,43.66,9.23,57.99,26.36,14.94,17.59,22.46,42,22.54,66.28ZM1669.12,335.81c-1.59-13.95-7.1-27.16-15.9-38.09-9.69-11.49-24.08-17.95-39.1-17.56-26.52,0-43.58,17.22-51.12,39.24-1.82,5.36-3.12,10.89-3.87,16.51l109.99-.09Z\"/><path d=\"M1715.08,205.13c0-6.82,5.53-12.35,12.35-12.35s12.35,5.53,12.35,12.35v223.4c-.1,6.75-5.6,12.17-12.35,12.17s-12.25-5.42-12.35-12.17v-223.4Z\"/></g><g><path d=\"M1453.77,233.36l-163.73-4.14-28.14-.36,1.36-2.46,198.87-24.83,28.76-42.71c3.52-5.23,17.22-6.73,24.71-5.52l-27.02,57.16c-5.39,11.41-13.93,22.23-24.18,28.68l-10.64-5.83Z\"/><path d=\"M1631.94,170.54l-138.66,51.99,10.96-28.06,99.5-23.11,66.18-15.37c-11.9,6.6-23.82,9.24-37.98,14.55Z\"/></g></svg></span><p class=\"ds-footer-desc\">JarvisTravel plans the pace, the budget and the memories, so you can enjoy your vacation.</p><div class=\"ds-footer-social\"><a class=\"ds-footer-icon\" href=\"#\" aria-label=\"JarvisTravel on Instagram\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect width=\"20\" height=\"20\" x=\"2\" y=\"2\" rx=\"5\" ry=\"5\"/><path d=\"M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z\"/><line x1=\"17.5\" x2=\"17.51\" y1=\"6.5\" y2=\"6.5\"/></svg></a><a class=\"ds-footer-icon\" href=\"#\" aria-label=\"JarvisTravel on Facebook\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z\"/></svg></a><span class=\"ds-footer-handle\">@jarvistravelapp</span></div></div><div><h2 class=\"ds-footer-title\">Product</h2><ul class=\"ds-footer-links\"><li><a class=\"ds-footer-link\" href=\"#\">How it works</a></li><li><a class=\"ds-footer-link\" href=\"#\">Pricing</a></li></ul></div><div><h2 class=\"ds-footer-title\">Company</h2><ul class=\"ds-footer-links\"><li><a class=\"ds-footer-link\" href=\"#\">About</a></li><li><a class=\"ds-footer-link\" href=\"#\">Contact</a></li></ul></div><div><h2 class=\"ds-footer-title\">Legal</h2><ul class=\"ds-footer-links\"><li><a class=\"ds-footer-link\" href=\"#\">Privacy Policy</a></li><li><a class=\"ds-footer-link\" href=\"#\">Terms of Service</a></li><li><a class=\"ds-footer-link\" href=\"#\">Data Security</a></li></ul></div></div><div class=\"ds-footer-legal\"><p class=\"ds-footer-copy\">© 2026 JarvisTravel, Inc. All rights reserved.</p><p class=\"ds-footer-mark\">JARVISTRAVEL is a trademark of JarvisTravel, Inc. Fatigue Index is patent pending.</p></div></footer>",
+      "css": ".ds-footer { padding: 64px 32px; background: #003A6C; color: #F0EEEB; font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif; } .ds-footer-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 48px; } .ds-footer-brand { grid-column: span 2; } .ds-footer-lockup { display: block; margin-bottom: 24px; color: #F0EEEB; } .ds-footer-lockup svg { display: block; height: 40px; width: auto; } .ds-footer-desc { max-width: 384px; margin: 0; color: #DBE9F4; font-size: 16px; line-height: 1.625; } .ds-footer-social { display: flex; align-items: center; gap: 20px; margin-top: 24px; } .ds-footer-icon { color: #DBE9F4; transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-footer-icon svg { display: block; width: 20px; height: 20px; } .ds-footer-handle { color: #B7D3E9; font-size: 14px; line-height: 20px; } .ds-footer-title { margin: 0 0 16px; color: #F0EEEB; font-size: 16px; line-height: 24px; font-weight: 600; } .ds-footer-links { margin: 0; padding: 0; list-style: none; } .ds-footer-links li + li { margin-top: 12px; } .ds-footer-link { color: #DBE9F4; font-size: 16px; line-height: 24px; text-decoration: none; transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-footer-icon:hover, .ds-footer-link:hover { color: #F0EEEB; } .ds-footer-icon:focus-visible, .ds-footer-link:focus-visible { outline: 2px solid #F0EEEB; outline-offset: 3px; border-radius: 4px; } .ds-footer-legal { margin-top: 48px; padding-top: 32px; border-top: 1px solid rgba(240, 238, 235, 0.15); } .ds-footer-copy { margin: 0 0 8px; color: #B7D3E9; font-size: 14px; line-height: 20px; } .ds-footer-mark { margin: 0; color: rgba(183, 211, 233, 0.8); font-size: 12px; line-height: 1.625; } @media (max-width: 767px) { .ds-footer { padding: 64px 16px; } .ds-footer-grid { grid-template-columns: 1fr; } .ds-footer-brand { grid-column: auto; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Chart Room at Noon",
+    "overview": "The site is a chart room with the sun overhead. Ateneo navy is the room: the page header bands, the ledges that hold the app's screens, the closing invitation and the footer. Sea Buckthorn amber is the sun. It fills the one place to act, and elsewhere it appears only as small label type on navy. Between the navy bands lies a warm Moonlight ground where the reading happens, set in one typeface with sentence-case headlines. The only ornament is the contour ring: thin Moonlight circles bleeding off the corners of a navy band, like chart linework.\n\nThe mood is calm, unhurried and trustworthy. The density is low: a page is a vertical stack of full-bleed bands, 64 to 96px deep, each holding one idea. Parallel points sit in hairline rows rather than boxes. The product is shown, never staged. The app's real screens lie flat on a navy ledge with no bezel, tilt or chrome, and real photographs sit behind a navy scrim with their credit on the image.\n\nThe system rejects what the brand has already taken out: gradients and glows in chrome, black or Neverything as a surface, device bezels and keyline rings around screenshots, pill-shaped actions, and accents outside the navy family.",
+    "keyCharacteristics": [
+      "Navy bands alternate with a warm Moonlight ground and white sections.",
+      "One filled amber action per group, always under an ink label.",
+      "Inter alone: 700 headlines in sentence case, balanced.",
+      "Flat and quiet: depth comes from the band color, 1px hairlines and one phone shadow.",
+      "Real app screens on navy ledges; real photographs carry their credits.",
+      "Concentric contour rings are the only decoration."
+    ],
+    "rules": [
+      {
+        "name": "The One Sun Rule",
+        "body": "Solid amber fills the sign-up action and the skip link, always under ink, and never a band, card, badge or icon. As text, amber is small label type only: Sea Buckthorn on navy, Buckthorn Deep on light grounds. Raw Sea Buckthorn is never text on a light ground.",
+        "section": "colors"
+      },
+      {
+        "name": "The Navy Night Rule",
+        "body": "The brand's dark is navy. Dark surfaces are Ateneo Navy or Midnight Navy, never black or Neverything. Text on navy is Moonlight or a navy tint, and the logo there is Moonlight.",
+        "section": "colors"
+      },
+      {
+        "name": "The Borrowed Color Rule",
+        "body": "Coral belongs to the journal and the four Fatigue Index colors belong to the scale. Neither appears as chrome, decoration or a category accent anywhere else.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Family Rule",
+        "body": "Inter is the only typeface, served from the site itself and never from a font CDN. Steps come from size (11, 12, 14, 16, 18, 20, 24, 30, 36, 48px) and weight (400 reading, 500 links, 600 titles and labels, 700 headlines). Tracking belongs only to the two 11px uppercase settings.",
+        "section": "typography"
+      },
+      {
+        "name": "The Sentence Headline Rule",
+        "body": "Headlines are sentences in sentence case with normal tracking, and a headline that makes a statement closes with a period. Display headlines, and the section headlines on Home and How it works, wrap balanced. Legal page titles are the document's name, and Data Security's sub-section headings are plain labels.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Figures Rule",
+        "body": "Prices and Fatigue Index digits use tabular figures, so amounts align and never shift when a billing option changes.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Depth Cue Rule",
+        "body": "A screenshot pair gets one depth cue: the phone's shadow. No keyline ring, no border in the ground color, no bezel and no tilt. A zero-offset ring reads as a line drawn around the phone, not as the phone in front.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Declare Once Rule",
+        "body": "A surface takes a border or a shadow, never both. Cards and panels take a 1px Hairline and no shadow, and the phone takes its shadow and no edge. The desktop screenshot takes a 1px Hairline ring only on a light ground, where its edge would otherwise vanish, and nothing on navy.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Squared Action Rule",
+        "body": "Anything pressed is squared at 2px, and pills are retired. Rounded corners belong to containers, and they grow with the container.",
+        "section": "shapes"
+      },
+      {
+        "name": "The Contour Rule",
+        "body": "The contour ring is the only decoration. It lives on navy at 13% Moonlight, bleeds off a corner behind the content, and never intercepts a click.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do fill the sign-up action with Sea Buckthorn (#FFBF65) under a Neverything ink (#13181B) label, squared at 2px, lightening to #FFCC85 on hover.",
+      "Do show the product as the app's real screens lying flat on a navy ledge (20px corners), with the phone in front of the desktop and its navy-tinted shadow.",
+      "Do separate parallel points with 1px Hairline (#DAD5CD) rows before reaching for cards.",
+      "Do set text on navy in Moonlight (#F0EEEB) or a navy tint: Navy Mist (#DBE9F4) for leads, Navy Haze (#B7D3E9) for secondary lines.",
+      "Do put every Unsplash photograph under a Midnight Navy (#0E2A47) scrim with its credit on the image, at 70% wherever text sits on the photograph.",
+      "Do hold running text near 65 to 75 characters a line; the 672px column at 18px measures a median of 70.",
+      "Do keep focus visible at 3:1 or better on every ground: an Ateneo Navy ring on light grounds, a Moonlight ring on navy.",
+      "Do set prices and Fatigue Index digits in tabular figures."
+    ],
+    "donts": [
+      "Don't use gradients or glows in chrome, text or borders; emphasis comes from band color, weight and size.",
+      "Don't frame screenshots in a device bezel, tilt them, caption them, or ring the phone with a keyline.",
+      "Don't use black or Neverything (#13181B) as a surface, or set the logo in pure white or black.",
+      "Don't round actions or badges into pills; the brand owner removed them.",
+      "Don't use Journal Coral outside the journal, or the Fatigue Index colors outside the scale.",
+      "Don't set Fatigue Index digits in their band color on their own 10% tint: at 18px bold they need 4.5:1, and all four fall short (chill #0EA5E9 2.51:1, balanced #059669 3.33:1, packed #CA8A04 2.66:1, peak #D35446 3.62:1).",
+      "Don't add a second typeface, or load Inter from a font CDN."
+    ]
+  }
+}
