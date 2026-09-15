@@ -341,7 +341,7 @@ Refined and restrained: squared, certain actions inside quiet, soft-cornered con
 ### Buttons
 - **Shape:** Squared corners (2px).
 - **Primary:** Sea Buckthorn fill under a Neverything ink label in Label type, with 16px by 32px of padding (40px at the sides on the closing invitation). Every Join Now outside the navigation takes it, except the one in the pricing offer that doesn't hold the highlight, which is Quiet.
-- **Hover / Focus:** The fill lightens to Buckthorn Light over 150ms. Focus draws a 2px outline 3px outside the element, visible at 3:1 or better on its ground: Ateneo Navy on light grounds (9.95:1 on Moonlight), Moonlight on navy (9.95:1 on Ateneo Navy). Today the site draws the Ateneo ring on every ground, where it measures 1.00:1 on Ateneo Navy and 1.26:1 on Midnight Navy; JAR-1633 fixes that.
+- **Hover / Focus:** The fill lightens to Buckthorn Light over 150ms. Focus draws a 2px outline 3px outside the element, visible at 3:1 or better on its ground: Ateneo Navy on light grounds (9.95:1 on Moonlight), Moonlight on navy (9.95:1 on Ateneo Navy).
 - **Compact:** The navigation's Join Now: the same fill, label color and corners, at 500 weight with 10px by 20px of padding.
 - **Quiet:** The resting action inside the offer that does not hold the highlight: transparent, with a 1px Hairline Strong border, an ink label and 14px by 32px of padding. When its offer takes the highlight, it becomes the Primary fill.
 
@@ -370,7 +370,7 @@ The site's signature. A solid Ateneo Navy plane with 20px corners and 16px of pa
 Every page without a hero opens on a flat Ateneo Navy band: the Display headline in Moonlight (768px at most) over a Lead in Navy Mist (672px at most), with no rings. Most pages set a page label in Label Caps above the headline, in Sea Buckthorn, 24px above it. Legal pages follow the headline with a Navy Haze date line.
 
 ### Photo Band
-The home hero and the breadth band put an Unsplash photograph (full bleed, cropped to cover) under a Midnight Navy scrim, then contour rings, then the content. The hero rotates through five city photographs under a 70% scrim, which keeps its headline and lead readable over a bright facade; the breadth band's scrim is 55%. The credit sits in the bottom-right corner in Credit type, white at 85% with the credit text shadow. A photograph never renders without its credit, and with no photograph the band stays plain navy with its rings.
+The home hero and the breadth band put an Unsplash photograph (full bleed, cropped to cover) under a Midnight Navy scrim, then contour rings, then the content. The hero rotates through five city photographs. Both bands use a 70% scrim, which keeps their text readable over a bright facade. The credit sits in the bottom-right corner in Credit type, white at 85% with the credit text shadow, and comes after the band's content in reading and tab order. A photograph never renders without its credit, and with no photograph the band stays plain navy with its rings.
 
 ### Hairline Rows
 The default structure for parallel points (the promises, How it works, Data Security, legal clauses): a list with a 1px Hairline on top and one under each row, 20 to 32px of vertical padding, a Title, then Body text in Soft Ink. On How it works a benefit line in ink Label Medium closes each row. Rows carry no icons and no cards. Legal clauses keep their numbers because readers cite them.

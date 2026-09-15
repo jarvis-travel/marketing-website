@@ -36,7 +36,7 @@ export function Navigation() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-4">
+        <div className={`flex justify-between items-center py-4 ${isLightNav ? 'focus-on-dark' : ''}`}>
           {/* The lockup is inlined so fill="currentColor" inherits the text colour
               here, which is how one file stays correct on both grounds. Colour
               follows the surface, never #fff: gray-50 is Moonlight, gray-900 is
@@ -85,6 +85,9 @@ export function Navigation() {
 
           <button
             type="button"
+            aria-label="Menu"
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-menu"
             onClick={() => setIsMobileMenuOpen((open) => !open)}
             className={`md:hidden p-2 rounded-lg ${
               isLightNav ? 'text-gray-50' : 'text-gray-900'
@@ -95,7 +98,7 @@ export function Navigation() {
         </div>
 
         {isMobileMenuOpen && (
-          <div className="md:hidden bg-white rounded-2xl shadow-xl p-4 mb-4 animate-in slide-in-from-top-2">
+          <div id="mobile-menu" className="md:hidden bg-white rounded-2xl shadow-xl p-4 mb-4 animate-in slide-in-from-top-2">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.path}
