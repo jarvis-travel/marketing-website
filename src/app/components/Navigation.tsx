@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { LogoLockup } from './Logo';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, matchPath, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 
 const NAV_LINKS: { name: string; path: string }[] = [
@@ -25,7 +25,7 @@ export function Navigation() {
   const currentPath = location.pathname;
   // Join Now goes to /pricing, whose plan cards carry their own, so there a nav
   // link to the page you're on would do nothing.
-  const showJoinNow = currentPath !== '/pricing';
+  const showJoinNow = !matchPath('/pricing', currentPath);
 
   return (
     <nav

@@ -15,7 +15,7 @@ binding work contract for its subtree.
 
 React TypeScript marketing website for JarvisTravel — a standalone SPA deployed
 to the production Droplet (mktg.jarvistravel.com) and GitHub Pages. Serves as the public-facing landing experience: marketing pages for a
-pre-launch product (no auth; nav/home/features "Sign up" still routes to contact, while pricing CTAs link into the app with the chosen plan; moving the rest is JAR-1196).
+pre-launch product (no auth; every "Join Now" outside the pricing page goes to /pricing, and the pricing page's plan CTAs link into the app with the chosen plan: JAR-1630).
 
 ## Ownership
 
@@ -105,7 +105,7 @@ dollar amount reappears as a literal in a component.
 
 - **SPA** — no server-side rendering. All pages are client-rendered React.
 - **Marketing layout** — `MarketingLayout` in `PageRouter.tsx` wraps all public-facing pages with `<Navigation />` + `<Footer />`. New marketing routes should follow the same pattern.
-- **No auth** — pre-launch marketing site; the simulated client-side auth stack was removed as dead code (JAR-429). Nav/home/features "Sign up" routes to `/contact`; the pricing page's plan CTAs link into the app via `appLink.ts` (JAR-1184). Moving the rest is JAR-1196.
+- **No auth** — pre-launch marketing site; the simulated client-side auth stack was removed as dead code (JAR-429). Every "Join Now" outside the pricing page links to `/pricing` (JAR-1630), and the pricing page's plan CTAs link into the app via `appLink.ts` (JAR-1184). `scripts/check-pricing-ctas.mjs` enforces both.
 - **Static output** — `npm run build` produces `dist/`. The GitHub Actions workflow uploads `dist/` to GitHub Pages or rsyncs it to the Droplet.
 - **Sourcemaps enabled** in production builds (`vite.config.ts` `sourcemap: true`).
 

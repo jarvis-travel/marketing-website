@@ -49,6 +49,10 @@ const PRICING = 'src/app/data/pricing.ts';
 // and the mover has to edit this list, in the same commit, on purpose.
 //
 // A guard that accommodates both answers records neither.
+//
+// The targets have to stay inline literals in these files: the guard reads their
+// text, not their imports, so a CTA moved into a shared component or constant
+// needs this guard changed with it.
 const OFF_PRICING = [
   'src/app/components/Navigation.tsx',
   'src/app/pages/HomePage.tsx',
