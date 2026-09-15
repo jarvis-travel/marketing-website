@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { LogoLockup } from './Logo';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, matchPath, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 
 const NAV_LINKS: { name: string; path: string }[] = [
@@ -23,6 +23,9 @@ export function Navigation() {
 
   const isLightNav = location.pathname === '/' && !isScrolled;
   const currentPath = location.pathname;
+  // Join Now goes to /pricing, whose plan cards carry their own, so there a nav
+  // link to the page you're on would do nothing.
+  const showJoinNow = !matchPath('/pricing', currentPath);
 
   return (
     <nav
@@ -70,12 +73,14 @@ export function Navigation() {
               </Link>
             ))}
 
-            <Link
-              to="/contact"
-              className="px-5 py-2.5 bg-amber-400 text-gray-900 rounded-sm font-medium hover:shadow-lg hover:shadow-amber-400/25 transition-all"
-            >
-              Join Now
-            </Link>
+            {showJoinNow && (
+              <Link
+                to="/pricing"
+                className="px-5 py-2.5 bg-amber-400 text-gray-900 rounded-sm font-medium hover:shadow-lg hover:shadow-amber-400/25 transition-all"
+              >
+                Join Now
+              </Link>
+            )}
           </div>
 
           <button
@@ -105,15 +110,17 @@ export function Navigation() {
                 {link.name}
               </Link>
             ))}
-            <div className="mt-4 pt-4 border-t border-gray-100 space-y-2">
-              <Link
-                to="/contact"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="w-full py-3 bg-amber-400 text-gray-900 rounded-xl font-medium block text-center"
-              >
-                Join Now
-              </Link>
-            </div>
+            {showJoinNow && (
+              <div className="mt-4 pt-4 border-t border-gray-100 space-y-2">
+                <Link
+                  to="/pricing"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full py-3 bg-amber-400 text-gray-900 rounded-sm font-medium block text-center"
+                >
+                  Join Now
+                </Link>
+              </div>
+            )}
           </div>
         )}
       </div>

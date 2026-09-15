@@ -232,10 +232,9 @@ export function FeaturesPage() {
             ))}
           </ol>
 
-          {/* Routes to the contact page's signup path until app/payment is live. */}
           <div className="text-center mt-12">
             <Link
-              to="/contact"
+              to="/pricing"
               className="inline-block px-8 py-4 bg-amber-400 text-gray-900 rounded-sm font-semibold hover:bg-amber-300 transition-colors"
             >
               Join Now
