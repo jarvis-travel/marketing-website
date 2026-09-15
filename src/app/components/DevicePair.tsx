@@ -6,10 +6,8 @@
 // no bezel and no tilt.
 //
 // ONE DEPTH CUE, ON THE PHONE ONLY: a soft shadow with a real offset, tinted
-// toward the navy. An earlier version separated the two with a thick keyline
-// in the ground colour; a zero-offset coloured ring reads as a border drawn
-// around the phone, not as the phone sitting in front, and Brent found it
-// jarring (2026-09-14).
+// toward the navy. A zero-offset ring in the ground colour reads as a border
+// drawn around the phone, not as the phone sitting in front.
 //
 // Phones get the phone capture alone. Two screens squeezed into 360px are two
 // screens nobody can read.
@@ -28,11 +26,13 @@ interface DevicePairProps {
   alt: string;
   /** The navy ledge or the light page: sets the shadow's strength and whether the desktop needs an edge. */
   ground: 'plane' | 'page';
-  /** The desktop screen's rendered width, for the browser's srcset pick. */
-  sizes: string;
+  /**
+   * Each screen's rendered width in the pair, as a `sizes` value, for the
+   * browser's srcset pick. The phone is 26% of the pair's width and the desktop
+   * 86%, so the phone's slot is the desktop's times 26/86.
+   */
+  sizes: { desktop: string; phone: string };
 }
-
-const PHONE_SIZES = '(min-width: 1024px) 240px, 26vw';
 
 const PHONE_DEPTH = {
   // On navy the shadow only reads where the phone crosses the light desktop
@@ -68,7 +68,7 @@ export function DevicePair({ image, alt, ground, sizes }: DevicePairProps) {
           lower than the desktop's bottom edge. */}
       <div className="relative hidden sm:block pl-[14%] pt-[3%] pb-[6%]">
         <picture>
-          <source type="image/webp" srcSet={image.desktop} sizes={sizes} />
+          <source type="image/webp" srcSet={image.desktop} sizes={sizes.desktop} />
           <img
             src={image.fallback}
             alt={alt}
@@ -80,7 +80,7 @@ export function DevicePair({ image, alt, ground, sizes }: DevicePairProps) {
           />
         </picture>
         <picture>
-          <source type="image/webp" srcSet={image.phone} sizes={PHONE_SIZES} />
+          <source type="image/webp" srcSet={image.phone} sizes={sizes.phone} />
           <img
             src={image.phoneFallback}
             alt=""
