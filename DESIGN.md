@@ -226,7 +226,7 @@ The system rejects what the brand has already taken out: gradients and glows in 
 A cool navy world on a warm neutral ground, lit by one amber: navy carries the brand, Moonlight carries the reading, and amber carries the action.
 
 ### Primary
-- **Sea Buckthorn Amber** (#FFBF65): The action. It fills every Join Now control and the skip link, always under a Neverything ink label (10.98:1). On navy it also sets small label type: the page label above a header band's headline, and the highlighted offer's name (7.08:1 on Ateneo Navy). It never fills a band, card or icon.
+- **Sea Buckthorn Amber** (#FFBF65): The action. It fills Join Now and the skip link, always under a Neverything ink label (10.98:1); on Pricing, only the offer holding the highlight fills its Join Now. On navy it also sets small label type: the page label above a header band's headline, and the highlighted offer's name (7.08:1 on Ateneo Navy). It never fills a band, card or icon.
 - **Buckthorn Light** (#FFCC85): The hover fill of the amber action (12.12:1 with ink).
 - **Buckthorn Deep** (#9A5B00): Amber's text voice on white: the quiet offer's name and the saving badge on the quiet pricing card (5.43:1 on white).
 
@@ -301,7 +301,7 @@ The page is a vertical stack of full-bleed bands. Each band sets its own ground 
 
 **Alignment.** Left-aligned by default. Only the home hero, the closing invitation and a band's single closing action are centered.
 
-**Measure.** The 672px column sets 18px text at 66 to 76 characters a line (median 70), inside a 65 to 75 character target. The 768px column runs 18px text to 75 to 84 characters and 16px text to 88 to 94, so it suits components and screenshots better than long reading.
+**Measure.** The 672px column sets 18px text at 66 to 76 characters a line, with a median of 70. The 768px column runs 18px text to 75 to 84 characters and 16px text to 88 to 94, so it suits components and screenshots better than long reading.
 
 **Responsive.** Breakpoints sit at 640px, 768px and 1024px. Below 640px, a screenshot pair collapses to the phone screen alone (300px wide at most). Below 768px, the navigation collapses to a menu button, and the display, headline and title sizes step down.
 
@@ -340,8 +340,8 @@ Refined and restrained: squared, certain actions inside quiet, soft-cornered con
 
 ### Buttons
 - **Shape:** Squared corners (2px).
-- **Primary:** Sea Buckthorn fill under a Neverything ink label in Label type, with 16px by 32px of padding (40px at the sides on the closing invitation). This is every Join Now outside the navigation.
-- **Hover / Focus:** The fill lightens to Buckthorn Light over 150ms. Focus draws a 2px Ateneo Navy outline 3px outside the button.
+- **Primary:** Sea Buckthorn fill under a Neverything ink label in Label type, with 16px by 32px of padding (40px at the sides on the closing invitation). Every Join Now outside the navigation takes it, except the one in the pricing offer that doesn't hold the highlight, which is Quiet.
+- **Hover / Focus:** The fill lightens to Buckthorn Light over 150ms. Focus draws a 2px outline 3px outside the element, visible at 3:1 or better on its ground: Ateneo Navy on light grounds (9.95:1 on Moonlight), Moonlight on navy (9.95:1 on Ateneo Navy). Today the site draws the Ateneo ring on every ground, where it measures 1.00:1 on Ateneo Navy and 1.26:1 on Midnight Navy; JAR-1633 fixes that.
 - **Compact:** The navigation's Join Now: the same fill, label color and corners, at 500 weight with 10px by 20px of padding.
 - **Quiet:** The resting action inside the offer that does not hold the highlight: transparent, with a 1px Hairline Strong border, an ink label and 14px by 32px of padding. When its offer takes the highlight, it becomes the Primary fill.
 
@@ -382,7 +382,7 @@ Lucide icons sit in a 36px tile with 8px corners: the glyph at 20px with a 2px s
 Pricing shows two offers, and exactly one holds the highlight. The subscription holds it by default: Ateneo Navy fill, Moonlight text, Navy Glint checks, Sea Buckthorn offer name, and the group's one amber action. Hovering or focusing inside the single-trip offer moves the whole treatment there over 200ms and turns the subscription quiet (white card, Hairline border, Buckthorn Deep name, Quiet action). Leaving hands it back.
 
 ### Fatigue Index Scale
-The 1 to 9 scale appears as the app shows it: 44px chips with 12px corners and 8px gaps. Each digit is set in 700 18px tabular figures in its band color, over a 10% tint of that color, and the current reading is ringed 2px in its own color. The group is one image to assistive technology, described once in words.
+The 1 to 9 scale appears as the app shows it: 44px chips with 12px corners and 8px gaps, each tinted 10% in its band color, with the current reading ringed 2px in that color. Each digit is set in 700 18px tabular figures and must reach 4.5:1 against its chip, since 18px bold is not large text. Today the digits take the band color itself and measure 2.51 to 3.62:1; JAR-1634 fixes that. The group is one image to assistive technology, described once in words.
 
 ## Do's and Don'ts
 
@@ -392,7 +392,8 @@ The 1 to 9 scale appears as the app shows it: 44px chips with 12px corners and 8
 - **Do** separate parallel points with 1px Hairline (#DAD5CD) rows before reaching for cards.
 - **Do** set text on navy in Moonlight (#F0EEEB) or a navy tint: Navy Mist (#DBE9F4) for leads, Navy Haze (#B7D3E9) for secondary lines.
 - **Do** put every Unsplash photograph under a Midnight Navy (#0E2A47) scrim with its credit on the image, at 70% wherever text sits on the photograph.
-- **Do** hold running text to 65 to 75 characters a line; the 672px column at 18px measures a median of 70.
+- **Do** hold running text near 65 to 75 characters a line; the 672px column at 18px measures a median of 70.
+- **Do** keep focus visible at 3:1 or better on every ground: an Ateneo Navy ring on light grounds, a Moonlight ring on navy.
 - **Do** set prices and Fatigue Index digits in tabular figures.
 
 ### Don't:
@@ -401,5 +402,5 @@ The 1 to 9 scale appears as the app shows it: 44px chips with 12px corners and 8
 - **Don't** use black or Neverything (#13181B) as a surface, or set the logo in pure white or black.
 - **Don't** round actions or badges into pills; the brand owner removed them.
 - **Don't** use Journal Coral outside the journal, or the Fatigue Index colors outside the scale.
-- **Don't** set Fatigue Index digits in their band color on its own 10% tint without checking contrast: chill (#0EA5E9) measures 2.51:1 there and packed (#CA8A04) 2.66:1.
+- **Don't** set Fatigue Index digits in their band color on their own 10% tint: at 18px bold they need 4.5:1, and all four fall short (chill #0EA5E9 2.51:1, balanced #059669 3.33:1, packed #CA8A04 2.66:1, peak #D35446 3.62:1).
 - **Don't** add a second typeface, or load Inter from a font CDN.

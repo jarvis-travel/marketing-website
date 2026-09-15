@@ -62,4 +62,4 @@ Confirmed 2026-09-14:
 
 ## Accessibility & Inclusion
 
-Inferred from the codebase: WCAG AA contrast for text, a visible focus ring, a skip link, and alt text that describes an image rather than captioning it.
+The target is WCAG AA: text contrast of 4.5:1 (3:1 for large text), a focus ring visible on every background, a skip link, and alt text that describes an image rather than captioning it.

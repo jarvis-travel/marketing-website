@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-15T16:57:51+00:00",
+  "generatedAt": "2026-09-15T17:08:12+00:00",
   "title": "Design System: JarvisTravel",
   "extensions": {
     "colorMeta": {
@@ -605,7 +605,8 @@
       "Do separate parallel points with 1px Hairline (#DAD5CD) rows before reaching for cards.",
       "Do set text on navy in Moonlight (#F0EEEB) or a navy tint: Navy Mist (#DBE9F4) for leads, Navy Haze (#B7D3E9) for secondary lines.",
       "Do put every Unsplash photograph under a Midnight Navy (#0E2A47) scrim with its credit on the image, at 70% wherever text sits on the photograph.",
-      "Do hold running text to 65 to 75 characters a line; the 672px column at 18px measures a median of 70.",
+      "Do hold running text near 65 to 75 characters a line; the 672px column at 18px measures a median of 70.",
+      "Do keep focus visible at 3:1 or better on every ground: an Ateneo Navy ring on light grounds, a Moonlight ring on navy.",
       "Do set prices and Fatigue Index digits in tabular figures."
     ],
     "donts": [
@@ -614,7 +615,7 @@
       "Don't use black or Neverything (#13181B) as a surface, or set the logo in pure white or black.",
       "Don't round actions or badges into pills; the brand owner removed them.",
       "Don't use Journal Coral outside the journal, or the Fatigue Index colors outside the scale.",
-      "Don't set Fatigue Index digits in their band color on its own 10% tint without checking contrast: chill (#0EA5E9) measures 2.51:1 there and packed (#CA8A04) 2.66:1.",
+      "Don't set Fatigue Index digits in their band color on their own 10% tint: at 18px bold they need 4.5:1, and all four fall short (chill #0EA5E9 2.51:1, balanced #059669 3.33:1, packed #CA8A04 2.66:1, peak #D35446 3.62:1).",
       "Don't add a second typeface, or load Inter from a font CDN."
     ]
   }
