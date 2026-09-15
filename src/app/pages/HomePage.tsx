@@ -38,16 +38,16 @@ const HEROES: Hero[] = [
     sub: 'One plan for the days, the money and the memories. Jarvis does the homework; you take the trip.',
   },
   {
-    headline: 'Enjoy your vacation.',
-    sub: 'Planning is hard. Jarvis does the heavy lifting: the pace, the budget, the map, all in one place.',
+    headline: 'Leave room for the good part.',
+    sub: 'Jarvis plans the pace, the budget and the map together, so your days keep room for the moments you didn’t plan.',
   },
   {
     headline: 'Come home with stories, not exhaustion.',
-    sub: 'Jarvis reads every day of your plan as chill, balanced, or packed, so the tough ones show up before you do.',
+    sub: 'Jarvis rates every day of your plan as chill, balanced, or packed, so the tough ones show up before you do.',
   },
   {
-    headline: 'Twelve tabs is not a travel plan.',
-    sub: 'The days, the budget, the map and the journal, together in one place that thinks about pacing.',
+    headline: 'Some days should be slow.',
+    sub: 'Jarvis rates each day chill, balanced or packed while you plan, so the busy ones don’t pile up.',
   },
 ];
 
@@ -70,7 +70,7 @@ const FEATURES: Feature[] = [
   {
     icon: TrendingUp,
     name: 'The Fatigue Index',
-    desc: 'Every day reads chill, balanced, or packed before you commit, so the tough days show up while you can still fix them.',
+    desc: 'Every day is rated chill, balanced, or packed before you commit, so the tough days show up while you can still fix them.',
     voice: 'accent',
   },
   {
