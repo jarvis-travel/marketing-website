@@ -51,7 +51,7 @@ const MOMENTS: Moment[] = [
     soWhat: 'So you fix Tuesday at home, not mid-afternoon in a crowded plaza.',
     capture: {
       image: LIGHTER_DAY,
-      alt: 'A packed day in Rome beside a lighter version of it: rated 7, packed, now and 6, balanced, lighter, with lunch moved to a lighter day, less spent that day, and why the day flows better.',
+      alt: 'A packed day in Rome beside a lighter version of it. Now, the day is rated 7, packed. Lighter, it is rated 6, balanced, with lunch moved to a lighter day and less spent that day. Below them, why the lighter day flows better.',
     },
   },
   {
