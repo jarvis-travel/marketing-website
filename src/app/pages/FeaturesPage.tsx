@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { AppCapture } from '../components/AppCapture';
+import { DevicePair } from '../components/DevicePair';
 import {
   DAY_DETAIL,
   DAY_ROUTE,
@@ -184,12 +184,14 @@ export function FeaturesPage() {
               ))}
             </svg>
 
-            <AppCapture
-              image={DAY_DETAIL}
-              alt="A week in Rome in the trip plan. Day one is rated balanced, with a note on why it is full but manageable, and its stops in order from a 9:30 airport arrival."
-              sizes="(min-width: 1024px) 848px, calc(100vw - 120px)"
-              className="relative"
-            />
+            <div className="relative">
+              <DevicePair
+                image={DAY_DETAIL}
+                alt="A week in Rome in the trip plan. Day one is rated balanced, with a note on why it is full but manageable, and its stops in order from a 9:30 airport arrival."
+                ground="plane"
+                sizes="(min-width: 1024px) 650px, 60vw"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -216,12 +218,14 @@ export function FeaturesPage() {
                   <p className="text-gray-600 leading-relaxed mb-3">{moment.desc}</p>
                   <p className="font-medium text-gray-900">{moment.soWhat}</p>
                   {moment.capture && (
-                    <AppCapture
-                      image={moment.capture.image}
-                      alt={moment.capture.alt}
-                      sizes="(min-width: 768px) 644px, calc(100vw - 100px)"
-                      className="mt-6 border border-gray-200"
-                    />
+                    <div className="mt-6">
+                      <DevicePair
+                        image={moment.capture.image}
+                        alt={moment.capture.alt}
+                        ground="page"
+                        sizes="(min-width: 768px) 490px, 60vw"
+                      />
+                    </div>
                   )}
                 </div>
               </li>

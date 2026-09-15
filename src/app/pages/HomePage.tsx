@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PhotoBackdrop } from '../components/PhotoBackdrop';
-import { AppCapture } from '../components/AppCapture';
+import { DevicePair } from '../components/DevicePair';
 import { TRIP_HOME } from '../data/appCaptures';
 import type { LucideIcon } from 'lucide-react';
 
@@ -217,15 +217,17 @@ export function HomePage() {
               rather not juggle, in one place.
             </p>
           </div>
-          {/* The claim, shown: the app's own trip screen, flat on a solid plane. */}
+          {/* The claim, shown: the app's own trip screen at desktop and phone size, flat on a solid plane. */}
           <div className="relative overflow-hidden rounded-[20px] bg-sky-600 p-4 sm:p-8 md:p-12 mb-12">
             <ContourArcs className="absolute -bottom-56 -right-40 w-[520px] h-[520px]" />
-            <AppCapture
-              image={TRIP_HOME}
-              alt="A trip's home screen for a week in Rome: today's schedule, what is left of the budget, and the week's pacing, with two days running packed."
-              sizes="(min-width: 1152px) 992px, calc(100vw - 160px)"
-              className="relative"
-            />
+            <div className="relative">
+              <DevicePair
+                image={TRIP_HOME}
+                alt="A trip's home screen for a week in Rome: today's schedule, what is left of the budget, and the week's pacing, with two days running packed."
+                ground="plane"
+                sizes="(min-width: 1152px) 760px, 60vw"
+              />
+            </div>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {FEATURES.map((feature) => {
