@@ -46,12 +46,12 @@ import flowMapPng from '../../assets/captures/desktop/flow-map-light-720.png';
 import flowMapPhone390 from '../../assets/captures/mobile/flow-map-light-390.webp';
 import flowMapPhone780 from '../../assets/captures/mobile/flow-map-light-780.webp';
 
-import journalStory720 from '../../assets/captures/desktop/journal-story-light-720.webp';
-import journalStory960 from '../../assets/captures/desktop/journal-story-light-960.webp';
-import journalStory1440 from '../../assets/captures/desktop/journal-story-light-1440.webp';
-import journalStoryPng from '../../assets/captures/desktop/journal-story-light-720.png';
-import journalStoryPhone390 from '../../assets/captures/mobile/journal-story-light-390.webp';
-import journalStoryPhone780 from '../../assets/captures/mobile/journal-story-light-780.webp';
+import journalDay720 from '../../assets/captures/desktop/journal-day-light-720.webp';
+import journalDay960 from '../../assets/captures/desktop/journal-day-light-960.webp';
+import journalDay1440 from '../../assets/captures/desktop/journal-day-light-1440.webp';
+import journalDayPng from '../../assets/captures/desktop/journal-day-light-720.png';
+import journalDayPhone390 from '../../assets/captures/mobile/journal-day-light-390.webp';
+import journalDayPhone780 from '../../assets/captures/mobile/journal-day-light-780.webp';
 
 /** One screen, as both device profiles the harness captures. */
 export interface AppCaptureImage {
@@ -91,8 +91,9 @@ export const DAY_ROUTE: AppCaptureImage = {
   fallback: flowMapPng,
 };
 
+/** A journal day with a place card open, not the journal's cover (JAR-1618). */
 export const JOURNAL: AppCaptureImage = {
-  desktop: srcSet([journalStory720, 720], [journalStory960, 960], [journalStory1440, 1440]),
-  phone: srcSet([journalStoryPhone390, 390], [journalStoryPhone780, 780]),
-  fallback: journalStoryPng,
+  desktop: srcSet([journalDay720, 720], [journalDay960, 960], [journalDay1440, 1440]),
+  phone: srcSet([journalDayPhone390, 390], [journalDayPhone780, 780]),
+  fallback: journalDayPng,
 };

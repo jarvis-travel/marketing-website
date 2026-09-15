@@ -84,7 +84,7 @@ const MOMENTS: Moment[] = [
     soWhat: 'So the trip doesn’t evaporate when the tan does.',
     capture: {
       image: JOURNAL,
-      alt: 'A trip journal for a week in Rome: the fullest day, a map of the 15 places visited so far, and a button to add a note.',
+      alt: 'A day in the trip journal for Rome, with the Colosseum tour open: the spend confirmed from its receipt, the receipt line by line, and a place to add a note.',
     },
   },
 ];
