@@ -183,7 +183,7 @@ export function FeaturesPage() {
                 image={DAY_DETAIL}
                 alt="A week in Rome in the trip plan. Day one is rated balanced, with a note on why it is full but manageable, and its stops in order from a 9:30 airport arrival."
                 ground="plane"
-                sizes="(min-width: 1024px) 730px, 80vw"
+                sizes={{ desktop: '(min-width: 1024px) 730px, 80vw', phone: '(min-width: 1024px) 221px, 24vw' }}
               />
             </div>
           </div>
@@ -209,7 +209,7 @@ export function FeaturesPage() {
                         image={moment.capture.image}
                         alt={moment.capture.alt}
                         ground="page"
-                        sizes="(min-width: 768px) 560px, 80vw"
+                        sizes={{ desktop: '(min-width: 768px) 560px, 80vw', phone: '(min-width: 768px) 169px, 24vw' }}
                       />
                     </div>
                   )}

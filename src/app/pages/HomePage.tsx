@@ -239,7 +239,7 @@ export function HomePage() {
                 image={TRIP_HOME}
                 alt="A trip's home screen for a week in Rome: today's schedule, what is left of the budget, and the week's pacing, with two days running packed."
                 ground="plane"
-                sizes="(min-width: 1152px) 860px, 80vw"
+                sizes={{ desktop: '(min-width: 1152px) 860px, 80vw', phone: '(min-width: 1152px) 260px, 24vw' }}
               />
             </div>
           </div>
