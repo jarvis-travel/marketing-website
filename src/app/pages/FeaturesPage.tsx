@@ -31,7 +31,6 @@ const FI_SCALE: FiBand[] = [
 ];
 
 interface Moment {
-  numeral: string;
   name: string;
   desc: string;
   soWhat: string;
@@ -42,15 +41,13 @@ interface Moment {
 
 const MOMENTS: Moment[] = [
   {
-    numeral: '1',
-    name: 'The week before you go',
-    desc: 'Jarvis drafts the days (pacing, order, and the walk between stops) with the forecast and your budget sitting inside the same plan. You move things; the numbers move with them. And it works the same for a staycation, a long weekend, or two weeks abroad.',
+    name: 'Your days, drafted for you',
+    desc: 'Jarvis puts your days in a sensible order, with the forecast and your budget right there in the plan. Move a stop and the numbers move with it. A long weekend or two weeks abroad, it works the same way.',
     soWhat: 'So the plan gets finished, and you get your evenings back.',
   },
   {
-    numeral: '2',
-    name: 'The day that comes up packed',
-    desc: 'When the Fatigue Index rates a day packed, the plan says so before you commit, and offers a lighter version of the same day, so you can see what dropping one thing buys you.',
+    name: 'Spot the tough days early',
+    desc: 'When a day comes up packed, you’ll know while you’re still planning, and Jarvis can show you a lighter version of the same day. See what dropping one thing buys you.',
     soWhat: 'So you fix Tuesday at home, not mid-afternoon in a crowded plaza.',
     capture: {
       image: PACKED_DAY,
@@ -58,9 +55,8 @@ const MOMENTS: Moment[] = [
     },
   },
   {
-    numeral: '3',
-    name: 'The ground',
-    desc: 'Your trip on one map, numbered by day. The route you would actually walk, not a cloud of pins.',
+    name: 'Your day on one map',
+    desc: 'Your stops in order, on the route you’d walk, with the backtracking already taken out.',
     soWhat: 'So you see the whole day before your feet commit to it.',
     capture: {
       image: DAY_ROUTE,
@@ -68,9 +64,8 @@ const MOMENTS: Moment[] = [
     },
   },
   {
-    numeral: '4',
-    name: 'What it costs',
-    desc: 'A budget that lives inside the plan: categories, running totals, and what is left, visible while you decide, not after.',
+    name: 'Keep the budget in view',
+    desc: 'Your budget lives inside the plan: what you’ve set aside, what you’ve spent and what’s left, right next to your days.',
     soWhat: 'So the budget is a decision you make, not news you get.',
     capture: {
       image: BUDGET,
@@ -78,9 +73,8 @@ const MOMENTS: Moment[] = [
     },
   },
   {
-    numeral: '5',
-    name: 'The flight home',
-    desc: 'Notes, photos, receipts and places, assembled into a journal worth rereading. Yours to keep after the trip ends.',
+    name: 'Bring the trip home with you',
+    desc: 'Your notes, photos, receipts and places come together in a journal worth rereading. It’s yours to keep.',
     soWhat: 'So the trip doesn’t evaporate when the tan does.',
     capture: {
       image: JOURNAL,
@@ -95,15 +89,12 @@ export function FeaturesPage() {
       {/* Header - flat Ateneo band. */}
       <section className="bg-sky-600">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
-          <p className="text-[11px] font-semibold tracking-[0.14em] uppercase text-amber-400 mb-6">
-            How it works
-          </p>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-50 leading-tight [text-wrap:balance] max-w-3xl mb-6">
-            Five moments a plan has to survive.
+            From the first idea to the flight home.
           </h1>
           <p className="text-lg text-sky-100 max-w-2xl leading-relaxed">
-            Not a feature list: the points in a real trip where most plans
-            quietly fail, and what Jarvis does at each one.
+            Jarvis drafts your days, flags the tough ones, and keeps the map
+            and the budget in one place.
           </p>
         </div>
       </section>
@@ -111,17 +102,21 @@ export function FeaturesPage() {
       {/* The Fatigue Index - the machinery, shown the way the app shows it. */}
       <section className="bg-white">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 [text-wrap:balance] mb-2">
-            The Fatigue Index: chill, balanced, or packed.
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 [text-wrap:balance] mb-4">
+            Know how every day will feel.
           </h2>
+          <p className="text-lg text-gray-600 leading-relaxed mb-2">
+            The Fatigue Index rates each day chill, balanced or packed while
+            you plan.
+          </p>
           {/* Filed; attached to the feature itself, never a site-wide badge.
               Diarize the provisional's 12-month expiry: the line comes down
               if the filing lapses. */}
           <p className="text-sm font-medium text-gray-500 mb-6">Patent pending</p>
           <p className="text-lg text-gray-600 leading-relaxed mb-8">
-            As you build a plan, Jarvis rates each day. The rating comes from
-            how far your body clock moves, how long you&rsquo;re in transit, how
-            far you walk, how much is packed in, and how much downtime is left.
+            It looks at how far your body clock moves, how long you&rsquo;re in
+            transit, how far you walk, how much is packed in and how
+            much downtime is left.
           </p>
 
           {/* The scale, as the app displays it: numbered chips tinted by the
@@ -150,8 +145,7 @@ export function FeaturesPage() {
           </div>
 
           <p className="text-gray-600 leading-relaxed">
-            That&rsquo;s all the Fatigue Index is: a rating for how each day will
-            feel, not medical advice.
+            It&rsquo;s a heads-up, not medical advice.
           </p>
         </div>
       </section>
@@ -162,11 +156,11 @@ export function FeaturesPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
           <div className="max-w-2xl mb-10">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 [text-wrap:balance] mb-4">
-              This is what a day looks like.
+              Every day, laid out.
             </h2>
             <p className="text-lg text-gray-600 leading-relaxed">
-              Every stop, timed and paced, with the day&rsquo;s rating right at
-              the top. Here&rsquo;s day one of a week in Rome.
+              Each stop in order with its time, and the day&rsquo;s rating right
+              at the top. This is day one of a week in Rome.
             </p>
           </div>
 
@@ -196,21 +190,13 @@ export function FeaturesPage() {
         </div>
       </section>
 
-      {/* The five moments - each one ends with its "so what". */}
+      {/* What Jarvis does, each ending with what the traveler gets. No
+          numbers: the order is not a sequence the reader needs. */}
       <section className="bg-gray-50">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-          <ol className="border-t border-gray-200 list-none m-0 p-0">
+          <ul className="border-t border-gray-200 list-none m-0 p-0">
             {MOMENTS.map((moment) => (
-              <li
-                key={moment.numeral}
-                className="grid grid-cols-[40px_1fr] gap-x-5 py-8 border-b border-gray-200"
-              >
-                <span
-                  aria-hidden="true"
-                  className="text-2xl font-bold text-gray-300 [font-variant-numeric:tabular-nums] leading-tight"
-                >
-                  {moment.numeral}
-                </span>
+              <li key={moment.name} className="py-8 border-b border-gray-200">
                 <div>
                   <h2 className="text-xl md:text-2xl font-semibold text-gray-900 mb-2">
                     {moment.name}
@@ -230,7 +216,7 @@ export function FeaturesPage() {
                 </div>
               </li>
             ))}
-          </ol>
+          </ul>
 
           <div className="text-center mt-12">
             <Link
