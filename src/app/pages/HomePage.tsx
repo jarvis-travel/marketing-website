@@ -51,6 +51,16 @@ const HEROES: Hero[] = [
   },
 ];
 
+/** The hero photograph rotates like the headline, one city per visit. Each slot
+ *  is pinned to a reviewed photo in scripts/fetch-unsplash-manifest.mjs. */
+const HERO_PHOTO_SLOTS = [
+  'home.hero.rome',
+  'home.hero.new-york',
+  'home.hero.paris',
+  'home.hero.sydney',
+  'home.hero.lisbon',
+];
+
 interface Feature {
   icon: LucideIcon;
   name: string;
@@ -129,11 +139,17 @@ export function HomePage() {
   const [hero] = useState<Hero>(
     () => HEROES[Math.floor(Math.random() * HEROES.length)]
   );
+  const [heroPhotoSlot] = useState(
+    () => HERO_PHOTO_SLOTS[Math.floor(Math.random() * HERO_PHOTO_SLOTS.length)]
+  );
   return (
     <div>
       {/* Hero: the story, not the mechanics. */}
       <section className="relative overflow-hidden bg-sky-600">
-        <PhotoBackdrop slot="home.hero" />
+        {/* Heavier than the default scrim because the city photos have bright
+            skies and white facades: over white, the sub-headline needs 70% to
+            clear 4.5:1. */}
+        <PhotoBackdrop slot={heroPhotoSlot} scrim="bg-sky-900/70" />
         <ContourArcs className="absolute -top-44 -left-44 w-[520px] h-[520px]" />
         <ContourArcs className="absolute -bottom-56 -right-40 w-[520px] h-[520px]" />
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-36 pb-24 md:pt-44 md:pb-32 text-center">
