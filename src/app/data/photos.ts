@@ -9,13 +9,11 @@
 // bundle to leak — scripts/check-no-unsplash-key-in-bundle.mjs proves that per
 // build rather than asserting it here.
 //
-// AN EMPTY MANIFEST IS AN ORDINARY STATE, not a failure, and it is the state
-// this ships in: the manifest is populated by a CI run that has the key, and
-// UNSPLASH_ACCESS_KEY is not a secret on this repo yet. Every slot below then
-// returns null and the sections render exactly what they render today. That
-// mirrors the app, where a null photo means "Unsplash had nothing, or the key
-// is unset, or the budget is spent" and the answer to all three is the brand
-// surface, which is a designed state rather than a fallback.
+// AN EMPTY SLOT IS AN ORDINARY STATE, not a failure: a slot with no photo
+// returns null, and its section renders the brand surface. That mirrors the
+// app, where a null photo means "Unsplash had nothing, or the key is unset, or
+// the budget is spent" and the answer to all three is the brand surface, which
+// is a designed state rather than a fallback.
 // ============================================================================
 
 import manifest from './photoManifest.json';
