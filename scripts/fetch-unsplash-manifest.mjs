@@ -43,7 +43,12 @@ const UTM_MEDIUM = 'referral';
 // reviewed once, and this script re-fetches the SAME photos to refresh their
 // URLs and re-register the downloads.
 const SLOTS = [
-  { slot: 'home.hero', query: 'golden hour coastal travel landscape', orientation: 'landscape' },
+  // The home hero rotates through five cities, one picked per visit (HomePage).
+  { slot: 'home.hero.rome', query: 'Colosseum Rome golden hour', orientation: 'landscape' },
+  { slot: 'home.hero.new-york', query: 'Manhattan skyline golden hour', orientation: 'landscape' },
+  { slot: 'home.hero.paris', query: 'Paris Eiffel Tower golden hour aerial', orientation: 'landscape' },
+  { slot: 'home.hero.sydney', query: 'Sydney Harbour Bridge dusk', orientation: 'landscape' },
+  { slot: 'home.hero.lisbon', query: 'Lisbon rooftops Alfama', orientation: 'landscape' },
   { slot: 'home.planning', query: 'traveller planning map table', orientation: 'landscape' },
 ];
 

@@ -9,6 +9,8 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PhotoBackdrop } from '../components/PhotoBackdrop';
+import { DevicePair } from '../components/DevicePair';
+import { TRIP_HOME } from '../data/appCaptures';
 import type { LucideIcon } from 'lucide-react';
 
 // Home (JAR-431). Benefit-led story per the jarvistravel-copy voice skill:
@@ -38,17 +40,27 @@ const HEROES: Hero[] = [
     sub: 'One plan for the days, the money and the memories. Jarvis does the homework; you take the trip.',
   },
   {
-    headline: 'Enjoy your vacation.',
-    sub: 'Planning is hard. Jarvis does the heavy lifting: the pace, the budget, the map, all in one place.',
+    headline: 'Leave room for the good part.',
+    sub: 'Jarvis plans the pace, the budget and the map together, so your days keep room for the moments you didn’t plan.',
   },
   {
     headline: 'Come home with stories, not exhaustion.',
-    sub: 'Jarvis reads every day of your plan as chill, balanced, or packed, so the tough ones show up before you do.',
+    sub: 'Jarvis rates every day of your plan as chill, balanced, or packed, so the tough ones show up before you do.',
   },
   {
-    headline: 'Twelve tabs is not a travel plan.',
-    sub: 'The days, the budget, the map and the journal, together in one place that thinks about pacing.',
+    headline: 'Some days should be slow.',
+    sub: 'Jarvis rates each day chill, balanced or packed while you plan, so the busy ones don’t pile up.',
   },
+];
+
+/** The hero photograph rotates like the headline, one city per visit. Each slot
+ *  is pinned to a reviewed photo in scripts/fetch-unsplash-manifest.mjs. */
+const HERO_PHOTO_SLOTS = [
+  'home.hero.rome',
+  'home.hero.new-york',
+  'home.hero.paris',
+  'home.hero.sydney',
+  'home.hero.lisbon',
 ];
 
 interface Feature {
@@ -70,7 +82,7 @@ const FEATURES: Feature[] = [
   {
     icon: TrendingUp,
     name: 'The Fatigue Index',
-    desc: 'Every day reads chill, balanced, or packed before you commit, so the tough days show up while you can still fix them.',
+    desc: 'Every day is rated chill, balanced, or packed before you commit, so the tough days show up while you can still fix them.',
     voice: 'accent',
   },
   {
@@ -129,11 +141,17 @@ export function HomePage() {
   const [hero] = useState<Hero>(
     () => HEROES[Math.floor(Math.random() * HEROES.length)]
   );
+  const [heroPhotoSlot] = useState(
+    () => HERO_PHOTO_SLOTS[Math.floor(Math.random() * HERO_PHOTO_SLOTS.length)]
+  );
   return (
     <div>
       {/* Hero: the story, not the mechanics. */}
       <section className="relative overflow-hidden bg-sky-600">
-        <PhotoBackdrop slot="home.hero" />
+        {/* Heavier than the default scrim because the city photos have bright
+            skies and white facades: over white, the sub-headline needs 70% to
+            clear 4.5:1. */}
+        <PhotoBackdrop slot={heroPhotoSlot} scrim="bg-sky-900/70" />
         <ContourArcs className="absolute -top-44 -left-44 w-[520px] h-[520px]" />
         <ContourArcs className="absolute -bottom-56 -right-40 w-[520px] h-[520px]" />
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-36 pb-24 md:pt-44 md:pb-32 text-center">
@@ -214,6 +232,18 @@ export function HomePage() {
               Everything that makes a trip work, and everything you&rsquo;d
               rather not juggle, in one place.
             </p>
+          </div>
+          {/* The claim, shown: the app's own trip screen, the phone in front of the desktop, on a solid plane. */}
+          <div className="relative overflow-hidden rounded-[20px] bg-sky-600 p-4 sm:p-6 md:p-8 mb-12">
+            <ContourArcs className="absolute -bottom-56 -right-40 w-[520px] h-[520px]" />
+            <div className="relative">
+              <DevicePair
+                image={TRIP_HOME}
+                alt="A trip's home screen for a week in Rome: today's schedule, what is left of the budget, and the week's pacing, with two days running packed."
+                ground="plane"
+                sizes="(min-width: 1152px) 860px, 80vw"
+              />
+            </div>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {FEATURES.map((feature) => {

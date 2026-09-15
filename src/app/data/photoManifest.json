@@ -1,19 +1,59 @@
 {
-  "generatedAt": "2026-09-14T14:19:52.868Z",
+  "generatedAt": "2026-09-14T23:47:28.399Z",
   "slots": {
-    "home.hero": {
-      "photoId": "kFtX_bm8g50",
-      "url": "https://images.unsplash.com/photo-1776592996355-5d05a1dbb3ab?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDQxOTkxfDB8MXxhbGx8fHx8fHx8fHwxNzg5Mzk1NTkzfA&ixlib=rb-4.1.0&q=80&w=1080",
-      "alt": "Golden hour light on a rocky coastline, waves breaking below palm trees and a hillside town",
+    "home.hero.rome": {
+      "photoId": "7Y015gklIDg",
+      "url": "https://images.unsplash.com/photo-1663143050642-69240b347b2b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDQxOTkxfDB8MXxhbGx8fHx8fHx8fHwxNzg5NDI5NjQ4fA&ixlib=rb-4.1.0&q=80&w=1080",
+      "alt": "The Colosseum in Rome in warm evening light under a clear sky",
       "credit": {
-        "name": "⚜ Venetum",
-        "profileUrl": "https://unsplash.com/@venetum?utm_source=jarvistravel&utm_medium=referral",
-        "unsplashUrl": "https://unsplash.com/photos/rocky-coastline-with-gentle-waves-at-sunset-kFtX_bm8g50?utm_source=jarvistravel&utm_medium=referral"
+        "name": "Matteo del Piano",
+        "profileUrl": "https://unsplash.com/@matteodelpiano?utm_source=jarvistravel&utm_medium=referral",
+        "unsplashUrl": "https://unsplash.com/photos/colosseum-in-rome-at-golden-hour-7Y015gklIDg?utm_source=jarvistravel&utm_medium=referral"
+      }
+    },
+    "home.hero.new-york": {
+      "photoId": "kZokA2VTKn4",
+      "url": "https://images.unsplash.com/photo-1518235506717-e1ed3306a89b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDQxOTkxfDB8MXxhbGx8fHx8fHx8fHwxNzg5NDI5NjQ5fA&ixlib=rb-4.1.0&q=80&w=1080",
+      "alt": "The Manhattan skyline across the Hudson River at dusk",
+      "credit": {
+        "name": "Mike Chavarri",
+        "profileUrl": "https://unsplash.com/@mikechv?utm_source=jarvistravel&utm_medium=referral",
+        "unsplashUrl": "https://unsplash.com/photos/new-york-city-skyline-from-hoboken-kZokA2VTKn4?utm_source=jarvistravel&utm_medium=referral"
+      }
+    },
+    "home.hero.paris": {
+      "photoId": "Q7htkhMW66Y",
+      "url": "https://images.unsplash.com/photo-1526821799652-2dc51675628e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDQxOTkxfDB8MXxhbGx8fHx8fHx8fHwxNzg5NDI5NjQ5fA&ixlib=rb-4.1.0&q=80&w=1080",
+      "alt": "Paris from above at golden hour, the Eiffel Tower rising over the rooftops",
+      "credit": {
+        "name": "Luca Micheli",
+        "profileUrl": "https://unsplash.com/@lucamicheli?utm_source=jarvistravel&utm_medium=referral",
+        "unsplashUrl": "https://unsplash.com/photos/eiffel-tower-and-les-invalides-in-paris-Q7htkhMW66Y?utm_source=jarvistravel&utm_medium=referral"
+      }
+    },
+    "home.hero.sydney": {
+      "photoId": "Wp3xWCVXMCI",
+      "url": "https://images.unsplash.com/photo-1598948485421-33a1655d3c18?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDQxOTkxfDB8MXxhbGx8fHx8fHx8fHwxNzg5NDI5NjQ5fA&ixlib=rb-4.1.0&q=80&w=1080",
+      "alt": "Sydney Harbour Bridge and the city skyline under a pink dusk sky",
+      "credit": {
+        "name": "Leigh",
+        "profileUrl": "https://unsplash.com/@leigh_?utm_source=jarvistravel&utm_medium=referral",
+        "unsplashUrl": "https://unsplash.com/photos/city-with-high-rise-buildings-and-bridge-during-daytime-Wp3xWCVXMCI?utm_source=jarvistravel&utm_medium=referral"
+      }
+    },
+    "home.hero.lisbon": {
+      "photoId": "VHWyqXsWHg0",
+      "url": "https://images.unsplash.com/photo-1501927023255-9063be98970c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDQxOTkxfDB8MXxhbGx8fHx8fHx8fHwxNzg5NDI5NjQ5fA&ixlib=rb-4.1.0&q=80&w=1080",
+      "alt": "Lisbon's rooftops climbing to the white towers of São Vicente de Fora",
+      "credit": {
+        "name": "Liam McKay",
+        "profileUrl": "https://unsplash.com/@liammckay?utm_source=jarvistravel&utm_medium=referral",
+        "unsplashUrl": "https://unsplash.com/photos/city-landscape-photography-during-daytime-VHWyqXsWHg0?utm_source=jarvistravel&utm_medium=referral"
       }
     },
     "home.planning": {
       "photoId": "98WPMlTl5xo",
-      "url": "https://images.unsplash.com/photo-1578894381163-e72c17f2d45f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDQxOTkxfDB8MXxhbGx8fHx8fHx8fHwxNzg5Mzk1NTkzfA&ixlib=rb-4.1.0&q=80&w=1080",
+      "url": "https://images.unsplash.com/photo-1578894381163-e72c17f2d45f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDQxOTkxfDB8MXxhbGx8fHx8fHx8fHwxNzg5NDI5NjUwfA&ixlib=rb-4.1.0&q=80&w=1080",
       "alt": "Trip planning flat lay: a world map with a passport, cameras, sunglasses and string lights",
       "credit": {
         "name": "Charlotte Noelle",

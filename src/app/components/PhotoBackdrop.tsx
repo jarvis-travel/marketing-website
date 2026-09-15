@@ -23,6 +23,24 @@ interface PhotoBackdropProps {
   scrim?: string;
 }
 
+/** The same hotlinked photo at wider sizes, so a full-bleed band stays sharp on a
+ *  large or high-density screen. Only `w` changes: the ixid that carries the
+ *  view back to the photographer stays on every candidate. */
+function widerSizes(url: string): string | undefined {
+  try {
+    return [1080, 1600, 2400]
+      .map((w) => {
+        const u = new URL(url);
+        u.searchParams.set('w', String(w));
+        return `${u.toString()} ${w}w`;
+      })
+      .join(', ');
+  } catch {
+    // A manifest URL that doesn't parse gets no srcset; the img still has its src.
+    return undefined;
+  }
+}
+
 export function PhotoBackdrop({ slot, scrim = 'bg-sky-900/55' }: PhotoBackdropProps) {
   const photo = photoFor(slot);
   if (!photo) return null;
@@ -31,6 +49,8 @@ export function PhotoBackdrop({ slot, scrim = 'bg-sky-900/55' }: PhotoBackdropPr
     <>
       <img
         src={photo.url}
+        srcSet={widerSizes(photo.url)}
+        sizes="100vw"
         // EMPTY ALT, DELIBERATELY. This photograph sits behind a headline that
         // already says everything the section means; the image carries no
         // information a screen reader would otherwise miss. An alt here could
