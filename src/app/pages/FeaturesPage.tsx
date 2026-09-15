@@ -5,7 +5,7 @@ import {
   DAY_DETAIL,
   DAY_ROUTE,
   JOURNAL,
-  PACKED_DAY,
+  LIGHTER_DAY,
   type AppCaptureImage,
 } from '../data/appCaptures';
 
@@ -50,8 +50,8 @@ const MOMENTS: Moment[] = [
     desc: 'When a day comes up packed, you’ll know while you’re still planning, and Jarvis can show you a lighter version of the same day. See what dropping one thing buys you.',
     soWhat: 'So you fix Tuesday at home, not mid-afternoon in a crowded plaza.',
     capture: {
-      image: PACKED_DAY,
-      alt: 'A day in Rome rated packed: around 8 hours on the go with no real break, a suggestion to add a short break in the afternoon, and a button to make the day lighter.',
+      image: LIGHTER_DAY,
+      alt: 'A packed day in Rome beside a lighter version of it. Now, the day is rated 7, packed. Lighter, it is rated 6, balanced, with lunch moved to a lighter day and less spent that day. Below them, why the lighter day flows better.',
     },
   },
   {
@@ -85,7 +85,7 @@ const MOMENTS: Moment[] = [
 
 export function FeaturesPage() {
   return (
-    <div className="pt-20">
+    <div className="pt-24">
       {/* Header - flat Ateneo band. */}
       <section className="bg-sky-600">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
@@ -101,52 +101,54 @@ export function FeaturesPage() {
 
       {/* The Fatigue Index - the machinery, shown the way the app shows it. */}
       <section className="bg-white">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 [text-wrap:balance] mb-4">
-            Know how every day will feel.
-          </h2>
-          <p className="text-lg text-gray-600 leading-relaxed mb-2">
-            The Fatigue Index rates each day chill, balanced or packed while
-            you plan.
-          </p>
-          {/* Filed; attached to the feature itself, never a site-wide badge.
-              Diarize the provisional's 12-month expiry: the line comes down
-              if the filing lapses. */}
-          <p className="text-sm font-medium text-gray-500 mb-6">Patent pending</p>
-          <p className="text-lg text-gray-600 leading-relaxed mb-8">
-            It looks at how far your body clock moves, how long you&rsquo;re in
-            transit, how far you walk, how much is packed in and how
-            much downtime is left.
-          </p>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+          <div className="max-w-3xl">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 [text-wrap:balance] mb-4">
+              Know how every day will feel.
+            </h2>
+            <p className="text-lg text-gray-600 leading-relaxed max-w-xl [text-wrap:pretty] mb-2">
+              The Fatigue Index rates each day chill, balanced or packed while
+              you plan.
+            </p>
+            {/* Filed; attached to the feature itself, never a site-wide badge.
+                Diarize the provisional's 12-month expiry: the line comes down
+                if the filing lapses. */}
+            <p className="text-sm font-medium text-gray-500 mb-6">Patent pending</p>
+            <p className="text-lg text-gray-600 leading-relaxed max-w-xl [text-wrap:pretty] mb-8">
+              It looks at how far your body clock moves, how long you&rsquo;re in
+              transit, how far you walk, how much is packed in and how
+              much downtime is left.
+            </p>
 
-          {/* The scale, as the app displays it: numbered chips tinted by the
-              shipped band colors; the current reading carries the ring. The
-              words above carry the meaning, so no caption; the mapping is
-              provided to screen readers via the aria-label. */}
-          <div
-            role="img"
-            aria-label="The Fatigue Index scale: days 1 to 3 are rated chill, 4 to 6 balanced, and 7 to 9 packed, with 9 the peak. The example shows a day rated 7."
-            className="flex flex-wrap gap-2 mb-8"
-          >
-            {FI_SCALE.flatMap((band) =>
-              band.days.map((day) => (
-                <span
-                  key={day}
-                  aria-hidden="true"
-                  style={{ color: band.color, backgroundColor: `${band.color}1A` }}
-                  className={`w-11 h-11 rounded-xl flex items-center justify-center text-lg font-bold [font-variant-numeric:tabular-nums] ${
-                    day === 7 ? 'ring-2 ring-current' : ''
-                  }`}
-                >
-                  {day}
-                </span>
-              ))
-            )}
+            {/* The scale, as the app displays it: numbered chips tinted by the
+                shipped band colors; the current reading carries the ring. The
+                words above carry the meaning, so no caption; the mapping is
+                provided to screen readers via the aria-label. */}
+            <div
+              role="img"
+              aria-label="The Fatigue Index scale: days 1 to 3 are rated chill, 4 to 6 balanced, and 7 to 9 packed, with 9 the peak. The example shows a day rated 7."
+              className="flex flex-wrap gap-2 mb-8"
+            >
+              {FI_SCALE.flatMap((band) =>
+                band.days.map((day) => (
+                  <span
+                    key={day}
+                    aria-hidden="true"
+                    style={{ color: band.color, backgroundColor: `${band.color}1A` }}
+                    className={`w-11 h-11 rounded-xl flex items-center justify-center text-lg font-bold [font-variant-numeric:tabular-nums] ${
+                      day === 7 ? 'ring-2 ring-current' : ''
+                    }`}
+                  >
+                    {day}
+                  </span>
+                ))
+              )}
+            </div>
+
+            <p className="text-gray-600 leading-relaxed">
+              It&rsquo;s a heads-up, not medical advice.
+            </p>
           </div>
-
-          <p className="text-gray-600 leading-relaxed">
-            It&rsquo;s a heads-up, not medical advice.
-          </p>
         </div>
       </section>
 
@@ -158,7 +160,7 @@ export function FeaturesPage() {
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 [text-wrap:balance] mb-4">
               Every day, laid out.
             </h2>
-            <p className="text-lg text-gray-600 leading-relaxed">
+            <p className="text-lg text-gray-600 leading-relaxed max-w-xl [text-wrap:pretty]">
               Each stop in order with its time, and the day&rsquo;s rating right
               at the top. This is day one of a week in Rome.
             </p>
@@ -187,36 +189,38 @@ export function FeaturesPage() {
               />
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* What Jarvis does, each ending with what the traveler gets. No
-          numbers: the order is not a sequence the reader needs. */}
-      <section className="bg-gray-50">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-          <ul className="border-t border-gray-200 list-none m-0 p-0">
-            {MOMENTS.map((moment) => (
-              <li key={moment.name} className="py-8 border-b border-gray-200">
-                <div>
-                  <h2 className="text-xl md:text-2xl font-semibold text-gray-900 mb-2">
-                    {moment.name}
-                  </h2>
-                  <p className="text-gray-600 leading-relaxed mb-3">{moment.desc}</p>
-                  <p className="font-medium text-gray-900">{moment.soWhat}</p>
-                  {moment.capture && (
-                    <div className="mt-6">
-                      <DevicePair
-                        image={moment.capture.image}
-                        alt={moment.capture.alt}
-                        ground="page"
-                        sizes={{ desktop: '(min-width: 768px) 560px, 80vw', phone: '(min-width: 768px) 169px, 24vw' }}
-                      />
-                    </div>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
+          {/* What Jarvis does, each ending with what the traveler gets, in the
+              same band as the plan above so no empty band sits between them.
+              No numbers: the order is not a sequence the reader needs. */}
+          <div className="max-w-3xl mt-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 [text-wrap:balance] mb-8">
+              Jarvis does the heavy lifting.
+            </h2>
+            <ul className="border-t border-gray-200 list-none m-0 p-0">
+              {MOMENTS.map((moment) => (
+                <li key={moment.name} className="py-8 border-b border-gray-200">
+                  <div>
+                    <h3 className="text-xl md:text-2xl font-semibold text-gray-900 mb-2">
+                      {moment.name}
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed max-w-lg [text-wrap:pretty] mb-3">{moment.desc}</p>
+                    <p className="font-medium text-gray-900 max-w-lg [text-wrap:pretty]">{moment.soWhat}</p>
+                    {moment.capture && (
+                      <div className="mt-6">
+                        <DevicePair
+                          image={moment.capture.image}
+                          alt={moment.capture.alt}
+                          ground="page"
+                          sizes={{ desktop: '(min-width: 1024px) 660px, 80vw', phone: '(min-width: 1024px) 200px, 24vw' }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
 
           <div className="text-center mt-12">
             <Link

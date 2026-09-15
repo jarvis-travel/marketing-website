@@ -65,7 +65,7 @@ const SECTIONS: Section[] = [
 
 export function TermsPage() {
   return (
-    <div className="pt-20">
+    <div className="pt-24">
       {/* Header - flat Ateneo band. */}
       <section className="bg-sky-600">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">

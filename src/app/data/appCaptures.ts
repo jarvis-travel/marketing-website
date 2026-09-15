@@ -26,13 +26,13 @@ import dayDetailBadgePhone390 from '../../assets/captures/mobile/day-detail-badg
 import dayDetailBadgePhone780 from '../../assets/captures/mobile/day-detail-badge-light-780.webp';
 import dayDetailBadgePhonePng from '../../assets/captures/mobile/day-detail-badge-light-390.png';
 
-import tripPlanDays720 from '../../assets/captures/desktop/trip-plan-days-light-720.webp';
-import tripPlanDays960 from '../../assets/captures/desktop/trip-plan-days-light-960.webp';
-import tripPlanDays1440 from '../../assets/captures/desktop/trip-plan-days-light-1440.webp';
-import tripPlanDaysPng from '../../assets/captures/desktop/trip-plan-days-light-720.png';
-import tripPlanDaysPhone390 from '../../assets/captures/mobile/trip-plan-days-light-390.webp';
-import tripPlanDaysPhone780 from '../../assets/captures/mobile/trip-plan-days-light-780.webp';
-import tripPlanDaysPhonePng from '../../assets/captures/mobile/trip-plan-days-light-390.png';
+import dayLighter720 from '../../assets/captures/desktop/day-lighter-light-720.webp';
+import dayLighter960 from '../../assets/captures/desktop/day-lighter-light-960.webp';
+import dayLighter1440 from '../../assets/captures/desktop/day-lighter-light-1440.webp';
+import dayLighterPng from '../../assets/captures/desktop/day-lighter-light-720.png';
+import dayLighterPhone390 from '../../assets/captures/mobile/day-lighter-light-390.webp';
+import dayLighterPhone780 from '../../assets/captures/mobile/day-lighter-light-780.webp';
+import dayLighterPhonePng from '../../assets/captures/mobile/day-lighter-light-390.png';
 
 import homeTab720 from '../../assets/captures/desktop/home-tab-light-720.webp';
 import homeTab960 from '../../assets/captures/desktop/home-tab-light-960.webp';
@@ -89,11 +89,12 @@ export const DAY_DETAIL: AppCaptureImage = {
   phoneFallback: dayDetailBadgePhonePng,
 };
 
-export const PACKED_DAY: AppCaptureImage = {
-  desktop: srcSet([tripPlanDays720, 720], [tripPlanDays960, 960], [tripPlanDays1440, 1440]),
-  phone: srcSet([tripPlanDaysPhone390, 390], [tripPlanDaysPhone780, 780]),
-  fallback: tripPlanDaysPng,
-  phoneFallback: tripPlanDaysPhonePng,
+/** A packed day beside its lighter version ("Make this day lighter"), not the Trip Plan the day plan already shows. */
+export const LIGHTER_DAY: AppCaptureImage = {
+  desktop: srcSet([dayLighter720, 720], [dayLighter960, 960], [dayLighter1440, 1440]),
+  phone: srcSet([dayLighterPhone390, 390], [dayLighterPhone780, 780]),
+  fallback: dayLighterPng,
+  phoneFallback: dayLighterPhonePng,
 };
 
 export const TRIP_HOME: AppCaptureImage = {
