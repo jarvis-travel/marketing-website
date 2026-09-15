@@ -53,7 +53,7 @@ export function DevicePair({ image, alt, ground, sizes }: DevicePairProps) {
       <picture className="sm:hidden">
         <source type="image/webp" srcSet={image.phone} sizes="300px" />
         <img
-          src={image.fallback}
+          src={image.phoneFallback}
           alt={alt}
           width={390}
           height={844}
@@ -82,7 +82,7 @@ export function DevicePair({ image, alt, ground, sizes }: DevicePairProps) {
         <picture>
           <source type="image/webp" srcSet={image.phone} sizes={PHONE_SIZES} />
           <img
-            src={image.fallback}
+            src={image.phoneFallback}
             alt=""
             aria-hidden="true"
             width={390}
