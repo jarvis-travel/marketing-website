@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
 import { DevicePair } from '../components/DevicePair';
 import {
+  BUDGET,
   DAY_DETAIL,
   DAY_ROUTE,
   JOURNAL,
   PACKED_DAY,
-  TRIP_HOME,
   type AppCaptureImage,
 } from '../data/appCaptures';
 
@@ -73,8 +73,8 @@ const MOMENTS: Moment[] = [
     desc: 'A budget that lives inside the plan: categories, running totals, and what is left, visible while you decide, not after.',
     soWhat: 'So the budget is a decision you make, not news you get.',
     capture: {
-      image: TRIP_HOME,
-      alt: "A trip's home screen showing what is left of the budget and how much is spent, along with the day's schedule and the week's pacing.",
+      image: BUDGET,
+      alt: 'The budget tracker for a week in Rome: spending on a healthy pace and projected to finish under budget, with what is spent so far, what is left, and how it splits between card and cash.',
     },
   },
   {
