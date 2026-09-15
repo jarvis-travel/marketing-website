@@ -1,4 +1,13 @@
 import { Link } from 'react-router-dom';
+import { DevicePair } from '../components/DevicePair';
+import {
+  BUDGET,
+  DAY_DETAIL,
+  DAY_ROUTE,
+  JOURNAL,
+  PACKED_DAY,
+  type AppCaptureImage,
+} from '../data/appCaptures';
 
 // "How it works" (JAR-432, reworked per brand-owner direction 2026-07-21):
 // the Fatigue Index deep-dive lives HERE (the home page tells the story;
@@ -21,29 +30,14 @@ const FI_SCALE: FiBand[] = [
   { color: '#D35446', days: [9] },
 ];
 
-// Band dot colors (shipped FI ramp, light tokens).
-const BAND_COLOR: Record<string, string> = {
-  chill: '#0EA5E9',
-  balanced: '#059669',
-  packed: '#D35446',
-};
-
-// Day 1 of the shipped Rome demo trip, verbatim from the app's sample data
-// (name, time, and fatigueImpact) - so the product visual shows real content,
-// not invented copy.
-const DAY_ONE: { time: string; name: string; band: 'chill' | 'balanced' | 'packed' }[] = [
-  { time: '09:30', name: 'Arrival at FCO', band: 'balanced' },
-  { time: '10:30', name: 'Transfer to hotel', band: 'chill' },
-  { time: '14:00', name: 'Check in at Hotel de Russie', band: 'chill' },
-  { time: '15:30', name: 'Walk around Piazza del Popolo', band: 'balanced' },
-  { time: '19:30', name: 'Welcome dinner at Roscioli', band: 'chill' },
-];
-
 interface Moment {
   numeral: string;
   name: string;
   desc: string;
   soWhat: string;
+  /** The app screen that shows this moment. The first has none: the real
+   *  day plan sits directly above the list. */
+  capture?: { image: AppCaptureImage; alt: string };
 }
 
 const MOMENTS: Moment[] = [
@@ -58,24 +52,40 @@ const MOMENTS: Moment[] = [
     name: 'The day that comes up packed',
     desc: 'When the Fatigue Index rates a day packed, the plan says so before you commit, and offers a lighter version of the same day, so you can see what dropping one thing buys you.',
     soWhat: 'So you fix Tuesday at home, not mid-afternoon in a crowded plaza.',
+    capture: {
+      image: PACKED_DAY,
+      alt: 'A day in Rome rated packed: around 8 hours on the go with no real break, a suggestion to add a short break in the afternoon, and a button to make the day lighter.',
+    },
   },
   {
     numeral: '3',
     name: 'The ground',
     desc: 'Your trip on one map, numbered by day. The route you would actually walk, not a cloud of pins.',
     soWhat: 'So you see the whole day before your feet commit to it.',
+    capture: {
+      image: DAY_ROUTE,
+      alt: 'A walking route through central Rome with numbered stops. Dashed lines mark the cross-town detours Jarvis skipped, about 23 minutes and 1.1 miles less on foot.',
+    },
   },
   {
     numeral: '4',
     name: 'What it costs',
     desc: 'A budget that lives inside the plan: categories, running totals, and what is left, visible while you decide, not after.',
     soWhat: 'So the budget is a decision you make, not news you get.',
+    capture: {
+      image: BUDGET,
+      alt: 'The budget tracker for a week in Rome: spending on a healthy pace and projected to finish under budget, with what is spent so far, what is left, and how it splits between card and cash.',
+    },
   },
   {
     numeral: '5',
     name: 'The flight home',
     desc: 'Notes, photos, receipts and places, assembled into a journal worth rereading. Yours to keep after the trip ends.',
     soWhat: 'So the trip doesn’t evaporate when the tan does.',
+    capture: {
+      image: JOURNAL,
+      alt: 'A day in the trip journal for Rome, with the Colosseum tour open: the spend confirmed from its receipt, the receipt line by line, and a place to add a note.',
+    },
   },
 ];
 
@@ -146,10 +156,8 @@ export function FeaturesPage() {
         </div>
       </section>
 
-      {/* A real plan, on a ledge. The screen is a faithful view of the app's
-          Trip Plan (Day 1, Rome) built from the shipped demo data and the
-          Meridian FI ramp - an honest illustration until automated captures
-          land (see the web-app capture-prep ticket). */}
+      {/* A real plan, on a ledge: the app's own Trip Plan for the demo week in
+          Rome, with day one open (data/appCaptures.ts). */}
       <section className="bg-gray-50">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
           <div className="max-w-2xl mb-10">
@@ -164,7 +172,7 @@ export function FeaturesPage() {
 
           {/* The ledge: the screen sits frameless on a solid Ateneo plane with
               one contour arc behind it. No device chrome. */}
-          <div className="relative overflow-hidden rounded-[20px] bg-sky-600 p-6 sm:p-10 md:p-14">
+          <div className="relative overflow-hidden rounded-[20px] bg-sky-600 p-4 sm:p-6 md:p-8">
             <svg
               className="pointer-events-none absolute -bottom-40 -right-32 w-[440px] h-[440px]"
               viewBox="0 0 440 440"
@@ -176,47 +184,13 @@ export function FeaturesPage() {
               ))}
             </svg>
 
-            <div
-              role="img"
-              aria-label="A JarvisTravel trip plan for day one in Rome: the day is rated balanced, and five stops are laid out from a nine-thirty airport arrival to a seven-thirty welcome dinner, each tagged chill or balanced."
-              className="relative mx-auto max-w-md bg-white rounded-[14px] p-6 shadow-[0_24px_48px_-12px_rgba(4,16,30,0.45)]"
-            >
-              <div className="flex items-baseline justify-between mb-1">
-                <p className="text-[11px] font-semibold tracking-[0.14em] uppercase text-gray-500">
-                  Day 1 &middot; Rome
-                </p>
-                <span
-                  className="text-[11px] font-semibold tracking-wide uppercase px-2 py-0.5 rounded-sm"
-                  style={{ color: '#059669', backgroundColor: '#0596691A' }}
-                >
-                  Balanced
-                </span>
-              </div>
-              <p className="text-lg font-semibold text-gray-900 mb-5">Monday, July 28</p>
-
-              <ul className="space-y-0">
-                {DAY_ONE.map((stop, i) => (
-                  <li
-                    key={stop.name}
-                    className={`flex items-center gap-3 py-3 ${
-                      i > 0 ? 'border-t border-gray-100' : ''
-                    }`}
-                  >
-                    <span className="text-sm text-gray-500 [font-variant-numeric:tabular-nums] w-12 flex-shrink-0">
-                      {stop.time}
-                    </span>
-                    <span className="flex-1 text-gray-900">{stop.name}</span>
-                    <span
-                      // A circle, not a pill. The de-pilling sweep replaced
-                      // every rounded-full in the file, but this one is a 10px
-                      // band-status dot — the shape IS the affordance (review L8).
-                      className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: BAND_COLOR[stop.band] }}
-                      title={stop.band}
-                    />
-                  </li>
-                ))}
-              </ul>
+            <div className="relative">
+              <DevicePair
+                image={DAY_DETAIL}
+                alt="A week in Rome in the trip plan. Day one is rated balanced, with a note on why it is full but manageable, and its stops in order from a 9:30 airport arrival."
+                ground="plane"
+                sizes="(min-width: 1024px) 730px, 80vw"
+              />
             </div>
           </div>
         </div>
@@ -243,6 +217,16 @@ export function FeaturesPage() {
                   </h2>
                   <p className="text-gray-600 leading-relaxed mb-3">{moment.desc}</p>
                   <p className="font-medium text-gray-900">{moment.soWhat}</p>
+                  {moment.capture && (
+                    <div className="mt-6">
+                      <DevicePair
+                        image={moment.capture.image}
+                        alt={moment.capture.alt}
+                        ground="page"
+                        sizes="(min-width: 768px) 560px, 80vw"
+                      />
+                    </div>
+                  )}
                 </div>
               </li>
             ))}
