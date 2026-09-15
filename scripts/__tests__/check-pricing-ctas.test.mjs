@@ -40,11 +40,11 @@ const PRICES = `export const PRICES = {
 // The off-pricing CTAs the guard now also reads. Valid by default so the cases
 // above keep testing what they tested — a fixture that fails for a reason the
 // case is not about proves nothing. Each is overridable per case.
-const WAITLIST_CTA = `export default function P() {
-  return <Link to="/contact" className="px-8 py-3.5">Join Now</Link>;
+const PRICING_CTA = `export default function P() {
+  return <Link to="/pricing" className="px-8 py-3.5">Join Now</Link>;
 }`;
 
-function withRepo({ page, pricing = PRICES, nav = WAITLIST_CTA, home = WAITLIST_CTA, features = WAITLIST_CTA, contact = WAITLIST_CTA }, fn) {
+function withRepo({ page, pricing = PRICES, nav = PRICING_CTA, home = PRICING_CTA, features = PRICING_CTA, contact = PRICING_CTA }, fn) {
   const dir = mkdtempSync(join(tmpdir(), 'ctaguard-'));
   try {
     mkdirSync(join(dir, 'src/app/pages'), { recursive: true });
@@ -100,8 +100,8 @@ test('accepts the shipped page: both CTAs via appJoinUrl with declared keys', ()
   });
 });
 
-// MUTATION 1: the regression the guard exists for - a CTA reverted to the
-// waitlist. Building, rendering, and screenshotting all stay green.
+// MUTATION 1: the regression the guard exists for - a CTA reverted to
+// /contact. Building, rendering, and screenshotting all stay green.
 // Review F3. The scan took the LAST opener before the label; an inline anchor
 // that opened and closed in between — a "see plans" aside inside the card —
 // became "the CTA" and its href was read instead of the real one. The CTA
@@ -141,7 +141,7 @@ export function PricingPage() {
 }`,
   }, (d) => {
     const r = run(d);
-    assert(r.code === 1, 'guard passed a CTA reverted to the waitlist');
+    assert(r.code === 1, 'guard passed a CTA reverted to /contact');
     assert(/instead of appJoinUrl/.test(r.out), `wrong reason: ${r.out}`);
   });
 });
@@ -226,12 +226,12 @@ test('refuses a hand-written signup href that bypasses appJoinUrl', () => {
   });
 });
 
-// ── JAR-1196: the OTHER half of the split ────────────────────────────────────
+// ── The OTHER half of the split ────────────────────────────────────
 //
 // The guard now asserts both directions, and both are mutated below. If only
 // one reddens, the guard encodes a preference rather than a contract: it would
-// stop a revert while permitting a silent migration, and the migration is the
-// change this ticket exists to make deliberate.
+// stop a revert while permitting a silent migration, and a migration has to
+// be deliberate.
 
 test('refuses an off-pricing CTA migrated to the app', () => {
   withRepo(
@@ -243,9 +243,9 @@ test('refuses an off-pricing CTA migrated to the app', () => {
     },
     (dir) => {
       const r = run(dir);
-      assert(r.code === 1, 'guard permitted a silent migration off the waitlist');
+      assert(r.code === 1, 'guard permitted a silent migration off /pricing');
       assert(/Navigation\.tsx/.test(r.out), `wrong file named: ${r.out}`);
-      assert(/JAR-1196/.test(r.out), `the error does not point at the open decision: ${r.out}`);
+      assert(/JAR-1630/.test(r.out), `the error does not point at the decision: ${r.out}`);
       // The message must tell the migrator what to do, not merely refuse.
       assert(/OFF_PRICING/.test(r.out), `the error does not say how to make it deliberate: ${r.out}`);
     },
@@ -253,7 +253,7 @@ test('refuses an off-pricing CTA migrated to the app', () => {
 });
 
 test('refuses an off-pricing CTA pointed at any third destination', () => {
-  // Not just app-vs-waitlist: "/signup" is neither, and a guard that only knew
+  // Not just app-vs-pricing: "/signup" is neither, and a guard that only knew
   // the two known answers would pass it.
   withRepo(
     {
@@ -267,6 +267,25 @@ test('refuses an off-pricing CTA pointed at any third destination', () => {
       assert(r.code === 1, 'guard permitted a CTA to a third destination');
       assert(/HomePage\.tsx/.test(r.out), `wrong file named: ${r.out}`);
       assert(/\/signup/.test(r.out), `the error does not name what it found: ${r.out}`);
+    },
+  );
+});
+
+test('refuses an off-pricing Join Now left on /contact', () => {
+  // The loop this guard's current decision closes: Contact's own Join Now linked
+  // to /contact, the page it sits on.
+  withRepo(
+    {
+      page: GOOD_PAGE,
+      contact: `export default function C() {
+  return <a href="/contact" className="px-8 py-4">Join Now</a>;
+}`,
+    },
+    (dir) => {
+      const r = run(dir);
+      assert(r.code === 1, 'guard permitted a Join Now left on /contact');
+      assert(/ContactPage\.tsx/.test(r.out), `wrong file named: ${r.out}`);
+      assert(/targets \/contact/.test(r.out), `the error does not name what it found: ${r.out}`);
     },
   );
 });
@@ -285,7 +304,7 @@ test('refuses a file whose Join Now disappeared — a guard watching nothing', (
   );
 });
 
-test('accepts the shipped split: pricing into the app, the rest on the waitlist', () => {
+test('accepts the shipped split: pricing into the app, the rest on /pricing', () => {
   // The control for all three above. Without it, a guard that failed everything
   // would satisfy every mutation case in this file.
   withRepo({ page: GOOD_PAGE }, (dir) => {

@@ -1,11 +1,12 @@
 import { Mail } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 // Contact (JAR-432) - the previous form called setSubmitted(true), transmitted
 // nothing, and told the visitor "Message Sent! We'll get back to you within
-// 24 hours." Every path below is real: the signup link goes to the live
-// waitlist capture on jarvistravel.com (verified POST /api/waitlist), and the
-// addresses are the ones already published on this site. A real contact form
-// returns when the form endpoint exists (phase 1 of the redesign plan).
+// 24 hours." Every path below is real: Join Now goes to pricing, where each
+// plan starts signup, and the addresses are the ones already published on this
+// site. A real contact form returns when the form endpoint exists (phase 1 of
+// the redesign plan).
 
 export function ContactPage() {
   return (
@@ -36,15 +37,12 @@ export function ContactPage() {
             <p className="text-gray-600 leading-relaxed mb-6">
               Join now and plan your next trip with Jarvis.
             </p>
-            {/* Routes to the waitlist like every signup CTA outside the pricing
-                page (JAR-1196). Migrating it into the app is exactly what the
-                guard's OFF_PRICING list records - change both in one commit. */}
-            <a
-              href="/contact"
+            <Link
+              to="/pricing"
               className="inline-block px-8 py-4 bg-amber-400 text-gray-900 rounded-sm font-semibold hover:bg-amber-300 transition-colors"
             >
               Join Now
-            </a>
+            </Link>
           </div>
 
           {/* Email - the app's icon row recipe. */}
