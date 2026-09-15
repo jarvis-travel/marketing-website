@@ -50,7 +50,6 @@ const SLOTS = [
   { slot: 'home.hero.sydney', query: 'Sydney Harbour Bridge dusk', orientation: 'landscape' },
   { slot: 'home.hero.lisbon', query: 'Lisbon rooftops Alfama', orientation: 'landscape' },
   { slot: 'home.planning', query: 'traveller planning map table', orientation: 'landscape' },
-  { slot: 'home.journal', query: 'travel journal notebook window light', orientation: 'landscape' },
 ];
 
 const key = (process.env.UNSPLASH_ACCESS_KEY || '').trim();
