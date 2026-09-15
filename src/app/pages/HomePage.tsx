@@ -217,15 +217,15 @@ export function HomePage() {
               rather not juggle, in one place.
             </p>
           </div>
-          {/* The claim, shown: the app's own trip screen at desktop and phone size, flat on a solid plane. */}
-          <div className="relative overflow-hidden rounded-[20px] bg-sky-600 p-4 sm:p-8 md:p-12 mb-12">
+          {/* The claim, shown: the app's own trip screen, the phone in front of the desktop, on a solid plane. */}
+          <div className="relative overflow-hidden rounded-[20px] bg-sky-600 p-4 sm:p-6 md:p-8 mb-12">
             <ContourArcs className="absolute -bottom-56 -right-40 w-[520px] h-[520px]" />
             <div className="relative">
               <DevicePair
                 image={TRIP_HOME}
                 alt="A trip's home screen for a week in Rome: today's schedule, what is left of the budget, and the week's pacing, with two days running packed."
                 ground="plane"
-                sizes="(min-width: 1152px) 760px, 60vw"
+                sizes="(min-width: 1152px) 860px, 80vw"
               />
             </div>
           </div>

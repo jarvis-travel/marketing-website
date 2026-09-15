@@ -172,7 +172,7 @@ export function FeaturesPage() {
 
           {/* The ledge: the screen sits frameless on a solid Ateneo plane with
               one contour arc behind it. No device chrome. */}
-          <div className="relative overflow-hidden rounded-[20px] bg-sky-600 p-6 sm:p-10 md:p-14">
+          <div className="relative overflow-hidden rounded-[20px] bg-sky-600 p-4 sm:p-6 md:p-8">
             <svg
               className="pointer-events-none absolute -bottom-40 -right-32 w-[440px] h-[440px]"
               viewBox="0 0 440 440"
@@ -189,7 +189,7 @@ export function FeaturesPage() {
                 image={DAY_DETAIL}
                 alt="A week in Rome in the trip plan. Day one is rated balanced, with a note on why it is full but manageable, and its stops in order from a 9:30 airport arrival."
                 ground="plane"
-                sizes="(min-width: 1024px) 650px, 60vw"
+                sizes="(min-width: 1024px) 730px, 80vw"
               />
             </div>
           </div>
@@ -223,7 +223,7 @@ export function FeaturesPage() {
                         image={moment.capture.image}
                         alt={moment.capture.alt}
                         ground="page"
-                        sizes="(min-width: 768px) 490px, 60vw"
+                        sizes="(min-width: 768px) 560px, 80vw"
                       />
                     </div>
                   )}
