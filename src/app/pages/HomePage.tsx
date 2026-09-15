@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PhotoBackdrop } from '../components/PhotoBackdrop';
+import { FI_BANDS } from '../data/fatigueIndex';
 import { DevicePair } from '../components/DevicePair';
 import { TRIP_HOME } from '../data/appCaptures';
 import type { LucideIcon } from 'lucide-react';
@@ -184,11 +185,30 @@ export function HomePage() {
             one afternoon. That&rsquo;s how you come home needing a vacation from
             the vacation.
           </p>
-          <p className="text-lg text-gray-600 leading-relaxed mb-8">
+          <p className="text-lg text-gray-600 leading-relaxed mb-6">
             So Jarvis rates every day while you build it: chill, balanced, or
             packed. A packed day shows up before you&rsquo;re standing in it,
             with a lighter version one tap away.
           </p>
+          {/* The three band words, as the Fatigue Index's visual on Home: no
+              digits here, since the scale is explained on How it works. The
+              sentence above already says them, so screen readers skip the
+              chips. Patent pending sits with the feature it describes, never as
+              a site-wide badge, and comes down if the filing lapses. */}
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-3 mb-8">
+            <div className="flex gap-2" aria-hidden="true">
+              {FI_BANDS.map((band) => (
+                <span
+                  key={band.word}
+                  style={{ color: band.tone.ink, backgroundColor: `${band.tone.color}1A` }}
+                  className="rounded-lg px-3 py-1.5 text-sm font-semibold"
+                >
+                  {band.word}
+                </span>
+              ))}
+            </div>
+            <p className="text-sm font-medium text-gray-500">Patent pending</p>
+          </div>
           <Link
             to="/features"
             className="font-medium text-sky-600 underline underline-offset-4 decoration-1 hover:text-sky-700 transition-colors"

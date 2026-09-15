@@ -24,6 +24,10 @@ colors:
   fatigue-balanced: "#059669"
   fatigue-packed: "#CA8A04"
   fatigue-peak: "#D35446"
+  fatigue-chill-ink: "#106B95"
+  fatigue-balanced-ink: "#097152"
+  fatigue-packed-ink: "#835E0D"
+  fatigue-peak-ink: "#A3453B"
 typography:
   display:
     fontFamily: "Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
@@ -253,6 +257,7 @@ A cool navy world on a warm neutral ground, lit by one amber: navy carries the b
 
 ### Data
 - **Fatigue Index Chill** (#0EA5E9), **Fatigue Index Balanced** (#059669), **Fatigue Index Packed** (#CA8A04) and **Fatigue Index Peak** (#D35446): The app's four color steps, for days rated 1 to 3, 4 to 6, 7 to 8 and 9 (7 to 9 are all packed, and 9 is the peak), mirrored for the scale on How it works. They are data, not chrome.
+- **Fatigue Index inks** (#106B95, #097152, #835E0D and #A3453B): each color step darkened toward Neverything until text set in it reaches 4.5:1 on the step's 10% tint, over white or Moonlight (5.3:1 on white). Digits, band words and the current reading's ring take the ink; the tints take the step color.
 
 ### Named Rules
 **The One Sun Rule.** Solid amber fills the sign-up action and the skip link, always under ink, and never a band, card, badge or icon. As text, amber is small label type only: Sea Buckthorn on navy, Buckthorn Deep on light grounds. Raw Sea Buckthorn is never text on a light ground.
@@ -382,7 +387,7 @@ Lucide icons sit in a 36px tile with 8px corners: the glyph at 20px with a 2px s
 Pricing shows two offers, and exactly one holds the highlight. The subscription holds it by default: Ateneo Navy fill, Moonlight text, Navy Glint checks, Sea Buckthorn offer name, and the group's one amber action. Hovering or focusing inside the single-trip offer moves the whole treatment there over 200ms and turns the subscription quiet (white card, Hairline border, Buckthorn Deep name, Quiet action). Leaving hands it back.
 
 ### Fatigue Index Scale
-The 1 to 9 scale appears as the app shows it: 44px chips with 12px corners and 8px gaps, each tinted 10% in its band color, with the current reading ringed 2px in that color. Each digit is set in 700 18px tabular figures and must reach 4.5:1 against its chip, since 18px bold is not large text. Today the digits take the band color itself and measure 2.51 to 3.62:1; JAR-1634 fixes that. The group is one image to assistive technology, described once in words.
+The 1 to 9 scale appears as the app shows it: a chip per day, tinted 10% in its color step, grouped into the three bands with the band's word centered under each group. The chips are square with 12px corners, and the scale keeps one row from desktop down to a 375px phone. Each digit is set in 700 tabular figures (18px, or 16px below 640px) in its step's ink, and each band word in 600 14px in the band's ink, all at 4.5:1 or better; the current reading is ringed 2px in its ink. The group is one image to assistive technology, described once in words. On Home, where digits don't appear, the three band words stand alone as tinted chips with 8px corners, beside Patent pending.
 
 ## Do's and Don'ts
 
@@ -395,6 +400,7 @@ The 1 to 9 scale appears as the app shows it: 44px chips with 12px corners and 8
 - **Do** hold running text near 65 to 75 characters a line; the 672px column at 18px measures a median of 70.
 - **Do** keep focus visible at 3:1 or better on every ground: an Ateneo Navy ring on light grounds, a Moonlight ring on navy.
 - **Do** set prices and Fatigue Index digits in tabular figures.
+- **Do** set Fatigue Index digits and band words in the band's ink (#106B95, #097152, #835E0D, #A3453B), never in the tint color itself.
 
 ### Don't:
 - **Don't** use gradients or glows in chrome, text or borders; emphasis comes from band color, weight and size.
