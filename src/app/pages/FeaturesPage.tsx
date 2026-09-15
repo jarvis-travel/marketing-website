@@ -8,27 +8,14 @@ import {
   LIGHTER_DAY,
   type AppCaptureImage,
 } from '../data/appCaptures';
+import { FI_BANDS, fiToneForDay } from '../data/fatigueIndex';
 
 // "How it works" (JAR-432, reworked per brand-owner direction 2026-07-21):
 // the Fatigue Index deep-dive lives HERE (the home page tells the story;
 // this page shows the machinery). FI numbers are always numeric digits.
-// The scale graphic mirrors how the app itself displays FI - numbered day
-// chips tinted by the shipped band colors (utils/fi.ts light tokens:
-// 1-3 #0EA5E9 chill, 4-6 #059669 balanced, 7-8 #CA8A04 elevated,
-// 9 #D35446 packed) with the app's ring treatment on the active reading.
+// The scale graphic mirrors how the app itself displays FI (data/fatigueIndex.ts),
+// with the app's ring treatment on the active reading.
 // Each moment below ends with its "so what" - the benefit, not the feature.
-
-interface FiBand {
-  color: string;
-  days: number[];
-}
-
-const FI_SCALE: FiBand[] = [
-  { color: '#0EA5E9', days: [1, 2, 3] },
-  { color: '#059669', days: [4, 5, 6] },
-  { color: '#CA8A04', days: [7, 8] },
-  { color: '#D35446', days: [9] },
-];
 
 interface Moment {
   name: string;
@@ -120,29 +107,39 @@ export function FeaturesPage() {
               much downtime is left.
             </p>
 
-            {/* The scale, as the app displays it: numbered chips tinted by the
-                shipped band colors; the current reading carries the ring. The
-                words above carry the meaning, so no caption; the mapping is
-                provided to screen readers via the aria-label. */}
+            {/* The scale, as the app displays it: a chip per day in its colour
+                step, grouped by band with the band's word under each group. The
+                groups share one row down to a 375px phone. The words above carry
+                the meaning, so no caption; screen readers get the mapping from
+                the aria-label. */}
             <div
               role="img"
               aria-label="The Fatigue Index scale: days 1 to 3 are rated chill, 4 to 6 balanced, and 7 to 9 packed, with 9 the peak. The example shows a day rated 7."
-              className="flex flex-wrap gap-2 mb-8"
+              className="grid max-w-[29rem] grid-cols-3 gap-3 mb-8"
             >
-              {FI_SCALE.flatMap((band) =>
-                band.days.map((day) => (
-                  <span
-                    key={day}
-                    aria-hidden="true"
-                    style={{ color: band.color, backgroundColor: `${band.color}1A` }}
-                    className={`w-11 h-11 rounded-xl flex items-center justify-center text-lg font-bold [font-variant-numeric:tabular-nums] ${
-                      day === 7 ? 'ring-2 ring-current' : ''
-                    }`}
-                  >
-                    {day}
-                  </span>
-                ))
-              )}
+              {FI_BANDS.map((band) => (
+                <div key={band.word} aria-hidden="true">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {band.days.map((day) => {
+                      const tone = fiToneForDay(day);
+                      return (
+                        <span
+                          key={day}
+                          style={{ color: tone.ink, backgroundColor: `${tone.color}1A` }}
+                          className={`aspect-square rounded-xl flex items-center justify-center text-base sm:text-lg font-bold [font-variant-numeric:tabular-nums] ${
+                            day === 7 ? 'ring-2 ring-current' : ''
+                          }`}
+                        >
+                          {day}
+                        </span>
+                      );
+                    })}
+                  </div>
+                  <p className="mt-2 text-center text-sm font-semibold" style={{ color: band.tone.ink }}>
+                    {band.word}
+                  </p>
+                </div>
+              ))}
             </div>
 
             <p className="text-gray-600 leading-relaxed">
