@@ -298,7 +298,7 @@ A cool navy world on a warm neutral ground, lit by one amber: navy carries the b
 
 The page is a vertical stack of full-bleed bands. Each band sets its own ground (Moonlight, white, Ateneo Navy or Midnight Navy) and centers one container. The change of ground is the section break, so no divider sits between bands.
 
-**Containers.** 1280px for the navigation and footer; 1152px for the home product section; 1024px for header bands, the pricing offers and every section of How it works, whose text keeps one left edge inside it; 896px for the home hero; 768px for reading sections; 672px for intros, the About letter and the closing invitation. Side gutters are 16px, 24px from 640px, and 32px from 1024px.
+**Containers.** 1280px for the navigation and footer; 1152px for the home product section; 1024px for header bands, the pricing offers and every section of How it works, whose text keeps one left edge inside it; 896px for the home hero; 768px for reading sections; 672px for intros, the About letter and the closing invitation; 576px for the lead under a header band's headline. Side gutters are 16px, 24px from 640px, and 32px from 1024px.
 
 **Rhythm.** Content bands carry 64px above and below, 80px from 768px. Header bands carry 80px, 96px from 768px. The home hero opens 144px above its headline (176px from 768px) to clear the fixed navigation, and closes 96px below (128px). The closing invitation carries 80px, 112px from 768px. Pages without a hero start 96px down, clear of the fixed bar. Inside a band: 16 to 24px between a headline and its lead, and 40 to 48px from an intro to the component it introduces.
 

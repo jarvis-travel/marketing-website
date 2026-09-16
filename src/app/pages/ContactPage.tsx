@@ -20,7 +20,7 @@ export function ContactPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-gray-50 leading-tight [text-wrap:balance] max-w-3xl mb-6">
             Get in touch.
           </h1>
-          <p className="text-lg text-sky-100 max-w-2xl leading-relaxed">
+          <p className="text-lg text-sky-100 max-w-xl leading-relaxed [text-wrap:pretty]">
             Ready to plan your next trip? Join now below. For everything else,
             email reaches a person.
           </p>

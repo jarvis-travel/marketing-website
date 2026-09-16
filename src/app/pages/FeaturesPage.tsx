@@ -79,7 +79,7 @@ export function FeaturesPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-gray-50 leading-tight [text-wrap:balance] max-w-3xl mb-6">
             From the first idea to the flight home.
           </h1>
-          <p className="text-lg text-sky-100 max-w-2xl leading-relaxed">
+          <p className="text-lg text-sky-100 max-w-xl leading-relaxed [text-wrap:pretty]">
             Jarvis drafts your days, flags the tough ones, and keeps the map
             and the budget in one place.
           </p>

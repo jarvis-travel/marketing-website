@@ -47,7 +47,7 @@ export function DataSecurityPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-gray-50 leading-tight [text-wrap:balance] max-w-3xl mb-6">
             Your data, your control.
           </h1>
-          <p className="text-lg text-sky-100 max-w-2xl leading-relaxed">
+          <p className="text-lg text-sky-100 max-w-xl leading-relaxed [text-wrap:pretty]">
             What we protect, what we will never do, and the rights you keep.
           </p>
         </div>
