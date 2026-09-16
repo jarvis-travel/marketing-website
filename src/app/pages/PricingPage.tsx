@@ -14,7 +14,7 @@ import { appJoinUrl } from '../data/appLink';
 // Ateneo treatment at a time. Explore holds it by default; while the visitor
 // hovers or keyboard-focuses Trip Pass, the highlight shifts there and
 // Explore goes quiet; it shifts back the moment they leave. One boolean
-// drives both cards, so exactly one solid amber pill is visible at any
+// drives both cards, so exactly one solid amber action is visible at any
 // moment. Touch devices keep the default (Explore highlighted).
 
 const TRIP_PASS_POINTS = [
@@ -65,6 +65,13 @@ const CADENCES: Cadence[] = [
 const heroCard = 'bg-sky-600 border-sky-600';
 const quietCard = 'bg-white border-gray-200';
 
+// The same two states for each card's action. One of the two is always quiet, and
+// it is the first a visitor sees, so it still has to read as an action.
+// There is deliberately no quiet hover: entering a card moves the highlight to it,
+// so the pointer turns the action amber before it reaches the button.
+const heroAction = 'bg-amber-400 border-amber-400 text-gray-900 hover:bg-amber-300 hover:border-amber-300';
+const quietAction = 'bg-transparent border-sky-600 text-sky-600';
+
 export function PricingPage() {
   const [cadenceKey, setCadenceKey] = useState<CadenceKey>('annual');
   const cadence = CADENCES.find((c) => c.key === cadenceKey) ?? CADENCES[0];
@@ -84,7 +91,7 @@ export function PricingPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-gray-50 leading-tight [text-wrap:balance] max-w-3xl mb-6">
             Pick the plan that fits the way you travel.
           </h1>
-          <p className="text-lg text-sky-100 max-w-2xl leading-relaxed">
+          <p className="text-lg text-sky-100 max-w-xl leading-relaxed [text-wrap:pretty]">
             Trip Pass covers one trip, start to finish. Explore covers every
             trip, all year.
           </p>
@@ -161,10 +168,8 @@ export function PricingPage() {
                   open is the app's call, not this site's. */}
               <a
                 href={appJoinUrl('jt_trip_pass')}
-                className={`mt-auto self-start px-8 py-3.5 rounded-sm font-semibold border transition-colors text-gray-900 ${
-                  tripActive
-                    ? 'bg-amber-400 border-amber-400 hover:bg-amber-300 hover:border-amber-300'
-                    : 'bg-transparent border-gray-300'
+                className={`self-start px-8 py-3.5 rounded-sm font-semibold border transition-colors ${
+                  tripActive ? heroAction : quietAction
                 }`}
               >
                 Join Now
@@ -232,10 +237,15 @@ export function PricingPage() {
                         >
                           {option.label}
                         </span>
+                        {/* On the white card the badge sits on the selected option's
+                            navy tint, which darkens its ground; its own white keeps
+                            the 11px label readable. */}
                         {option.best && SAVING_PCT !== null && (
                           <span
-                            className={`text-[11px] font-semibold tracking-wide uppercase bg-amber-400/[0.12] border border-amber-400/30 px-2 py-0.5 rounded-sm transition-colors ${
-                              exploreHot ? 'text-amber-400' : 'text-amber-700'
+                            className={`text-[11px] font-semibold tracking-wide uppercase border px-2 py-0.5 rounded-sm transition-colors ${
+                              exploreHot
+                                ? 'text-amber-400 bg-amber-400/[0.12] border-amber-400/30'
+                                : 'text-amber-700 bg-white border-amber-700/40'
                             }`}
                           >
                             Save {SAVING_PCT}%
@@ -304,10 +314,8 @@ export function PricingPage() {
                   asked for a second time. */}
               <a
                 href={appJoinUrl(cadence.lookupKey)}
-                className={`mt-auto w-full py-3.5 rounded-sm font-semibold text-center border transition-colors text-gray-900 ${
-                  exploreHot
-                    ? 'bg-amber-400 border-amber-400 hover:bg-amber-300 hover:border-amber-300'
-                    : 'bg-transparent border-gray-300'
+                className={`mt-auto w-full py-3.5 rounded-sm font-semibold text-center border transition-colors ${
+                  exploreHot ? heroAction : quietAction
                 }`}
               >
                 Join Now

@@ -130,7 +130,7 @@ components:
     padding: "10px 20px"
   button-quiet:
     backgroundColor: "transparent"
-    textColor: "{colors.neverything-ink}"
+    textColor: "{colors.ateneo-navy}"
     typography: "{typography.label}"
     rounded: "{rounded.squared}"
     padding: "14px 32px"
@@ -194,7 +194,7 @@ components:
   billing-option-selected:
     backgroundColor: "#003A6C1A"
   badge-saving:
-    backgroundColor: "#FFBF651F"
+    backgroundColor: "{colors.paper-white}"
     textColor: "{colors.buckthorn-deep}"
     typography: "{typography.badge}"
     rounded: "{rounded.squared}"
@@ -298,7 +298,7 @@ A cool navy world on a warm neutral ground, lit by one amber: navy carries the b
 
 The page is a vertical stack of full-bleed bands. Each band sets its own ground (Moonlight, white, Ateneo Navy or Midnight Navy) and centers one container. The change of ground is the section break, so no divider sits between bands.
 
-**Containers.** 1280px for the navigation and footer; 1152px for the home product section; 1024px for header bands, the pricing offers and every section of How it works, whose text keeps one left edge inside it; 896px for the home hero; 768px for reading sections; 672px for intros, the About letter and the closing invitation. Side gutters are 16px, 24px from 640px, and 32px from 1024px.
+**Containers.** 1280px for the navigation and footer; 1152px for the home product section; 1024px for header bands, the pricing offers and every section of How it works, whose text keeps one left edge inside it; 896px for the home hero; 768px for reading sections; 672px for intros, the About letter and the closing invitation; 576px for the lead under a header band's headline. Side gutters are 16px, 24px from 640px, and 32px from 1024px.
 
 **Rhythm.** Content bands carry 64px above and below, 80px from 768px. Header bands carry 80px, 96px from 768px. The home hero opens 144px above its headline (176px from 768px) to clear the fixed navigation, and closes 96px below (128px). The closing invitation carries 80px, 112px from 768px. Pages without a hero start 96px down, clear of the fixed bar. Inside a band: 16 to 24px between a headline and its lead, and 40 to 48px from an intro to the component it introduces.
 
@@ -306,7 +306,7 @@ The page is a vertical stack of full-bleed bands. Each band sets its own ground 
 
 **Alignment.** Left-aligned by default. Only the home hero, the closing invitation and a band's single closing action are centered.
 
-**Measure.** The 672px column sets 18px text at 66 to 76 characters a line, with a median of 70. The 768px column runs 18px text to 75 to 84 characters and 16px text to 88 to 94, so it suits components and screenshots better than long reading.
+**Measure.** The text column sets the line, not the band around it. Measured at 1440px across every page, the longest 18px line runs 73 characters in a 576px column, 76 in a 608px column, 78 in a 672px column, and 89 in the 704px of text a 768px reading column leaves inside its gutters. Reading columns therefore stop at 672px; the widest suits components and screenshots rather than long reading. Privacy and Terms still set their bodies in that widest column, which is why their lines run to 89 (JAR-1701).
 
 **Responsive.** Breakpoints sit at 640px, 768px and 1024px. Below 640px, a screenshot pair collapses to the phone screen alone (300px wide at most). Below 768px, the navigation collapses to a menu button, and the display, headline and title sizes step down.
 
@@ -348,10 +348,10 @@ Refined and restrained: squared, certain actions inside quiet, soft-cornered con
 - **Primary:** Sea Buckthorn fill under a Neverything ink label in Label type, with 16px by 32px of padding (40px at the sides on the closing invitation). Every Join Now outside the navigation takes it, except the one in the pricing offer that doesn't hold the highlight, which is Quiet.
 - **Hover / Focus:** The fill lightens to Buckthorn Light over 150ms. Focus draws a 2px outline 3px outside the element, visible at 3:1 or better on its ground: Ateneo Navy on light grounds (9.95:1 on Moonlight), Moonlight on navy (9.95:1 on Ateneo Navy).
 - **Compact:** The navigation's Join Now: the same fill, label color and corners, at 500 weight with 10px by 20px of padding.
-- **Quiet:** The resting action inside the offer that does not hold the highlight: transparent, with a 1px Hairline Strong border, an ink label and 14px by 32px of padding. When its offer takes the highlight, it becomes the Primary fill.
+- **Quiet:** The resting action inside the offer that does not hold the highlight, which is what a visitor meets on Trip Pass before touching anything: transparent, with a 1px Ateneo Navy border, an Ateneo Navy label and 14px by 32px of padding. The border reads 11.53:1 on the card. It carries no hover of its own, because entering the offer moves the highlight and turns it into the Primary fill before the pointer reaches the button.
 
 ### Chips
-- **Saving badge:** Amber at 12% with a 1px amber border at 30%, in Badge type with 2px by 8px of padding. The label is Sea Buckthorn on navy and Buckthorn Deep on white. It appears only inside the annual billing option.
+- **Saving badge:** Badge type with 2px by 8px of padding, inside the annual billing option and nowhere else. On the navy card it is Sea Buckthorn on an amber wash at 12%, inside a 1px amber border at 30%. On the white card it takes its own Paper White fill inside a 1px Buckthorn Deep border at 40%, which lifts the label off the selected option's 10% navy tint to 5.43:1.
 - **Billing options:** Full-width choice rows (12px corners, 12px by 16px of padding, a 1px border) that behave as toggle buttons. On a white card: Hairline Strong at rest, an Ateneo Navy border with a 6% navy fill on hover, and an Ateneo Navy border with a 10% navy fill when selected. On the navy card: a lighter navy border at rest, a Navy Glint border with a 20% Harbor Blue fill on hover, and a Navy Glint border with a 30% Harbor Blue fill when selected.
 
 ### Cards / Containers
