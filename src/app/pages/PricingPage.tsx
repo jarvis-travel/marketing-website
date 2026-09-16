@@ -161,7 +161,7 @@ export function PricingPage() {
                   open is the app's call, not this site's. */}
               <a
                 href={appJoinUrl('jt_trip_pass')}
-                className={`mt-auto self-start px-8 py-3.5 rounded-full font-semibold border transition-colors text-gray-900 ${
+                className={`mt-auto self-start px-8 py-3.5 rounded-sm font-semibold border transition-colors text-gray-900 ${
                   tripActive
                     ? 'bg-amber-400 border-amber-400 hover:bg-amber-300 hover:border-amber-300'
                     : 'bg-transparent border-gray-300'
@@ -234,7 +234,7 @@ export function PricingPage() {
                         </span>
                         {option.best && SAVING_PCT !== null && (
                           <span
-                            className={`text-[11px] font-semibold tracking-wide uppercase bg-amber-400/[0.12] border border-amber-400/30 px-2 py-0.5 rounded-full transition-colors ${
+                            className={`text-[11px] font-semibold tracking-wide uppercase bg-amber-400/[0.12] border border-amber-400/30 px-2 py-0.5 rounded-sm transition-colors ${
                               exploreHot ? 'text-amber-400' : 'text-amber-700'
                             }`}
                           >
@@ -304,7 +304,7 @@ export function PricingPage() {
                   asked for a second time. */}
               <a
                 href={appJoinUrl(cadence.lookupKey)}
-                className={`mt-auto w-full py-3.5 rounded-full font-semibold text-center border transition-colors text-gray-900 ${
+                className={`mt-auto w-full py-3.5 rounded-sm font-semibold text-center border transition-colors text-gray-900 ${
                   exploreHot
                     ? 'bg-amber-400 border-amber-400 hover:bg-amber-300 hover:border-amber-300'
                     : 'bg-transparent border-gray-300'

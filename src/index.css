@@ -94,14 +94,14 @@
 }
 
 @layer components {
-  /* Skip link: off-screen until focused, then a solid amber pill top-left. */
+  /* Skip link: off-screen until focused, then a solid amber block top-left. */
   .skip-link {
     position: fixed;
     top: 0.5rem;
     left: 0.5rem;
     z-index: 100;
     padding: 0.625rem 1rem;
-    border-radius: 999px;
+    border-radius: 0.125rem;
     font-weight: 600;
     background: #ffbf65;
     color: #13181b;
