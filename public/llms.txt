@@ -9,7 +9,7 @@ JarvisTravel is a trip planner. It does not sell, arrange or transact travel of 
 - [Home](https://jarvistravel.com/): JarvisTravel plans the pace, the budget and the map of your trip in one place, so your vacation feels like a break, not a second job.
 - [How it works](https://jarvistravel.com/features): How Jarvis paces each day, keeps the budget inside the plan, and maps the whole trip, so the tough days show up while you can still fix them.
 - [Pricing](https://jarvistravel.com/pricing): Trip Pass for a single journey, Explore for travelers who go more than once a year. Current prices live on this page.
-- [About](https://jarvistravel.com/about): Why JarvisTravel was built, and the promises behind it.
+- [About](https://jarvistravel.com/about): Why JarvisTravel was built, and how we run it.
 - [Contact](https://jarvistravel.com/contact): Questions, press requests and privacy notes.
 - [Privacy Policy](https://jarvistravel.com/privacy): What is collected, what we don't sell, and the choices that stay with the traveler.
 - [Terms of Service](https://jarvistravel.com/terms): The terms governing use of JarvisTravel.
