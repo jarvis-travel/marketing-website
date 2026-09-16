@@ -271,7 +271,7 @@ A cool navy world on a warm neutral ground, lit by one amber: navy carries the b
 ### Hierarchy
 - **Display** (700, 36px on a 45px line below 768px, 48px set solid from 768px): Page headlines in the navy header bands and the home hero. Moonlight on navy, balanced wrapping, 768px wide at most in a header band.
 - **Headline** (700, 30px/36px below 768px, 36px/40px from 768px): Section headlines on Moonlight, white and navy bands. Data Security's sub-sections step down to 24px/32px, then 30px/36px from 768px.
-- **Title** (600, 20px/28px below 768px, 24px/32px from 768px): Row titles in hairline lists and legal section titles. Panel titles and promise rows hold at 20px/28px.
+- **Title** (600, 20px/28px below 768px, 24px/32px from 768px): Row titles in hairline lists and legal section titles. Panel titles and Home's No catches rows hold at 20px/28px.
 - **Lead** (400, 18px, line-height 1.625): The paragraph under a headline, and long-form reading (About, legal). The home hero and photo band step to 20px/28px from 768px.
 - **Body** (400, 16px, line-height 1.625): Row descriptions, card text and list items.
 - **Label** (600, 16px/24px): Button labels, card titles and footer column titles.
@@ -373,7 +373,7 @@ Every page without a hero opens on a flat Ateneo Navy band: the Display headline
 The home hero and the breadth band put an Unsplash photograph (full bleed, cropped to cover) under a Midnight Navy scrim, then contour rings, then the content. The hero rotates through five city photographs. Both bands use a 70% scrim, which keeps their text readable over a bright facade. The credit sits in the bottom-right corner in Credit type, white at 85% with the credit text shadow, and comes after the band's content in reading and tab order. A photograph never renders without its credit, and with no photograph the band stays plain navy with its rings.
 
 ### Hairline Rows
-The default structure for parallel points (the promises, How it works, Data Security, legal clauses): a list with a 1px Hairline on top and one under each row, 20 to 32px of vertical padding, a Title, then Body text in Soft Ink. On How it works a benefit line in ink Label Medium closes each row. Rows carry no icons and no cards. Legal clauses keep their numbers because readers cite them.
+The default structure for parallel points (Home's No catches rows, How it works, Data Security, legal clauses): a list with a 1px Hairline on top and one under each row, 20 to 32px of vertical padding, a Title, then Body text in Soft Ink. On How it works a benefit line in ink Label Medium closes each row. Rows carry no icons and no cards. Legal clauses keep their numbers because readers cite them.
 
 ### Icon Tile
 Lucide icons sit in a 36px tile with 8px corners: the glyph at 20px with a 2px stroke in the voice color, over a 10% tint of that color. The voice is Ateneo Navy; only the trip journal's tile is Journal Coral. Icons are drawn lucide glyphs, never emoji or typed symbols.

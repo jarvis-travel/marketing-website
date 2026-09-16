@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-15T17:08:12+00:00",
+  "generatedAt": "2026-09-15T22:36:21+00:00",
   "title": "Design System: JarvisTravel",
   "extensions": {
     "colorMeta": {
@@ -346,7 +346,7 @@
       },
       "title": {
         "displayName": "Title",
-        "purpose": "Row titles in hairline lists and legal section titles. Panel titles and promise rows hold at 20px/28px."
+        "purpose": "Row titles in hairline lists and legal section titles. Panel titles and Home's No catches rows hold at 20px/28px."
       },
       "lead": {
         "displayName": "Lead",
