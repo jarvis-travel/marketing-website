@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-15T22:36:21+00:00",
+  "generatedAt": "2026-09-16T01:49:25+00:00",
   "title": "Design System: JarvisTravel",
   "extensions": {
     "colorMeta": {
@@ -333,6 +333,66 @@
           "#FEAC9F",
           "#FEE9E6"
         ]
+      },
+      "fatigue-chill-ink": {
+        "role": "data",
+        "displayName": "Fatigue Index Chill Ink",
+        "canonical": "oklch(50.0% 0.102 235.8)",
+        "tonalRamp": [
+          "#000D18",
+          "#01273B",
+          "#024564",
+          "#046591",
+          "#0787BF",
+          "#0EA5E9",
+          "#82CEFE",
+          "#DFF2FE"
+        ]
+      },
+      "fatigue-balanced-ink": {
+        "role": "data",
+        "displayName": "Fatigue Index Balanced Ink",
+        "canonical": "oklch(48.7% 0.099 165.5)",
+        "tonalRamp": [
+          "#000F07",
+          "#012C1C",
+          "#014C34",
+          "#006F4D",
+          "#059669",
+          "#40B788",
+          "#6BDEAD",
+          "#C2FFE1"
+        ]
+      },
+      "fatigue-packed-ink": {
+        "role": "data",
+        "displayName": "Fatigue Index Packed Ink",
+        "canonical": "oklch(50.8% 0.101 80.4)",
+        "tonalRamp": [
+          "#130900",
+          "#332000",
+          "#573902",
+          "#7E5402",
+          "#A67107",
+          "#CA8A04",
+          "#F9B64C",
+          "#FFEBD1"
+        ]
+      },
+      "fatigue-peak-ink": {
+        "role": "data",
+        "displayName": "Fatigue Index Peak Ink",
+        "canonical": "oklch(51.3% 0.127 28.4)",
+        "tonalRamp": [
+          "#1F0000",
+          "#4B0101",
+          "#7D0101",
+          "#A6291F",
+          "#D35446",
+          "#F37161",
+          "#FEAC9F",
+          "#FEE9E6"
+        ]
       }
     },
     "typographyMeta": {
@@ -607,7 +667,8 @@
       "Do put every Unsplash photograph under a Midnight Navy (#0E2A47) scrim with its credit on the image, at 70% wherever text sits on the photograph.",
       "Do hold running text near 65 to 75 characters a line; the 672px column at 18px measures a median of 70.",
       "Do keep focus visible at 3:1 or better on every ground: an Ateneo Navy ring on light grounds, a Moonlight ring on navy.",
-      "Do set prices and Fatigue Index digits in tabular figures."
+      "Do set prices and Fatigue Index digits in tabular figures.",
+      "Do set Fatigue Index digits and band words in the band's ink (#106B95, #097152, #835E0D, #A3453B), never in the tint color itself."
     ],
     "donts": [
       "Don't use gradients or glows in chrome, text or borders; emphasis comes from band color, weight and size.",
