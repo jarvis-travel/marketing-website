@@ -76,7 +76,7 @@ export function Navigation() {
             {showJoinNow && (
               <Link
                 to="/pricing"
-                className="px-5 py-2.5 bg-amber-400 text-gray-900 rounded-sm font-medium hover:shadow-lg hover:shadow-amber-400/25 transition-all"
+                className="px-5 py-2.5 bg-amber-400 text-gray-900 rounded-sm font-medium hover:bg-amber-300 transition-colors"
               >
                 Join Now
               </Link>

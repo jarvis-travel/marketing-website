@@ -74,7 +74,7 @@ export function Footer() {
                   <li key={link.name}>
                     <Link
                       to={link.path}
-                      className="text-sky-100 hover:text-white transition-colors"
+                      className="text-sky-100 hover:text-gray-50 transition-colors"
                     >
                       {link.name}
                     </Link>
