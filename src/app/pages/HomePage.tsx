@@ -176,14 +176,14 @@ export function HomePage() {
             The trip you waited a year for shouldn&rsquo;t wear you out by
             Tuesday.
           </h2>
-          <p className="text-lg text-gray-600 leading-relaxed mb-6">
+          <p className="text-lg text-gray-600 leading-relaxed max-w-xl [text-wrap:pretty] mb-6">
             A shared spreadsheet will get you a plan. What it won&rsquo;t tell
             you is that day 2 has six hours of walking after a red-eye, or that
             the museum, the market and the dinner across town won&rsquo;t fit in
             one afternoon. That&rsquo;s how you come home needing a vacation from
             the vacation.
           </p>
-          <p className="text-lg text-gray-600 leading-relaxed mb-6">
+          <p className="text-lg text-gray-600 leading-relaxed max-w-xl [text-wrap:pretty] mb-6">
             So Jarvis rates every day while you build it: chill, balanced, or
             packed. A packed day shows up before you&rsquo;re standing in it,
             with a lighter version one tap away.

@@ -298,7 +298,7 @@ A cool navy world on a warm neutral ground, lit by one amber: navy carries the b
 
 The page is a vertical stack of full-bleed bands. Each band sets its own ground (Moonlight, white, Ateneo Navy or Midnight Navy) and centers one container. The change of ground is the section break, so no divider sits between bands.
 
-**Containers.** 1280px for the navigation and footer; 1152px for the home product section; 1024px for header bands, the pricing offers and every section of How it works, whose text keeps one left edge inside it; 896px for the home hero; 768px for reading sections; 672px for intros, the About letter and the closing invitation; 576px for the lead under a header band's headline. Side gutters are 16px, 24px from 640px, and 32px from 1024px.
+**Containers.** 1280px for the navigation and footer; 1152px for the home product section; 1024px for header bands, the pricing offers and every section of How it works, whose text keeps one left edge inside it; 896px for the home hero; 768px for reading sections; 672px for intros, the About letter, the Privacy and Terms bodies and the closing invitation; 576px for the lead under a header band's headline. Side gutters are 16px, 24px from 640px, and 32px from 1024px.
 
 **Rhythm.** Content bands carry 64px above and below, 80px from 768px. Header bands carry 80px, 96px from 768px. The home hero opens 144px above its headline (176px from 768px) to clear the fixed navigation, and closes 96px below (128px). The closing invitation carries 80px, 112px from 768px. Pages without a hero start 96px down, clear of the fixed bar. Inside a band: 16 to 24px between a headline and its lead, and 40 to 48px from an intro to the component it introduces.
 
@@ -306,7 +306,7 @@ The page is a vertical stack of full-bleed bands. Each band sets its own ground 
 
 **Alignment.** Left-aligned by default. Only the home hero, the closing invitation and a band's single closing action are centered.
 
-**Measure.** The text column sets the line, not the band around it. Measured at 1440px across every page, the longest 18px line runs 73 characters in a 576px column, 76 in a 608px column, 78 in a 672px column, and 89 in the 704px of text a 768px reading column leaves inside its gutters. Reading columns therefore stop at 672px; the widest suits components and screenshots rather than long reading. Privacy and Terms still set their bodies in that widest column, which is why their lines run to 89 (JAR-1701).
+**Measure.** The text column sets the line, not the band around it. Measured at 1440px across every page, the longest 18px line runs 73 characters in a 576px column, 79 in a 608px column and 78 in a 672px column. Reading columns therefore stop at 672px, and no 18px paragraph sits in the 704px of text a 768px section leaves inside its gutters: that width suits components and screenshots rather than long reading.
 
 **Responsive.** Breakpoints sit at 640px, 768px and 1024px. Below 640px, a screenshot pair collapses to the phone screen alone (300px wide at most). Below 768px, the navigation collapses to a menu button, and the display, headline and title sizes step down.
 
