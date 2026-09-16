@@ -76,10 +76,18 @@
     @apply bg-gray-400;
   }
 
-  /* A visible, consistent focus ring on every interactive element - the
-     Ateneo accent, offset so it reads on any ground. */
+  /* A visible, consistent focus ring on every interactive element: Ateneo on
+     light grounds, Moonlight inside navy, where Ateneo would vanish. Every navy
+     surface is bg-sky-600 or bg-slate-900, so those classes switch it; the
+     nav's top row opts in with .focus-on-dark while it floats over the hero. */
+  .bg-sky-600,
+  .bg-slate-900,
+  .focus-on-dark {
+    --focus-ring: #f0eeeb;
+  }
+
   :where(a, button, input, select, textarea):focus-visible {
-    outline: 2px solid #003a6c;
+    outline: 2px solid var(--focus-ring, #003a6c);
     outline-offset: 3px;
     border-radius: 4px;
   }

@@ -7,20 +7,20 @@
 // here and put the credit somewhere else — or forget it. A caller gets both or
 // neither.
 //
-// Neither is the shipped state today. photoFor() returns null for every slot
-// until CI regenerates the manifest with a key, and null renders nothing at
-// all: the section keeps its brand colour and its contour motif, which is the
-// design it has now rather than a fallback for a missing image.
+// It wraps the band's content, so the credit comes after that content in
+// reading and tab order. A slot with no photo renders the content alone: the
+// section keeps its brand colour and its contour motif.
 // ============================================================================
 
+import type { ReactNode } from 'react';
 import { photoFor } from '../data/photos';
 import { PhotoCredit } from './PhotoCredit';
 
 interface PhotoBackdropProps {
   /** A slot declared in scripts/fetch-unsplash-manifest.mjs. */
   slot: string;
-  /** Tailwind colour for the scrim that keeps the headline legible. */
-  scrim?: string;
+  /** The band's content, which the photo sits behind and the credit follows. */
+  children: ReactNode;
 }
 
 /** The same hotlinked photo at wider sizes, so a full-bleed band stays sharp on a
@@ -41,9 +41,9 @@ function widerSizes(url: string): string | undefined {
   }
 }
 
-export function PhotoBackdrop({ slot, scrim = 'bg-sky-900/55' }: PhotoBackdropProps) {
+export function PhotoBackdrop({ slot, children }: PhotoBackdropProps) {
   const photo = photoFor(slot);
-  if (!photo) return null;
+  if (!photo) return <>{children}</>;
 
   return (
     <>
@@ -67,8 +67,13 @@ export function PhotoBackdrop({ slot, scrim = 'bg-sky-900/55' }: PhotoBackdropPr
       />
       {/* The scrim is what makes the copy legible over an arbitrary photograph,
           so it is not optional styling — a band whose text is unreadable over
-          its own backdrop is worse than a band with no backdrop. */}
-      <div className={`absolute inset-0 ${scrim}`} aria-hidden="true" />
+          its own backdrop is worse than a band with no backdrop. 70% because
+          the photos have bright skies and white facades, and over white the
+          band's lead text needs that much to clear 4.5:1. */}
+      <div className="absolute inset-0 bg-sky-900/70" aria-hidden="true" />
+      {children}
+      {/* After the content, so the credit's links come after it in reading and
+          tab order; it's positioned over the photo either way. */}
       <PhotoCredit photo={photo} variant="overlay" className="absolute bottom-2 right-3 z-10" />
     </>
   );
