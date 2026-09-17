@@ -186,6 +186,9 @@ function runAudit() {
       // npm's audit JSON can be large; the default 1 MiB maxBuffer would make a
       // big report throw ENOBUFS and fail closed spuriously (JAR-1734 review).
       maxBuffer: 64 * 1024 * 1024,
+      // A hung registry (proxy stall) must fail closed fast, not hold the CI
+      // job to its own timeout (JAR-1734 review, OCR routed).
+      timeout: 120_000,
     });
     return { audit: JSON.parse(out), raw: out, stderr: '' };
   } catch (err) {
