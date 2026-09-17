@@ -110,13 +110,23 @@ export function evaluate(audit, exceptions, today) {
     }
   }
 
-  // Cross-check against npm's own summary: metadata.vulnerabilities is a count
-  // { critical, high, … }. If npm counts a high or critical but our parse found
-  // none firing, the report shape drifted (vulnerabilities as an array, the
-  // advisory under a renamed key, an unexpected severity spelling, …) and we must
-  // not pass as clean — fail closed and name npm's counts (JAR-1734 review r6).
-  const counts = audit?.metadata?.vulnerabilities ?? {};
-  const flagged = (Number(counts.high) || 0) + (Number(counts.critical) || 0);
+  // Cross-check against npm's own summary. metadata.vulnerabilities is a count
+  // { critical, high, … }; the cross-check only works when it is present and
+  // numeric, so require that first — otherwise the summary can't vouch for a parse
+  // that found nothing, and a drifted report with empty metadata slips through
+  // (JAR-1734 review r7).
+  const counts = audit?.metadata?.vulnerabilities;
+  if (typeof counts !== 'object' || counts === null || typeof counts.high !== 'number' || typeof counts.critical !== 'number') {
+    return {
+      code: 1,
+      lines: ['BLOCKED: npm audit metadata has no numeric high/critical counts — unrecognized shape, failing closed'],
+    };
+  }
+  // If npm counts a high or critical but our parse found none firing, the report
+  // shape drifted (vulnerabilities as an array, the advisory under a renamed key,
+  // an unexpected severity spelling, …) and we must not pass as clean — fail
+  // closed and name npm's counts (JAR-1734 review r6).
+  const flagged = counts.high + counts.critical;
   if (flagged > 0 && firing.size === 0) {
     return {
       code: 1,

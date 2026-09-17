@@ -91,6 +91,13 @@ const rDrift = evaluate(drifted, [], TODAY);
 eq(rDrift.code, 1, 'metadata counts a high but none parsed → fail closed (drifted shape)');
 has(rDrift.lines, 'metadata counts', "the drift failure names npm's counts");
 
+// The cross-check needs npm's numeric counts to vouch for an empty parse. If
+// metadata carries no vulnerabilities counts, a drifted report (renamed key here,
+// so `via` is empty) would otherwise slip through — fail closed on missing or
+// non-numeric counts (JAR-1734 review round 7).
+const noCounts = { metadata: {}, vulnerabilities: { pkg: { severity: 'high', advisories: [{ severity: 'high', title: 'renamed key, no counts' }] } } };
+eq(evaluate(noCounts, [], TODAY).code, 1, 'metadata without numeric high/critical counts fails closed');
+
 // --- End-to-end: the guard actually runs, blocks, and fails closed ---------
 const GATE = fileURLToPath(new URL('../npm-audit-gate.mjs', import.meta.url));
 
