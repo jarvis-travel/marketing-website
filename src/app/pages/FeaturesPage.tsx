@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { appSignInUrl } from '../data/appLink';
 import { DevicePair } from '../components/DevicePair';
 import {
   BUDGET,
@@ -220,12 +220,12 @@ export function FeaturesPage() {
           </div>
 
           <div className="text-center mt-12">
-            <Link
-              to="/pricing"
+            <a
+              href={appSignInUrl()}
               className="inline-block px-8 py-4 bg-amber-400 text-gray-900 rounded-sm font-semibold hover:bg-amber-300 transition-colors"
             >
               Join Now
-            </Link>
+            </a>
           </div>
         </div>
       </section>

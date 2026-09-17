@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { LogoLockup } from './Logo';
+import { appSignInUrl } from '../data/appLink';
 import { Link, matchPath, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 
@@ -23,8 +24,8 @@ export function Navigation() {
 
   const isLightNav = location.pathname === '/' && !isScrolled;
   const currentPath = location.pathname;
-  // Join Now goes to /pricing, whose plan cards carry their own, so there a nav
-  // link to the page you're on would do nothing.
+  // On Pricing each plan card carries its own Join Now with that plan chosen, so a
+  // nav Join Now without a plan would compete with them.
   const showJoinNow = !matchPath('/pricing', currentPath);
 
   return (
@@ -74,12 +75,12 @@ export function Navigation() {
             ))}
 
             {showJoinNow && (
-              <Link
-                to="/pricing"
+              <a
+                href={appSignInUrl()}
                 className="px-5 py-2.5 bg-amber-400 text-gray-900 rounded-sm font-medium hover:bg-amber-300 transition-colors"
               >
                 Join Now
-              </Link>
+              </a>
             )}
           </div>
 
@@ -115,13 +116,12 @@ export function Navigation() {
             ))}
             {showJoinNow && (
               <div className="mt-4 pt-4 border-t border-gray-100 space-y-2">
-                <Link
-                  to="/pricing"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                <a
+                  href={appSignInUrl()}
                   className="w-full py-3 bg-amber-400 text-gray-900 rounded-sm font-medium block text-center"
                 >
                   Join Now
-                </Link>
+                </a>
               </div>
             )}
           </div>

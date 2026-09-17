@@ -1,16 +1,19 @@
 #!/usr/bin/env node
-// Signup CTA guard. Two halves of one decision about where "Join Now" goes:
+// Signup CTA guard. One decision about where "Join Now" goes, in two halves
+// (Brent, 2026-09-16, JAR-1692, which reversed JAR-1630 for this site):
 //
-//   pricing page  -> into the app carrying a plan, via appJoinUrl(), naming a
-//                    plan the shared contract knows about
-//   everywhere else -> the /pricing page, where the visitor picks a plan
+//   pricing page    -> the app's sign-in carrying the chosen plan, via
+//                      appJoinUrl(), naming a plan the shared contract knows
+//   everywhere else -> the app's sign-in with no plan, via appSignInUrl(),
+//                      because no plan was chosen there
 //
-// Both are asserted. Watching only the first would leave the other five CTAs
-// free to drift either way, which is how this split arrived unnoticed.
+// Both are asserted, and so is the one place the destination is spelled:
+// every app link appLink.ts builds goes to /auth/sign-in. So is the pricing
+// page's sign-in link for people who already have an account.
 //
 // Why this exists. Until JAR-1184 both CTAs routed to /contact, the waitlist
 // form, behind a comment saying they would change when the payment flow was
-// live. They now link to app.jarvistravel.com/auth/sign-up?plan=<lookup key>,
+// live. They now link to app.jarvistravel.com/auth/sign-in?plan=<lookup key>,
 // which the app reads to send the visitor straight to checkout for the plan
 // they picked.
 //
@@ -38,9 +41,13 @@ import { pathToFileURL } from 'node:url';
 const ROOT = join(import.meta.dirname, '..');
 const PAGE = 'src/app/pages/PricingPage.tsx';
 const PRICING = 'src/app/data/pricing.ts';
+const APP_LINK = 'src/app/data/appLink.ts';
+const SIGN_IN_PATH = '/auth/sign-in';
+const SIGN_IN_CALL = 'appSignInUrl()';
 
 // The other files carrying a signup CTA. Every "Join Now" in these goes to the
-// pricing page, and THIS LIST IS WHERE THAT DECISION IS RECORDED (JAR-1630).
+// app's sign-in with no plan, and THIS LIST IS WHERE THAT DECISION IS RECORDED
+// (JAR-1692; before it, JAR-1630 sent them to /pricing).
 //
 // The guard is deliberately two-sided. Asserting only "pricing CTAs use
 // appJoinUrl" leaves the other five free to drift in either direction, which is
@@ -59,7 +66,6 @@ const OFF_PRICING = [
   'src/app/pages/FeaturesPage.tsx',
   'src/app/pages/ContactPage.tsx',
 ];
-const PRICING_ROUTE = '/pricing';
 
 /**
  * Every "Join Now" in `source`, paired with the target of the <a>/<Link> that
@@ -128,18 +134,36 @@ export function checkPricingCtas(root = ROOT) {
     }
   }
 
-  // And every Join Now OUTSIDE it must go to the pricing page. This is the half
-  // that makes the split a contract rather than a coincidence: it fails on a
-  // migration, which is the point — see OFF_PRICING above.
+  // And every Join Now OUTSIDE it must go to the app's sign-in, with no plan.
+  // This half fails on a migration, which is the point: see OFF_PRICING above.
   for (const file of OFF_PRICING) {
     const source = readFileSync(join(root, file), 'utf8');
-    for (const { target } of ctaTargets(source, file, problems)) {
-      if (target !== PRICING_ROUTE) {
+    for (const { tag, target } of ctaTargets(source, file, problems)) {
+      if (!tag.includes(SIGN_IN_CALL)) {
         problems.push(
-          `${file}: a "Join Now" CTA targets ${target}, not ${PRICING_ROUTE} — every signup CTA outside the pricing page goes to the pricing page by decision (JAR-1630). ` +
+          `${file}: a "Join Now" CTA targets ${target}, not ${SIGN_IN_CALL}: every signup CTA outside the pricing page goes to the app's sign-in with no plan, by decision (JAR-1692). ` +
           `If that decision changed, edit OFF_PRICING in this guard in the same commit: this file is where the split is recorded, and a migration that does not touch it is drift.`,
         );
       }
+    }
+  }
+
+  // People who already have an account get a way in from the pricing page.
+  if (!page.includes(SIGN_IN_CALL)) {
+    problems.push(`${PAGE}: no ${SIGN_IN_CALL} link: the pricing page's sign-in for people who already have an account is gone (JAR-1692)`);
+  }
+
+  // The destination is spelled in one place. Every app link appLink.ts builds
+  // must go to the sign-in path; a Join Now that reads right here could still
+  // land on sign-up if the helper drifted.
+  const appLink = readFileSync(join(root, APP_LINK), 'utf8');
+  const paths = [...appLink.matchAll(/\$\{APP_ORIGIN\}([^`?$]*)/g)].map((m) => m[1]);
+  if (paths.length === 0) {
+    problems.push(`${APP_LINK}: builds no app link from APP_ORIGIN, so this guard cannot see where Join Now goes`);
+  }
+  for (const path of paths) {
+    if (path !== SIGN_IN_PATH) {
+      problems.push(`${APP_LINK}: builds an app link to ${path}, not ${SIGN_IN_PATH}: every Join Now goes to the app's sign-in (JAR-1692)`);
     }
   }
 
@@ -161,6 +185,6 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   // regardless of what the caller aimed it at.
   const problems = checkPricingCtas(process.cwd());
   for (const p of problems) console.error(`  ${p}`);
-  console.log(problems.length ? `\n${problems.length} problem(s)` : 'signup CTAs OK — pricing links into the app, the rest go to /pricing');
+  console.log(problems.length ? `\n${problems.length} problem(s)` : "signup CTAs OK: every Join Now goes to the app's sign-in, and pricing's carry the chosen plan");
   process.exit(problems.length ? 1 : 0);
 }

@@ -1,11 +1,11 @@
 import { Mail } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { appSignInUrl } from '../data/appLink';
 
 // Contact (JAR-432) - the previous form called setSubmitted(true), transmitted
 // nothing, and told the visitor "Message Sent! We'll get back to you within
-// 24 hours." Every path below is real: Join Now goes to pricing, where each
-// plan starts signup, and the addresses are the ones already published on this
-// site. A real contact form returns when the form endpoint exists (phase 1 of
+// 24 hours." Every path below is real: Join Now goes to the app's sign-in, where
+// a visitor signs in or starts a sign-up, and the addresses are the ones already
+// published on this site. A real contact form returns when the form endpoint exists (phase 1 of
 // the redesign plan).
 
 export function ContactPage() {
@@ -37,12 +37,12 @@ export function ContactPage() {
             <p className="text-gray-600 leading-relaxed mb-6">
               Join now and plan your next trip with Jarvis.
             </p>
-            <Link
-              to="/pricing"
+            <a
+              href={appSignInUrl()}
               className="inline-block px-8 py-4 bg-amber-400 text-gray-900 rounded-sm font-semibold hover:bg-amber-300 transition-colors"
             >
               Join Now
-            </Link>
+            </a>
           </div>
 
           {/* Email - the app's icon row recipe. */}

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Check } from 'lucide-react';
 import { priceOf, periodOf, annualSavingPercent, type PriceLookupKey } from '../data/pricing';
-import { appJoinUrl } from '../data/appLink';
+import { appJoinUrl, appSignInUrl } from '../data/appLink';
 
 // Approved offer structure (pricing handoff, 2026-07): exactly two offers.
 // Trip Pass is a real single-trip product, not a trial. Explore is the hero
@@ -323,11 +323,16 @@ export function PricingPage() {
             </div>
           </div>
 
-          {/* The upgrade path, framed simply. */}
+          {/* The site's way back in for people who already have an account. */}
           <div className="max-w-2xl mx-auto text-center mt-14">
             <p className="text-gray-900 font-medium">
-              Start with Trip Pass, then move to Explore when you're ready to
-              travel more.
+              Already have an account?{' '}
+              <a
+                href={appSignInUrl()}
+                className="text-sky-600 underline underline-offset-4 decoration-1 hover:text-sky-700"
+              >
+                Sign in
+              </a>
             </p>
           </div>
         </div>

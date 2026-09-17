@@ -64,11 +64,11 @@ jobs:
       - name: Fonts are self-hosted (no third-party font CDN)
         run: npm run lint:fonts
 
-      # VITE_APP_ORIGIN is where every pricing CTA sends a visitor. appLink.ts
+      # VITE_APP_ORIGIN is where every Join Now sends a visitor. appLink.ts
       # defaults it to production; requireAppOrigin() in vite.config.ts refuses
       # to build anything that is not an https:// origin — so a staging value like
-      # `localhost:5173` fails the build here rather than shipping a pricing
-      # page whose Join Now links go nowhere. Set explicitly so the deployed
+      # `localhost:5173` fails the build here rather than shipping a site
+      # whose Join Now links go nowhere. Set explicitly so the deployed
       # value is a decision recorded in this file, not a default nobody chose
       # (marketing-website#46 review F2).
       - name: Build

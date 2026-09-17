@@ -40,11 +40,22 @@ const PRICES = `export const PRICES = {
 // The off-pricing CTAs the guard now also reads. Valid by default so the cases
 // above keep testing what they tested — a fixture that fails for a reason the
 // case is not about proves nothing. Each is overridable per case.
-const PRICING_CTA = `export default function P() {
-  return <Link to="/pricing" className="px-8 py-3.5">Join Now</Link>;
+const SIGN_IN_CTA = `import { appSignInUrl } from '../data/appLink';
+export default function P() {
+  return <a href={appSignInUrl()} className="px-8 py-3.5">Join Now</a>;
 }`;
 
-function withRepo({ page, pricing = PRICES, nav = PRICING_CTA, home = PRICING_CTA, features = PRICING_CTA, contact = PRICING_CTA }, fn) {
+// The link helper, which the guard reads to see where every Join Now really
+// lands (JAR-1692). Valid by default, like the CTAs.
+const GOOD_APP_LINK = `const APP_ORIGIN = 'https://app.example';
+export function appSignInUrl() {
+  return \`\${APP_ORIGIN}/auth/sign-in\`;
+}
+export function appJoinUrl(plan) {
+  return \`\${appSignInUrl()}?plan=\${encodeURIComponent(plan)}\`;
+}`;
+
+function withRepo({ page, pricing = PRICES, nav = SIGN_IN_CTA, home = SIGN_IN_CTA, features = SIGN_IN_CTA, contact = SIGN_IN_CTA, appLink = GOOD_APP_LINK }, fn) {
   const dir = mkdtempSync(join(tmpdir(), 'ctaguard-'));
   try {
     mkdirSync(join(dir, 'src/app/pages'), { recursive: true });
@@ -56,6 +67,7 @@ function withRepo({ page, pricing = PRICES, nav = PRICING_CTA, home = PRICING_CT
     writeFileSync(join(dir, 'src/app/pages/HomePage.tsx'), home);
     writeFileSync(join(dir, 'src/app/pages/FeaturesPage.tsx'), features);
     writeFileSync(join(dir, 'src/app/pages/ContactPage.tsx'), contact);
+    writeFileSync(join(dir, 'src/app/data/appLink.ts'), appLink);
     return fn(dir);
   } finally {
     rmSync(dir, { recursive: true, force: true });
@@ -82,12 +94,17 @@ const cta = (target) => `<a
   Join Now
 </a>`;
 
-const GOOD_PAGE = `import { appJoinUrl } from '../data/appLink';
+// The sign-in line for people who already have an account, which the pricing
+// page must carry (JAR-1692).
+const SIGN_IN_LINE = `<p>Already have an account? <a href={appSignInUrl()}>Sign in</a></p>`;
+
+const GOOD_PAGE = `import { appJoinUrl, appSignInUrl } from '../data/appLink';
 export function PricingPage() {
   return (
     <div>
       <a href={appJoinUrl('jt_trip_pass')} className="px-8 py-3.5">Join Now</a>
       <a href={appJoinUrl('jt_explore_annual')} className="px-8 py-3.5">Join Now</a>
+      ${SIGN_IN_LINE}
     </div>
   );
 }`;
@@ -119,6 +136,7 @@ export function PricingPage() {
         <small><a href="/pricing#faq">see plans</a></small>
         <span>Join Now</span>
       </a>
+      ${SIGN_IN_LINE}
     </div>
   );
 }`,
@@ -196,6 +214,7 @@ export function PricingPage() {
           <span>Join Now</span>
         </article>
       </a>
+      ${SIGN_IN_LINE}
     </div>
   );
 }`,
@@ -215,7 +234,7 @@ test('refuses a hand-written signup href that bypasses appJoinUrl', () => {
     page: `export function PricingPage() {
   return (
     <div>
-      <a href="https://app.jarvistravel.com/auth/sign-up?plan=jt_trip_pass" className="px-8 py-3.5">Join Now</a>
+      <a href="https://app.jarvistravel.com/auth/sign-in?plan=jt_trip_pass" className="px-8 py-3.5">Join Now</a>
     </div>
   );
 }`,
@@ -228,12 +247,14 @@ test('refuses a hand-written signup href that bypasses appJoinUrl', () => {
 
 // ── The OTHER half of the split ────────────────────────────────────
 //
-// The guard now asserts both directions, and both are mutated below. If only
-// one reddens, the guard encodes a preference rather than a contract: it would
+// The guard asserts both directions, and both are mutated below. If only one
+// reddens, the guard encodes a preference rather than a contract: it would
 // stop a revert while permitting a silent migration, and a migration has to
 // be deliberate.
 
-test('refuses an off-pricing CTA migrated to the app', () => {
+test('refuses an off-pricing Join Now that carries a plan', () => {
+  // No plan was chosen on these pages (JAR-1692), so appJoinUrl here would
+  // hand the app a choice the visitor never made.
   withRepo(
     {
       page: GOOD_PAGE,
@@ -243,11 +264,28 @@ test('refuses an off-pricing CTA migrated to the app', () => {
     },
     (dir) => {
       const r = run(dir);
-      assert(r.code === 1, 'guard permitted a silent migration off /pricing');
+      assert(r.code === 1, 'guard permitted an off-pricing Join Now carrying a plan');
       assert(/Navigation\.tsx/.test(r.out), `wrong file named: ${r.out}`);
-      assert(/JAR-1630/.test(r.out), `the error does not point at the decision: ${r.out}`);
+      assert(/JAR-1692/.test(r.out), `the error does not point at the decision: ${r.out}`);
       // The message must tell the migrator what to do, not merely refuse.
       assert(/OFF_PRICING/.test(r.out), `the error does not say how to make it deliberate: ${r.out}`);
+    },
+  );
+});
+
+test('refuses an off-pricing Join Now still sent to /pricing, the reversed decision', () => {
+  withRepo(
+    {
+      page: GOOD_PAGE,
+      features: `export default function F() {
+  return <Link to="/pricing" className="px-8 py-4">Join Now</Link>;
+}`,
+    },
+    (dir) => {
+      const r = run(dir);
+      assert(r.code === 1, 'guard permitted a Join Now still on /pricing');
+      assert(/FeaturesPage\.tsx/.test(r.out), `wrong file named: ${r.out}`);
+      assert(/targets \/pricing/.test(r.out), `the error does not name what it found: ${r.out}`);
     },
   );
 });
@@ -304,8 +342,36 @@ test('refuses a file whose Join Now disappeared — a guard watching nothing', (
   );
 });
 
-test('accepts the shipped split: pricing into the app, the rest on /pricing', () => {
-  // The control for all three above. Without it, a guard that failed everything
+// ── Where the helper really points, and the pricing sign-in line (JAR-1692) ──
+
+test('refuses a link helper that builds a sign-up URL', () => {
+  // Every CTA reads right in its file, and every visitor still lands on sign-up:
+  // the drift only the helper can show.
+  withRepo({ page: GOOD_PAGE, appLink: GOOD_APP_LINK.replace('/auth/sign-in', '/auth/sign-up') }, (dir) => {
+    const r = run(dir);
+    assert(r.code === 1, 'guard passed a helper building a sign-up link');
+    assert(/builds an app link to \/auth\/sign-up/.test(r.out), `wrong reason: ${r.out}`);
+  });
+});
+
+test('refuses a link helper that builds no app link at all', () => {
+  withRepo({ page: GOOD_PAGE, appLink: "export function appSignInUrl() { return 'https://app.example/auth/sign-in'; }" }, (dir) => {
+    const r = run(dir);
+    assert(r.code === 1, 'guard passed a helper it cannot read (vacuous check)');
+    assert(/builds no app link/.test(r.out), `wrong reason: ${r.out}`);
+  });
+});
+
+test('refuses a pricing page with no sign-in link for existing accounts', () => {
+  withRepo({ page: GOOD_PAGE.replace(SIGN_IN_LINE, '') }, (dir) => {
+    const r = run(dir);
+    assert(r.code === 1, 'guard passed a pricing page with no sign-in line');
+    assert(/no appSignInUrl\(\) link/.test(r.out), `wrong reason: ${r.out}`);
+  });
+});
+
+test("accepts the shipped routing: every Join Now to the app's sign-in, pricing's with the plan", () => {
+  // The control for every case above. Without it, a guard that failed everything
   // would satisfy every mutation case in this file.
   withRepo({ page: GOOD_PAGE }, (dir) => {
     const r = run(dir);

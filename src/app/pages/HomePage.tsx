@@ -8,6 +8,7 @@ import {
   Wallet,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { appSignInUrl } from '../data/appLink';
 import { PhotoBackdrop } from '../components/PhotoBackdrop';
 import { FI_BANDS } from '../data/fatigueIndex';
 import { DevicePair } from '../components/DevicePair';
@@ -159,12 +160,12 @@ export function HomePage() {
             <p className="text-lg md:text-xl text-sky-100 leading-relaxed max-w-2xl mx-auto mb-10">
               {hero.sub}
             </p>
-            <Link
-              to="/pricing"
+            <a
+              href={appSignInUrl()}
               className="inline-block px-8 py-4 bg-amber-400 text-gray-900 rounded-sm font-semibold hover:bg-amber-300 transition-colors"
             >
               Join Now
-            </Link>
+            </a>
           </div>
         </PhotoBackdrop>
       </section>
@@ -333,12 +334,12 @@ export function HomePage() {
           <p className="text-lg text-sky-100 mb-10">
             Planning is hard. Jarvis does the heavy lifting.
           </p>
-          <Link
-            to="/pricing"
+          <a
+            href={appSignInUrl()}
             className="inline-block px-10 py-4 bg-amber-400 text-gray-900 rounded-sm font-semibold hover:bg-amber-300 transition-colors"
           >
             Join Now
-          </Link>
+          </a>
         </div>
       </section>
     </div>
