@@ -10,7 +10,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdtempSync, writeFileSync, copyFileSync, chmodSync, realpathSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 let passed = 0;
 let failed = 0;
@@ -98,6 +98,31 @@ has([e2eHigh.stdout], 'BLOCKED', 'e2e: an un-excepted high prints BLOCKED');
 const e2eJunk = runGate('this is not json', 1);
 eq(e2eJunk.status, 1, 'e2e: unparseable audit output fails closed (exit 1)');
 has([e2eJunk.stderr], 'failing closed', 'e2e: fail-closed says so on stderr');
+
+// Registry unreachable: npm prints {"error":{…}} on stdout — JSON that parses
+// but is not an audit. The gate must fail closed AND surface the cause, not drop
+// it (JAR-1734 review, round 2).
+const e2eErr = runGate(JSON.stringify({ error: { code: 'ENETUNREACH', summary: 'request to https://registry.npmjs.org failed' } }), 1);
+eq(e2eErr.status, 1, 'e2e: an npm error-JSON result fails closed (exit 1)');
+has([e2eErr.stderr], 'request to https://registry.npmjs.org failed', "e2e: the fail-closed cause names npm's error");
+
+// The module must import cleanly when process.argv[1] is absent (a test runner,
+// `node -e`): the guard calls pathToFileURL(process.argv[1]), which throws on
+// undefined unless Boolean(process.argv[1]) short-circuits first (JAR-1734
+// review, round 2). `node -e` leaves argv[1] undefined.
+let importOk = true;
+let importErr = '';
+try {
+  execFileSync(
+    process.execPath,
+    ['-e', `import(${JSON.stringify(pathToFileURL(GATE).href)}).then(() => process.exit(0), (e) => { console.error(String(e)); process.exit(3); })`],
+    { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] },
+  );
+} catch (e) {
+  importOk = false;
+  importErr = String(e.stderr || e.message);
+}
+eq(importOk, true, `e2e: imports cleanly when argv[1] is absent${importOk ? '' : ': ' + importErr}`);
 
 // The main-entry guard must fire even when the script's own path needs
 // URL-encoding — the exact case the old `file://${process.argv[1]}` guard

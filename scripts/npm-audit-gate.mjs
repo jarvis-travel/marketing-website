@@ -41,10 +41,11 @@ const EXCEPTIONS = [
   {
     id: 'GHSA-fx2h-pf6j-xcff',
     expires: '2026-12-16',
-    // vite server.fs.deny bypass on Windows alternate paths — dev-server only; a
-    // static production build never runs the vite dev server, so visitor
-    // exposure is nil. Only fixed by vite@8 (major, 5->8): JAR-1765.
-    why: 'vite dev-server-only server.fs.deny bypass; unreachable in the static prod build; fixed by vite@8 major (JAR-1765)',
+    // vite server.fs.deny bypass on Windows alternate paths (GHSA-fx2h-pf6j-xcff,
+    // <=6.4.2 affected) — dev-server only; a static production build never runs
+    // the vite dev server, so visitor exposure is nil. Fixed in vite >= 6.4.3
+    // (6.4.3, 7.x or 8.x all clear it): JAR-1765.
+    why: 'vite dev-server-only server.fs.deny bypass; unreachable in the static prod build; fixed in vite >= 6.4.3 (6.4.3/7.x/8.x), JAR-1765',
   },
 ];
 
@@ -136,36 +137,48 @@ export function evaluate(audit, exceptions, today) {
   return { code, lines };
 }
 
-// Returns { audit, stderr }: audit is the parsed JSON or null (fail closed);
-// stderr is npm's stderr when the run genuinely failed, kept so the fail-closed
-// message can name the cause (JAR-1734 review).
+// Returns { audit, raw, stderr }: audit is the parsed JSON or null; raw is npm's
+// stdout; stderr is its stderr (or the spawn error). All three are kept so a
+// fail-closed exit can name its cause — including npm's own {"error":{…}} JSON,
+// which it prints on stdout when the registry is unreachable (JAR-1734 review).
 function runAudit() {
   try {
     const out = execFileSync('npm', ['audit', '--json'], {
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'pipe'],
     });
-    return { audit: JSON.parse(out), stderr: '' };
+    return { audit: JSON.parse(out), raw: out, stderr: '' };
   } catch (err) {
     // npm audit exits non-zero when advisories exist; the JSON is still on
-    // stdout. Only a genuinely unparseable result is a fail-closed error.
-    if (err && err.stdout) {
+    // stdout. Keep the raw output and stderr either way.
+    const raw = err && err.stdout != null ? String(err.stdout) : '';
+    const stderr = err && (err.stderr || err.message) ? String(err.stderr || err.message) : '';
+    if (raw) {
       try {
-        return { audit: JSON.parse(err.stdout), stderr: '' };
+        return { audit: JSON.parse(raw), raw, stderr };
       } catch {
-        /* fall through */
+        /* not JSON — fall through */
       }
     }
-    return { audit: null, stderr: (err && (err.stderr || err.message)) || '' };
+    return { audit: null, raw, stderr };
   }
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
-  const { audit, stderr } = runAudit();
+// Boolean(process.argv[1]) &&: when the module is imported rather than run (a
+// test, or `node -e`), argv[1] can be absent, and pathToFileURL(undefined)
+// throws — the repo idiom guards it (check-absolute-claims.mjs, JAR-1734 review).
+if (Boolean(process.argv[1]) && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const { audit, raw, stderr } = runAudit();
   if (!audit || !audit.metadata) {
-    console.error('npm-audit-gate: npm audit did not return parseable JSON — failing closed');
-    const tail = String(stderr).trim();
-    if (tail) console.error('  npm said: ' + tail.split('\n').slice(-5).join('\n  '));
+    // Two fail-closed shapes: output that would not parse as JSON, and JSON that
+    // parsed but is not an audit — npm prints {"error":{…}} on stdout when the
+    // registry is unreachable, and its cause must not be dropped (JAR-1734 review).
+    const cause =
+      (audit && audit.error && (audit.error.summary || audit.error.detail || JSON.stringify(audit.error))) ||
+      String(stderr).trim() ||
+      String(raw).trim();
+    console.error('npm-audit-gate: npm audit did not return a usable audit — failing closed');
+    if (cause) console.error('  cause: ' + cause.split('\n').slice(0, 5).join('\n  '));
     process.exitCode = 1;
   } else {
     // UTC calendar date; exception `expires` is compared against this in UTC.
