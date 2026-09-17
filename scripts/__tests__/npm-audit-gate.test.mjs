@@ -81,6 +81,16 @@ const legacyVia = { metadata: { vulnerabilities: { critical: 0, high: 1, moderat
 eq(evaluate(legacyVia, [{ id: 'npm:1234', expires: '2027-01-01', why: 'dev-only, tracked' }], TODAY).code, 0, 'a legacy npmjs.com advisory keys as npm:<source>, so its npm:<n> exception matches');
 has(evaluate(legacyVia, [], TODAY).lines, 'npm:1234', 'a legacy npmjs.com advisory is keyed npm:<source>, not a bare number');
 
+// A drifted report shape our per-advisory parse doesn't recognize (here the
+// advisory sits under a renamed key, so `via` is empty) but whose metadata still
+// counts a high. The metadata cross-check must fail closed, not pass as clean —
+// this covers the whole class (array-shaped vulnerabilities, renamed keys, an
+// unexpected severity spelling), not one shape (JAR-1734 review round 6).
+const drifted = { metadata: { vulnerabilities: { critical: 0, high: 1, moderate: 0, low: 0, total: 1 } }, vulnerabilities: { pkg: { severity: 'high', advisories: [{ severity: 'high', title: 'renamed key' }] } } };
+const rDrift = evaluate(drifted, [], TODAY);
+eq(rDrift.code, 1, 'metadata counts a high but none parsed → fail closed (drifted shape)');
+has(rDrift.lines, 'metadata counts', "the drift failure names npm's counts");
+
 // --- End-to-end: the guard actually runs, blocks, and fails closed ---------
 const GATE = fileURLToPath(new URL('../npm-audit-gate.mjs', import.meta.url));
 

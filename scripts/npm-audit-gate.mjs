@@ -110,6 +110,20 @@ export function evaluate(audit, exceptions, today) {
     }
   }
 
+  // Cross-check against npm's own summary: metadata.vulnerabilities is a count
+  // { critical, high, … }. If npm counts a high or critical but our parse found
+  // none firing, the report shape drifted (vulnerabilities as an array, the
+  // advisory under a renamed key, an unexpected severity spelling, …) and we must
+  // not pass as clean — fail closed and name npm's counts (JAR-1734 review r6).
+  const counts = audit?.metadata?.vulnerabilities ?? {};
+  const flagged = (Number(counts.high) || 0) + (Number(counts.critical) || 0);
+  if (flagged > 0 && firing.size === 0) {
+    return {
+      code: 1,
+      lines: [`BLOCKED: npm's metadata counts ${flagged} high/critical advisory(ies) but none were parsed — unrecognized report shape, failing closed`],
+    };
+  }
+
   // A malformed entry is a gate-config bug: it blocks, and excepts nothing (so a
   // firing advisory it meant to cover still falls to the keyhole).
   const valid = [];
