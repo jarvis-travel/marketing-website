@@ -45,6 +45,13 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: npm i
+
+      - name: Dependency audit gate (blocking, with expiring exceptions)
+        # marketing-website had no audit step at all (JAR-1734). Now blocking, on
+        # core's govulncheck-gate model: any high/critical advisory fails the
+        # build unless it is a narrowly scoped, expiring exception in the script.
+        # The gate's own self-test runs via `npm run test:scripts` below.
+        run: node scripts/npm-audit-gate.mjs
       # Two halves: the literal scan always runs; the Stripe reconciliation
       # needs STRIPE_READ_API_KEY (restricted, read-only).
       # The guard's promise is "fail when the site and Stripe drift". It can only
