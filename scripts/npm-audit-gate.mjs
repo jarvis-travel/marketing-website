@@ -173,8 +173,14 @@ if (Boolean(process.argv[1]) && import.meta.url === pathToFileURL(process.argv[1
     // Two fail-closed shapes: output that would not parse as JSON, and JSON that
     // parsed but is not an audit — npm prints {"error":{…}} on stdout when the
     // registry is unreachable, and its cause must not be dropped (JAR-1734 review).
+    // npm puts the reason in a top-level `message` when the registry is down and
+    // leaves error.summary/detail empty; prefer message, then a non-empty summary
+    // or detail, then stderr, then the raw output (JAR-1734 review round 3).
+    const err = audit && audit.error;
     const cause =
-      (audit && audit.error && (audit.error.summary || audit.error.detail || JSON.stringify(audit.error))) ||
+      (audit && typeof audit.message === 'string' && audit.message.trim()) ||
+      (err && typeof err.summary === 'string' && err.summary.trim()) ||
+      (err && typeof err.detail === 'string' && err.detail.trim()) ||
       String(stderr).trim() ||
       String(raw).trim();
     console.error('npm-audit-gate: npm audit did not return a usable audit — failing closed');
