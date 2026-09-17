@@ -62,6 +62,25 @@ eq(evaluate(withAdvisory('high', VITE), [exc({ why: '' })], TODAY).code, 1, 'an 
 // ...and a malformed entry excepts nothing, so its advisory still falls to the keyhole.
 has(evaluate(withAdvisory('high', VITE), [exc({ why: '' })], TODAY).lines, 'BLOCKED', 'a malformed exception does not suppress its advisory');
 
+// --- Fail closed, never fail open (JAR-1734 review round 5) -----------------
+// An advisory with neither a GHSA url nor a source can't be keyed, but a
+// high/critical must still block — keyed by package name, never dropped.
+const unkeyable = { metadata: { vulnerabilities: { critical: 0, high: 1, moderate: 0, low: 0, total: 1 } }, vulnerabilities: { widget: { severity: 'high', via: [{ severity: 'high', title: 'mystery high' }] } } };
+const rUnkeyable = evaluate(unkeyable, [], TODAY);
+eq(rUnkeyable.code, 1, 'an unidentifiable high blocks (keyed by package), not skipped');
+has(rUnkeyable.lines, 'pkg:widget', 'the unidentifiable high is keyed by its package');
+
+// npm 6's shape has `advisories`, not `vulnerabilities`; a missing vulnerabilities
+// object must fail closed, not read as clean.
+const npm6 = { metadata: { vulnerabilities: { critical: 0, high: 1, moderate: 0, low: 0, total: 1 } }, advisories: { 1234: { severity: 'high' } } };
+eq(evaluate(npm6, [], TODAY).code, 1, 'an audit with no vulnerabilities object fails closed');
+
+// A legacy npmjs.com advisory url is not GHSA-shaped; the id must come from
+// `source` as npm:<n> so the documented npm:<n> exception form can match.
+const legacyVia = { metadata: { vulnerabilities: { critical: 0, high: 1, moderate: 0, low: 0, total: 1 } }, vulnerabilities: { oldpkg: { severity: 'high', via: [{ severity: 'high', url: 'https://npmjs.com/advisories/1234', source: 1234, title: 'legacy' }] } } };
+eq(evaluate(legacyVia, [{ id: 'npm:1234', expires: '2027-01-01', why: 'dev-only, tracked' }], TODAY).code, 0, 'a legacy npmjs.com advisory keys as npm:<source>, so its npm:<n> exception matches');
+has(evaluate(legacyVia, [], TODAY).lines, 'npm:1234', 'a legacy npmjs.com advisory is keyed npm:<source>, not a bare number');
+
 // --- End-to-end: the guard actually runs, blocks, and fails closed ---------
 const GATE = fileURLToPath(new URL('../npm-audit-gate.mjs', import.meta.url));
 

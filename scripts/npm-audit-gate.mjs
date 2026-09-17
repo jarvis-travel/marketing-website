@@ -52,20 +52,22 @@ const EXCEPTIONS = [
 const THRESHOLD = new Set(['high', 'critical']);
 
 // npm's `via` mixes advisory objects with plain strings (a transitive edge);
-// only the objects carry a severity and an id. Prefer the GHSA in the advisory
-// url; fall back to npm's numeric advisory id, namespaced so it can never be
-// mistaken for — or matched against — a GHSA-shaped exception (JAR-1734 review).
+// only the objects carry a severity and an id. Take the url's id only when it is
+// GHSA-shaped — a legacy npmjs.com/advisories/<n> url yields a bare number that
+// could never match the documented npm:<n> exception form. Otherwise use npm's
+// numeric advisory id, namespaced npm:<n> so it can never be mistaken for — or
+// matched against — a GHSA-shaped exception (JAR-1734 review).
 function ghsaId(via) {
   const fromUrl = (via.url ?? '').split('/advisories/')[1];
-  if (fromUrl) return fromUrl;
-  if (via.source != null && via.source !== '') return `npm:${via.source}`;
+  if (fromUrl && /^GHSA-/i.test(fromUrl)) return fromUrl;
+  if (via.source !== null && via.source !== undefined && via.source !== '') return `npm:${via.source}`;
   return '';
 }
 
 // null if the entry is well-formed, else a one-line reason it is not. Rejects an
 // impossible date (e.g. 2026-13-01, 2026-02-30) by round-tripping through Date:
 // a rollover or NaN means the calendar date does not exist (JAR-1734 review).
-function validateException(e, today) {
+function validateException(e) {
   if (!e || typeof e !== 'object') return 'not an object';
   if (typeof e.id !== 'string' || !e.id.trim()) return 'missing id';
   if (typeof e.why !== 'string' || !e.why.trim()) return 'missing reason (why)';
@@ -85,14 +87,25 @@ export function evaluate(audit, exceptions, today) {
   const lines = [];
   let code = 0;
 
+  // Fail closed on an unrecognized shape: if `vulnerabilities` is not an object
+  // (npm 6's `advisories` shape, or a truncated/garbled report), we can't know
+  // what fired, so we must not pass as clean (JAR-1734 review).
+  if (typeof audit?.vulnerabilities !== 'object' || audit.vulnerabilities === null) {
+    return {
+      code: 1,
+      lines: ['BLOCKED: npm audit output has no `vulnerabilities` object — unrecognized shape, failing closed'],
+    };
+  }
+
   // Every distinct advisory at or above the threshold, keyed by canonical id.
   const firing = new Map();
-  for (const info of Object.values(audit?.vulnerabilities ?? {})) {
+  for (const [pkg, info] of Object.entries(audit.vulnerabilities)) {
     for (const via of info?.via ?? []) {
       if (typeof via !== 'object' || via === null) continue;
       if (!THRESHOLD.has(via.severity)) continue;
-      const id = ghsaId(via);
-      if (!id) continue;
+      // An advisory we can't identify still blocks — keyed by package name, so a
+      // high/critical is never silently dropped for want of an id (fail safe).
+      const id = ghsaId(via) || `pkg:${pkg}`;
       if (!firing.has(id)) firing.set(id, { severity: via.severity, title: via.title ?? '' });
     }
   }
@@ -101,7 +114,7 @@ export function evaluate(audit, exceptions, today) {
   // firing advisory it meant to cover still falls to the keyhole).
   const valid = [];
   for (const e of exceptions) {
-    const problem = validateException(e, today);
+    const problem = validateException(e);
     if (problem) {
       lines.push(`INVALID EXCEPTION: ${JSON.stringify(e?.id ?? e)} — ${problem}`);
       code = Math.max(code, 1);
@@ -146,12 +159,15 @@ function runAudit() {
     const out = execFileSync('npm', ['audit', '--json'], {
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'pipe'],
+      // npm's audit JSON can be large; the default 1 MiB maxBuffer would make a
+      // big report throw ENOBUFS and fail closed spuriously (JAR-1734 review).
+      maxBuffer: 64 * 1024 * 1024,
     });
     return { audit: JSON.parse(out), raw: out, stderr: '' };
   } catch (err) {
     // npm audit exits non-zero when advisories exist; the JSON is still on
     // stdout. Keep the raw output and stderr either way.
-    const raw = err && err.stdout != null ? String(err.stdout) : '';
+    const raw = err && err.stdout !== null && err.stdout !== undefined ? String(err.stdout) : '';
     const stderr = err && (err.stderr || err.message) ? String(err.stderr || err.message) : '';
     if (raw) {
       try {
