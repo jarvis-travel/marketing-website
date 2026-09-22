@@ -195,6 +195,23 @@ const rUnknownEntry = evaluate(unknownEntry, exceptAll(), TODAY);
 eq(rUnknownEntry.code, 1, 'an entry with a severity npm does not write fails closed');
 has(rUnknownEntry.lines, 'BLOCKED: left-pad has severity "severe"', 'the unknown-entry failure names the entry and its severity');
 
+// npm writes `vulnerabilities` as an object keyed by package. An array is not
+// that, even an empty one beside zero counts, so it fails closed.
+eq(evaluate({ metadata: { vulnerabilities: { critical: 0, high: 0, moderate: 0, low: 0, total: 0 } }, vulnerabilities: [] }, [], TODAY).code, 1,
+  'an array where npm writes an object fails closed, even an empty one beside zero counts');
+
+// A pathological via list still gets a verdict. Spreading a million elements
+// into Math.max throws a RangeError, where a loop does not.
+const crowded = report();
+crowded.vulnerabilities['left-pad'] = { name: 'left-pad', severity: 'moderate', via: new Array(1_000_000).fill('minimist') };
+let rCrowded;
+try {
+  rCrowded = evaluate(crowded, exceptAll(), TODAY);
+} catch (err) {
+  rCrowded = { code: `threw ${err.name}`, lines: [] };
+}
+eq(rCrowded.code, 0, 'a million-long via list gets a verdict, not a RangeError');
+
 // A report the gate cannot read does not hide a malformed or an expired
 // exception: both are about this file, not the report, so both are said.
 const rBoth = evaluate(short, [...exceptAll(allButJson5), exc({ why: '' }), exc({ id: 'GHSA-old0-0000-0000', expires: '2026-01-01' })], TODAY);

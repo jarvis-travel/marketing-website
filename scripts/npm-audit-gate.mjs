@@ -118,10 +118,11 @@ function validateException(e) {
 // critical advisory in it is accounted for, else { refusal }, the lines that say
 // why the gate is failing closed. Pure.
 function readReport(audit) {
-  // Fail closed on an unrecognized shape: if `vulnerabilities` is not an object
-  // (npm 6's `advisories` shape, or a truncated/garbled report), we can't know
-  // what fired, so we must not pass as clean (JAR-1734 review).
-  if (typeof audit?.vulnerabilities !== 'object' || audit.vulnerabilities === null) {
+  // Fail closed on an unrecognized shape: if `vulnerabilities` is not the object
+  // npm writes, keyed by package (npm 6's `advisories` shape, an array, or a
+  // truncated/garbled report), we can't know what fired, so we must not pass as
+  // clean (JAR-1734 review; an array, JAR-1882 review).
+  if (typeof audit?.vulnerabilities !== 'object' || audit.vulnerabilities === null || Array.isArray(audit.vulnerabilities)) {
     return { refusal: ['BLOCKED: npm audit output has no `vulnerabilities` object — unrecognized shape, failing closed'] };
   }
 
@@ -185,8 +186,10 @@ function readReport(audit) {
   // the gate can read, every entry passes all three. One that does not carries
   // an advisory the gate cannot read, and it must not pass beside an excepted
   // sibling (JAR-1882).
+  // A loop, not Math.max(...vias): spreading a pathological via list into the
+  // call throws a RangeError past a few hundred thousand elements.
   const reached = new Map(
-    entries.map(([pkg, info]) => [pkg, Math.max(0, ...viasOf(info).map((via) => rank(severityOf(via))))]),
+    entries.map(([pkg, info]) => [pkg, viasOf(info).reduce((max, via) => Math.max(max, rank(severityOf(via))), 0)]),
   );
   for (let grew = true; grew; ) {
     grew = false;
