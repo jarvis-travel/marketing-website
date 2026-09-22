@@ -81,15 +81,12 @@ const legacyVia = { metadata: { vulnerabilities: { critical: 0, high: 1, moderat
 eq(evaluate(legacyVia, [{ id: 'npm:1234', expires: '2027-01-01', why: 'dev-only, tracked' }], TODAY).code, 0, 'a legacy npmjs.com advisory keys as npm:<source>, so its npm:<n> exception matches');
 has(evaluate(legacyVia, [], TODAY).lines, 'npm:1234', 'a legacy npmjs.com advisory is keyed npm:<source>, not a bare number');
 
-// A drifted report shape our per-advisory parse doesn't recognize (here the
-// advisory sits under a renamed key, so `via` is empty) but whose metadata still
-// counts a high. The metadata cross-check must fail closed, not pass as clean —
-// this covers the whole class (array-shaped vulnerabilities, renamed keys, an
-// unexpected severity spelling), not one shape (JAR-1734 review round 6).
+// A high entry whose advisory sits under a renamed key (so `via` is empty) has no
+// via we can read; the per-entry check (b) fails closed, naming the package.
 const drifted = { metadata: { vulnerabilities: { critical: 0, high: 1, moderate: 0, low: 0, total: 1 } }, vulnerabilities: { pkg: { severity: 'high', advisories: [{ severity: 'high', title: 'renamed key' }] } } };
 const rDrift = evaluate(drifted, [], TODAY);
-eq(rDrift.code, 1, 'metadata counts a high but none parsed → fail closed (drifted shape)');
-has(rDrift.lines, 'metadata counts', "the drift failure names npm's counts");
+eq(rDrift.code, 1, 'a renamed-key advisory (no readable via) fails closed');
+has(rDrift.lines, 'no readable via', 'the renamed-key failure names the package');
 
 // The cross-check needs npm's numeric counts to vouch for an empty parse. If
 // metadata carries no vulnerabilities counts, a drifted report (renamed key here,
@@ -97,6 +94,32 @@ has(rDrift.lines, 'metadata counts', "the drift failure names npm's counts");
 // non-numeric counts (JAR-1734 review round 7).
 const noCounts = { metadata: {}, vulnerabilities: { pkg: { severity: 'high', advisories: [{ severity: 'high', title: 'renamed key, no counts' }] } } };
 eq(evaluate(noCounts, [], TODAY).code, 1, 'metadata without numeric high/critical counts fails closed');
+
+// r6 stays covered: entries explained only by transitive-edge strings (nothing
+// fires) while metadata counts highs — the count cross-check catches it.
+const transitiveOnly = { metadata: { vulnerabilities: { critical: 0, high: 2, moderate: 0, low: 0, total: 2 } }, vulnerabilities: { a: { severity: 'high', via: ['b'] }, b: { severity: 'high', via: ['a'] } } };
+eq(evaluate(transitiveOnly, [], TODAY).code, 1, 'entries with only transitive-edge vias (nothing fires) fail closed via the count cross-check');
+has(evaluate(transitiveOnly, [], TODAY).lines, 'metadata counts', "the count cross-check names npm's totals");
+
+// (a): npm counts more highs than there are high entries, but a firing entry keeps
+// the r6 cross-check from tripping — the structural count check catches it (r8).
+const countMismatch = { metadata: { vulnerabilities: { critical: 0, high: 2, moderate: 0, low: 0, total: 2 } }, vulnerabilities: { vite: { severity: 'high', via: [{ severity: 'high', url: `https://github.com/advisories/${VITE}`, title: 'vite' }] } } };
+eq(evaluate(countMismatch, [exc()], TODAY).code, 1, 'metadata counting more highs than entries fails closed (structural)');
+
+// (b): a partial drift — one entry (evil) has no readable via — fails closed even
+// when its sibling (vite) is a valid, excepted advisory (r8).
+const partialDrift = { metadata: { vulnerabilities: { critical: 0, high: 2, moderate: 0, low: 0, total: 2 } }, vulnerabilities: { vite: { severity: 'high', via: [{ severity: 'high', url: `https://github.com/advisories/${VITE}`, title: 'vite' }] }, evil: { severity: 'high', via: [{ kind: 'malware' }] } } };
+const rPartial = evaluate(partialDrift, [exc()], TODAY);
+eq(rPartial.code, 1, 'a partial drift fails closed even with an excepted sibling');
+has(rPartial.lines, 'evil', 'the partial-drift failure names the unreadable package');
+
+// L: a pkg:<name> exception is the gate's own fallback key for an unidentifiable
+// advisory (M1), not a real id; it must be refused so a high can't be excepted by
+// package name (r8).
+const unkeyableFires = { metadata: { vulnerabilities: { critical: 0, high: 1, moderate: 0, low: 0, total: 1 } }, vulnerabilities: { evil: { severity: 'high', via: [{ severity: 'high', title: 'unidentifiable' }] } } };
+const rPkgExc = evaluate(unkeyableFires, [{ id: 'pkg:evil', expires: '2027-01-01', why: 'nice try' }], TODAY);
+eq(rPkgExc.code, 1, 'a pkg:<name> exception is refused, so the unidentifiable high still blocks');
+has(rPkgExc.lines, 'INVALID EXCEPTION', 'the pkg: exception is flagged invalid');
 
 // --- End-to-end: the guard actually runs, blocks, and fails closed ---------
 const GATE = fileURLToPath(new URL('../npm-audit-gate.mjs', import.meta.url));

@@ -70,6 +70,9 @@ function ghsaId(via) {
 function validateException(e) {
   if (!e || typeof e !== 'object') return 'not an object';
   if (typeof e.id !== 'string' || !e.id.trim()) return 'missing id';
+  if (/^pkg:/i.test(e.id.trim())) {
+    return 'a pkg:<name> id is the gate fallback for an unidentifiable advisory and cannot be excepted';
+  }
   if (typeof e.why !== 'string' || !e.why.trim()) return 'missing reason (why)';
   if (typeof e.expires !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(e.expires)) {
     return 'expires must be YYYY-MM-DD';
@@ -102,7 +105,7 @@ export function evaluate(audit, exceptions, today) {
   for (const [pkg, info] of Object.entries(audit.vulnerabilities)) {
     for (const via of info?.via ?? []) {
       if (typeof via !== 'object' || via === null) continue;
-      if (!THRESHOLD.has(via.severity)) continue;
+      if (!THRESHOLD.has(String(via.severity).toLowerCase())) continue;
       // An advisory we can't identify still blocks — keyed by package name, so a
       // high/critical is never silently dropped for want of an id (fail safe).
       const id = ghsaId(via) || `pkg:${pkg}`;
@@ -132,6 +135,48 @@ export function evaluate(audit, exceptions, today) {
       code: 1,
       lines: [`BLOCKED: npm's metadata counts ${flagged} high/critical advisory(ies) but none were parsed — unrecognized report shape, failing closed`],
     };
+  }
+
+  // (a) Structural integrity: npm's per-severity counts must equal the number of
+  // package entries at that severity — measured true on all three real reports.
+  // A mismatch means the vulnerabilities object isn't the shape we parse, so a
+  // partial drift (some entries missing) can't hide behind the ones that do parse
+  // — fail closed (JAR-1734 review r8).
+  let entryHigh = 0;
+  let entryCritical = 0;
+  for (const info of Object.values(audit.vulnerabilities)) {
+    const sev = typeof info?.severity === 'string' ? info.severity.toLowerCase() : '';
+    if (sev === 'high') entryHigh += 1;
+    else if (sev === 'critical') entryCritical += 1;
+  }
+  if (entryHigh !== counts.high || entryCritical !== counts.critical) {
+    return {
+      code: 1,
+      lines: [`BLOCKED: npm counts ${counts.high} high / ${counts.critical} critical, but the vulnerabilities object has ${entryHigh} / ${entryCritical} — unrecognized shape, failing closed`],
+    };
+  }
+
+  // (b) Every high/critical entry must be explained by a via we can read: a
+  // threshold-severity object (the advisory), or a string naming another listed
+  // entry (a transitive edge). An entry with neither is a shape we can't audit —
+  // fail closed, naming the package, so an unreadable high can't ride in beside an
+  // excepted sibling (JAR-1734 review r8).
+  const listed = new Set(Object.keys(audit.vulnerabilities));
+  for (const [pkg, info] of Object.entries(audit.vulnerabilities)) {
+    const sev = typeof info?.severity === 'string' ? info.severity.toLowerCase() : '';
+    if (sev !== 'high' && sev !== 'critical') continue;
+    const vias = Array.isArray(info?.via) ? info.via : [];
+    const explained = vias.some(
+      (via) =>
+        (typeof via === 'object' && via !== null && THRESHOLD.has(String(via.severity).toLowerCase())) ||
+        (typeof via === 'string' && listed.has(via)),
+    );
+    if (!explained) {
+      return {
+        code: 1,
+        lines: [`BLOCKED: ${pkg} is a ${sev} advisory with no readable via (no threshold object, no listed edge) — unrecognized shape, failing closed`],
+      };
+    }
   }
 
   // A malformed entry is a gate-config bug: it blocks, and excepts nothing (so a
