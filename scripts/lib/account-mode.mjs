@@ -50,6 +50,11 @@ export function modeOf({ livemode, key }) {
 /**
  * The refusal message for a mode this check is not for, or null to proceed.
  *
+ * `requireLive` is the live run's side of the same question (JAR-1739): a TEST
+ * key in the live secret would reconcile the site against the test catalogue
+ * and report it as live, the same green-for-the-wrong-claim this file exists to
+ * stop, in the other direction.
+ *
  * NAMES FOUND VS EXPECTED, AND SAYS IT IS NOT A CREDENTIAL PROBLEM. A mode
  * mismatch reading like a bad key sends the reader to rotate a secret that is
  * working perfectly — a different fix, in a different place, for a problem they
@@ -58,7 +63,21 @@ export function modeOf({ livemode, key }) {
  * @param {{mode: string, source: string, allowLive?: boolean}} seen
  * @returns {string|null}
  */
-export function refuseUnexpectedMode({ mode, source, allowLive = false }) {
+export function refuseUnexpectedMode({ mode, source, allowLive = false, requireLive = false }) {
+  if (requireLive) {
+    if (mode === 'LIVE') return null;
+    return (
+      `this key reads Stripe's TEST catalogue (mode reported by ${source}); ` +
+      `this check is for LIVE mode.\n` +
+      `       The key is valid — this is NOT a credential problem, and rotating ` +
+      `it will not help.\n` +
+      `       Production charges live prices, so a green result here would ` +
+      `mean "the site matches\n` +
+      `       test" while everyone reading it believes it means live. Put a ` +
+      `restricted, read-only\n` +
+      `       LIVE-mode key in STRIPE_LIVE_READ_API_KEY.`
+    );
+  }
   if (mode !== 'LIVE') return null;
   if (allowLive) return null;
   return (

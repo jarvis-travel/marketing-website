@@ -79,6 +79,27 @@ jobs:
         run: npm run lint:prices
         env:
           STRIPE_READ_API_KEY: ${{ secrets.STRIPE_READ_API_KEY }}
+      # And the LIVE catalogue, which production charges (JAR-1739). Live and
+      # test are separate catalogues, so the step above cannot see a live price
+      # that drifts from the site. Its own secret, and --live refuses a test key
+      # in it, so this cannot quietly check the test catalogue twice. A missing
+      # secret fails here for the same reason as the test one above.
+      - name: Assert the live pricing secret is configured
+        run: |
+          if [ -z "$STRIPE_LIVE_READ_API_KEY" ]; then
+            echo "::error::STRIPE_LIVE_READ_API_KEY repo secret is not configured. Production charges"
+            echo "::error::LIVE-mode prices, and without this key nothing checks them against the site."
+            echo "::error::"
+            echo "::error::Add a restricted, read-only, LIVE-mode key from acct_1ToBJsPDaNqc0Lek, with"
+            echo "::error::Prices read only (JAR-1739)."
+            exit 1
+          fi
+        env:
+          STRIPE_LIVE_READ_API_KEY: ${{ secrets.STRIPE_LIVE_READ_API_KEY }}
+      - name: Pricing guard (live catalogue)
+        run: npm run lint:prices:live
+        env:
+          STRIPE_LIVE_READ_API_KEY: ${{ secrets.STRIPE_LIVE_READ_API_KEY }}
       - name: Plan-not-book language guard
         run: npm run lint:plan-not-book
       - name: Absolute-claim guard (FTC §5 / Lanham §43(a))

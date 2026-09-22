@@ -4,6 +4,7 @@
 //   node scripts/check-prices.mjs           # always: no price literals in components
 //   STRIPE_READ_API_KEY=rk_... node scripts/check-prices.mjs         # + reconcile with Stripe
 //   STRIPE_READ_API_KEY=rk_... node scripts/check-prices.mjs --write # + rewrite pricing.ts
+//   STRIPE_LIVE_READ_API_KEY=rk_live_... node scripts/check-prices.mjs --live  # + reconcile with LIVE
 //
 // Half one — no literals. Every dollar amount on this site renders from
 // src/app/data/pricing.ts. The page used to carry them inline, which is how it
@@ -147,6 +148,11 @@ console.log(`prices: ok — no amount literals in ${scanned.size} component file
 // Reconciling against LIVE is a decision, never a default. Without this the
 // only way to end up reading live is by accident, which is the whole finding.
 const ALLOW_LIVE = process.argv.includes('--allow-live');
+// The live run (JAR-1739). Production charges live prices, and live is a
+// separate catalogue, so CI reconciles both. The live run reads its own secret
+// and REQUIRES a live key: --allow-live only permits one, so a test key in the
+// live secret would check the test catalogue and report it as live.
+const LIVE = process.argv.includes('--live');
 
 const EXPECTED_ACCOUNT = 'acct_1ToBJsPDaNqc0Lek';
 
@@ -155,7 +161,12 @@ const EXPECTED_ACCOUNT = 'acct_1ToBJsPDaNqc0Lek';
 // when priceOf() reaches into undefined.
 const EXPECTED_KEYS = ['jt_trip_pass', 'jt_explore_annual', 'jt_explore_monthly'];
 
-const KEY = process.env.STRIPE_READ_API_KEY;
+const KEY = LIVE ? process.env.STRIPE_LIVE_READ_API_KEY : process.env.STRIPE_READ_API_KEY;
+const KEY_NAME = LIVE ? 'STRIPE_LIVE_READ_API_KEY' : 'STRIPE_READ_API_KEY';
+const KEY_MODE = LIVE ? 'LIVE mode' : 'test mode';
+if (LIVE && WRITE) {
+  fail('--live only checks. pricing.ts is regenerated from the test catalogue, never from live.');
+}
 if (!KEY) {
   // Fail closed. A guard whose whole promise is "fail when it drifts" must not
   // report success when it did not check — and it did exactly that in CI,
@@ -165,15 +176,15 @@ if (!KEY) {
   // Local runs without a key are legitimate, so they can opt out explicitly.
   // CI cannot: there is no reading of an unset secret that means "verified".
   if (!ALLOW_SKIP) {
-    console.error('prices: STRIPE_READ_API_KEY is not set, so the Stripe reconciliation did not run.');
+    console.error(`prices: ${KEY_NAME} is not set, so the Stripe reconciliation did not run.`);
     console.error('');
-    console.error('  In CI: configure the STRIPE_READ_API_KEY repo secret (restricted, read-only, test mode).');
+    console.error(`  In CI: configure the ${KEY_NAME} repo secret (restricted, read-only, ${KEY_MODE}).`);
     console.error('  Locally: pass --allow-skip to run only the literal scan.');
     console.error('');
     console.error('Exiting non-zero rather than passing as if the amounts had been checked.');
     process.exit(1);
   }
-  console.log('prices: SKIPPED the Stripe reconciliation — STRIPE_READ_API_KEY is not set (--allow-skip).');
+  console.log(`prices: SKIPPED the Stripe reconciliation — ${KEY_NAME} is not set (--allow-skip).`);
   console.log('        The literal scan above still ran. Amounts were NOT verified against Stripe.');
   process.exit(0);
 }
@@ -317,7 +328,7 @@ async function assertAccount() {
       // carries `livemode` and it is exactly what we could not read. Labelled
       // as derived so nobody reads it as confirmed by Stripe.
       const { mode, source } = modeOf({ key: KEY });
-      const refusal = refuseUnexpectedMode({ mode, source, allowLive: ALLOW_LIVE });
+      const refusal = refuseUnexpectedMode({ mode, source, allowLive: ALLOW_LIVE || LIVE, requireLive: LIVE });
       if (refusal) fail(refusal);
       console.log(`prices: reading ${named} (${mode} mode, inferred from ${source})`);
       console.log('        Account confirmed from Stripe\'s permission error — /v1/account is');
@@ -327,8 +338,8 @@ async function assertAccount() {
 
     if (verdict === 'wrong') {
       fail(`that key belongs to ${named}, not ${EXPECTED_ACCOUNT}.\n` +
-        `       No permission grant fixes this. Issue a restricted, read-only TEST\n` +
-        `       key from ${EXPECTED_ACCOUNT} and replace the STRIPE_READ_API_KEY secret.`);
+        `       No permission grant fixes this. Issue a restricted, read-only ${LIVE ? 'LIVE' : 'TEST'}\n` +
+        `       key from ${EXPECTED_ACCOUNT} and replace the ${KEY_NAME} secret.`);
     }
 
     // Neither readable nor self-identifying. Not knowing which account we are
@@ -342,7 +353,7 @@ async function assertAccount() {
     fail(`key belongs to ${body.id}, expected ${EXPECTED_ACCOUNT} — comparing against the wrong Stripe account`);
   }
   const { mode, source } = modeOf({ livemode: body.livemode, key: KEY });
-  const refusal = refuseUnexpectedMode({ mode, source, allowLive: ALLOW_LIVE });
+  const refusal = refuseUnexpectedMode({ mode, source, allowLive: ALLOW_LIVE || LIVE, requireLive: LIVE });
   if (refusal) fail(refusal);
   console.log(`prices: reading ${body.id} (${mode} mode, reported by ${source})`);
 }
