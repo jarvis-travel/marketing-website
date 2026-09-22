@@ -87,6 +87,30 @@ dollar amount reappears as a literal in a component.
 5. The daily `pr-checks` schedule (06:00 UTC) catches Stripe-side edits that
    make no PR.
 
+### Email images (`public/email/` — JAR-1879)
+
+**These are not site assets. No page loads them.** They are the images every
+JarvisTravel email hot-links, by absolute URL at the apex: the masthead in all
+88 published Resend templates, and a hero in 21 of them.
+
+They live here because this site is about to become what answers
+`jarvistravel.com`. Measured 2026-09-22: the apex is still the waitlist site,
+which serves them out of its own `public/email/`, while
+`mktg.jarvistravel.com/email/hero-phone-fi.png` answered `200 text/html`, the
+SPA shell. On cutover day, without these files, every masthead and every hero
+in every template becomes a broken image at once.
+
+- `scripts/check-email-assets.mjs` is the gate, on all three shipping paths
+  (`pr-checks`, Pages, Droplet). It fails on a missing, empty or non-PNG file,
+  and on any *extra* file, because `public/` is published verbatim and a stray
+  README would be served at `jarvistravel.com/email/README.md`.
+- The required list is derived from the live templates, not invented; the guard
+  header carries the command that re-derives it.
+- **Sources, not originals.** Heroes come from `design-library/email/heroes/`,
+  generated there by `email/heroes/build.mjs`. Filenames are part of a serving
+  contract (`design-library/email/URL-CONTRACT.md`), so a rename breaks 88
+  templates that cannot be re-pointed without republishing them in Resend.
+
 ### Base path & routing
 
 - Routes are served at the domain root (`/`) on both deployments (configured in `vite.config.ts` and `tsconfig.json`)
