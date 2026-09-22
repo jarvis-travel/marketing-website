@@ -16,10 +16,13 @@
 // Decision A (core JAR-880, 2026-08-19): an expired or no-longer-firing
 // exception WARNS and never changes the exit code. Treating it as a hard
 // failure turns every unrelated PR red the moment the advisory DB shifts, which
-// is out of our control. core's own header still says "turns red" and is stale
-// (ticketed); this gate follows what core's script actually does, not its
-// header. A MALFORMED exception entry is different — a bad date or a missing
-// reason is an authoring bug in this file, fully in our control, so it blocks.
+// is out of our control. A MALFORMED exception entry is different — a bad date
+// or a missing reason is an authoring bug in this file, fully in our control,
+// so it blocks.
+//
+// The same policy runs in core's govulncheck-gate.sh and in this gate's copies
+// in web-app, marketing-website and waitlist. Nothing checks that the four
+// agree (JAR-1854), so a change to the policy is a change to all four.
 //
 // Gates at high+critical (npm's --audit-level=high). Exit codes: 0 clean, or
 // every firing advisory is excepted (expired/stale exceptions only warn); 1 a
