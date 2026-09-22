@@ -59,6 +59,8 @@ eq(evaluate(withAdvisory('high', VITE), [exc({ expires: 'soon' })], TODAY).code,
 eq(evaluate(withAdvisory('high', VITE), [exc({ expires: '2026-13-01' })], TODAY).code, 1, 'an impossible date (month 13) blocks');
 eq(evaluate(withAdvisory('high', VITE), [exc({ expires: '2026-02-30' })], TODAY).code, 1, 'an impossible date (Feb 30) blocks');
 eq(evaluate(withAdvisory('high', VITE), [exc({ why: '' })], TODAY).code, 1, 'an exception with no reason blocks');
+// Its advisory would block anyway, unmatched, so what proves the check is the line.
+has(evaluate(withAdvisory('high', VITE), [exc({ id: ` ${VITE}` })], TODAY).lines, 'id has spaces around it', 'an id with spaces around it is named invalid: it could never match its advisory');
 // ...and a malformed entry excepts nothing, so its advisory still falls to the keyhole.
 has(evaluate(withAdvisory('high', VITE), [exc({ why: '' })], TODAY).lines, 'BLOCKED', 'a malformed exception does not suppress its advisory');
 
@@ -141,6 +143,7 @@ delete short.vulnerabilities.json5;
 const rShort = evaluate(short, exceptAll(allButJson5), TODAY);
 eq(rShort.code, 1, 'a report listing fewer highs than npm counts fails closed');
 has(rShort.lines, 'npm counts 3 high but its report lists 2', 'the failure names both counts');
+has(rShort.lines, 'lists 2 (lodash, nanoid)', 'and names the entries the report does hold, to diff against npm');
 
 // An entry whose advisory the gate cannot read fails closed beside excepted
 // siblings, and so does a chain that does not reach an advisory at its severity.

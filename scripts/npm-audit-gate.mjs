@@ -97,10 +97,13 @@ function ghsaId(via) {
 function validateException(e) {
   if (!e || typeof e !== 'object') return 'not an object';
   if (typeof e.id !== 'string' || !e.id.trim()) return 'missing id';
+  // The id is matched exactly, so spaces around it would leave it matching
+  // nothing: its advisory would block while it warned "no longer appears".
+  if (e.id !== e.id.trim()) return 'id has spaces around it, so it could never match an advisory';
   // pkg:<name> is the key the gate gives an advisory it cannot identify.
   // Excepting it would waive every such advisory in that package, today's and
   // any later one, which is an off switch, not a keyhole (JAR-1882).
-  if (/^pkg:/i.test(e.id.trim())) {
+  if (/^pkg:/i.test(e.id)) {
     return 'pkg:<name> keys an advisory the gate cannot identify, and cannot be excepted: it would waive every such advisory in the package';
   }
   if (typeof e.why !== 'string' || !e.why.trim()) return 'missing reason (why)';
@@ -163,13 +166,18 @@ function readReport(audit) {
   // scripts/__tests__/fixtures pins the agreement: recapture it when CI moves to
   // a new npm major, and a changed tally shows there before it turns CI red.
   const listed = Object.fromEntries(
-    THRESHOLD.map((severity) => [severity, entries.filter(([, info]) => severityOf(info) === severity).length]),
+    THRESHOLD.map((severity) => [severity, entries.filter(([, info]) => severityOf(info) === severity).map(([pkg]) => pkg)]),
   );
-  const miscounted = THRESHOLD.filter((severity) => listed[severity] !== counts[severity]);
+  const miscounted = THRESHOLD.filter((severity) => listed[severity].length !== counts[severity]);
   if (miscounted.length) {
+    // Name what the report does hold, so the drift can be diffed against
+    // `npm audit --json` rather than re-derived by hand (JAR-1882 review).
+    const named = (pkgs) => (pkgs.length > 10 ? `${pkgs.slice(0, 10).join(', ')} and ${pkgs.length - 10} more` : pkgs.join(', '));
     return {
       refusal: miscounted.map(
-        (severity) => `BLOCKED: npm counts ${counts[severity]} ${severity} but its report lists ${listed[severity]}: unrecognized shape, failing closed`,
+        (severity) =>
+          `BLOCKED: npm counts ${counts[severity]} ${severity} but its report lists ${listed[severity].length}` +
+          `${listed[severity].length ? ` (${named(listed[severity])})` : ''}: unrecognized shape, failing closed`,
       ),
     };
   }
