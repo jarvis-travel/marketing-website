@@ -15,6 +15,7 @@
 // So this asserts the message, not the fetch: given a permission error naming a
 // foreign account, the guard must say BOTH things at once.
 import { readFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { NAMED_ACCOUNT_RE, classifyAccountError } from '../lib/account-error.mjs';
 import { modeOf, refuseUnexpectedMode } from '../lib/account-mode.mjs';
@@ -113,6 +114,45 @@ test('LIVE is refused, and the refusal is not mistakable for a credential proble
 test('test mode proceeds, and --allow-live is the only way LIVE does', () => {
   if (refuseUnexpectedMode({ mode: 'test', source: 'the account' }) !== null) throw new Error('test mode must proceed');
   if (refuseUnexpectedMode({ mode: 'LIVE', source: 'the account', allowLive: true }) !== null) throw new Error('--allow-live must let a deliberate live reconciliation proceed');
+});
+
+// JAR-1739. The live run requires a live key: --allow-live only permits one, so
+// a test key in the live secret would reconcile against the test catalogue and
+// report it as live.
+test('the live run refuses a TEST key, and the refusal is not mistakable for a credential problem', () => {
+  const msg = refuseUnexpectedMode({ mode: 'test', source: 'the key prefix', requireLive: true });
+  if (msg === null) throw new Error('a test key must be refused when the check is for LIVE');
+  if (!/this check is for LIVE mode/.test(msg)) throw new Error(`the refusal must say the check is for LIVE: ${msg}`);
+  if (!/NOT a credential problem/.test(msg)) throw new Error('the refusal must say the key itself is fine');
+  if (!/STRIPE_LIVE_READ_API_KEY/.test(msg)) throw new Error('the refusal must name the secret to fix');
+  if (refuseUnexpectedMode({ mode: 'LIVE', source: 'the account', requireLive: true }) !== null) {
+    throw new Error('a LIVE key must proceed when the check is for LIVE');
+  }
+});
+
+test('BOTH call sites require live on a live run', () => {
+  const calls = source.match(/refuseUnexpectedMode\(\{ mode, source, allowLive: ALLOW_LIVE \|\| LIVE, requireLive: LIVE \}\)/g) ?? [];
+  if (calls.length !== 2) throw new Error(`${calls.length} call site(s) pass requireLive, expected 2 — a path that skips it lets a test key through the live run`);
+});
+
+// Run for real, with no network: both refusals come before any Stripe call.
+const run = (args, env) => spawnSync(process.execPath, [SCRIPT, ...args], {
+  cwd: ROOT, encoding: 'utf8',
+  env: { PATH: process.env.PATH, ...env },
+});
+
+test('the live run reads its own secret, and fails closed without it', () => {
+  // The test secret is set and the live one is not: a live run that fell back
+  // to the test key would go on to reconcile the test catalogue.
+  const r = run(['--live'], { STRIPE_READ_API_KEY: 'rk_test_placeholder' });
+  if (r.status !== 1) throw new Error(`--live with no live key exited ${r.status}, want 1\n${r.stdout}${r.stderr}`);
+  if (!/STRIPE_LIVE_READ_API_KEY is not set/.test(r.stderr)) throw new Error(`the failure must name the live secret:\n${r.stderr}`);
+});
+
+test('the live run never writes pricing.ts', () => {
+  const r = run(['--live', '--write'], { STRIPE_LIVE_READ_API_KEY: 'rk_live_placeholder' });
+  if (r.status !== 1) throw new Error(`--live --write exited ${r.status}, want 1`);
+  if (!/--live only checks/.test(r.stderr)) throw new Error(`the refusal must say why:\n${r.stderr}`);
 });
 
 test('BOTH call sites assert, not just the readable-account one', () => {
