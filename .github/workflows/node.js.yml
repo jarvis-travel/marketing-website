@@ -64,6 +64,11 @@ jobs:
 
       - name: OG card is the real lockup
         run: npm run lint:og-card
+      # JAR-1879: the emails hot-link their images from the apex, which this
+      # site is about to take over. Ship without them and 88 templates lose
+      # their masthead at once.
+      - name: Email images this site has to serve are present
+        run: npm run lint:email-assets
       # Pricing guard — this is the Pages shipping path, so it must carry the
       # same drift gate as the droplet deploy (review deleg_dd2f886e Sec-M1 /
       # Design-F4: previously the guard only gated deploy-droplet, so drifted

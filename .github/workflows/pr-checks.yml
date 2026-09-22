@@ -119,6 +119,11 @@ jobs:
         # blunt, but the card is a binary this repo does not generate — there is
         # nothing subtler to assert, and blunt would have caught it.
         run: npm run lint:og-card
+      # JAR-1879: the emails hot-link their images from the apex, which this
+      # site is about to take over. Ship without them and 88 templates lose
+      # their masthead at once.
+      - name: Email images this site has to serve are present
+        run: npm run lint:email-assets
 
       - name: Brand mark is in sync, and the generator refuses hostile sources
         # Two things: the committed Logo.tsx and favicon.svg must still match
