@@ -4,6 +4,22 @@
 # including the pricing drift gate, as the final gate). The daily schedule
 # catches Stripe-side drift that makes no PR and no deploy (review
 # deleg_dd2f886e Design-F4b).
+#
+# EVERY GUARD REPORTS ITS OWN RESULT (JAR-1885). Steps run in order and a failed
+# one skips the rest, so while this job was a plain sequence the first red guard
+# was the only guard anyone got an answer from. That is not hypothetical:
+# STRIPE_LIVE_READ_API_KEY has never been configured, so from the moment
+# JAR-1739 added its assertion every branch push stopped at that step and the
+# eleven guards after it — copy, fonts, lookup keys, social meta, lint, build —
+# were reported as skipped on every PR in the repo, including the PRs editing
+# those very guards. The job's value is the whole report, not its first line, so
+# each step below runs unless the run was cancelled or its own prerequisite
+# failed, and any failure still fails the job. Nothing here is
+# continue-on-error: independent is not the same as advisory, and the checks
+# test asserts both.
+#
+# The deploy workflows are deliberately NOT like this. There a failing guard
+# must skip everything after it, because what comes after it is the deploy.
 name: PR checks
 
 on:
@@ -43,7 +59,11 @@ jobs:
         with:
           node-version: 22.x
           cache: 'npm'
+      # Every step below is conditioned on this one, not on the step before it:
+      # that is what makes the guards independent of each other while still
+      # skipping the lot when there is nothing installed to run them with.
       - name: Install dependencies
+        id: setup
         run: npm i
 
       - name: Dependency audit gate (blocking, with expiring exceptions)
@@ -51,6 +71,7 @@ jobs:
         # core's govulncheck-gate model: any high/critical advisory fails the
         # build unless it is a narrowly scoped, expiring exception in the script.
         # The gate's own self-test runs via `npm run test:scripts` below.
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: node scripts/npm-audit-gate.mjs
       # Two halves: the literal scan always runs; the Stripe reconciliation
       # needs STRIPE_READ_API_KEY (restricted, read-only).
@@ -59,6 +80,8 @@ jobs:
       # rather than a skip — this step passed vacuously on every PR while the
       # secret was unconfigured, and the log said SKIPPED where nobody read it.
       - name: Assert the pricing secret is configured
+        id: test_key
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: |
           if [ -z "$STRIPE_READ_API_KEY" ]; then
             echo "::error::STRIPE_READ_API_KEY repo secret is not configured. The pricing guard"
@@ -75,7 +98,11 @@ jobs:
           fi
         env:
           STRIPE_READ_API_KEY: ${{ secrets.STRIPE_READ_API_KEY }}
+      # Chained to its own assertion rather than to setup: with no key this
+      # guard cannot reconcile anything, and a second red step for one missing
+      # secret only buries the one that names it.
       - name: Pricing guard
+        if: ${{ !cancelled() && steps.test_key.outcome == 'success' }}
         run: npm run lint:prices
         env:
           STRIPE_READ_API_KEY: ${{ secrets.STRIPE_READ_API_KEY }}
@@ -85,6 +112,8 @@ jobs:
       # in it, so this cannot quietly check the test catalogue twice. A missing
       # secret fails here for the same reason as the test one above.
       - name: Assert the live pricing secret is configured
+        id: live_key
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: |
           if [ -z "$STRIPE_LIVE_READ_API_KEY" ]; then
             echo "::error::STRIPE_LIVE_READ_API_KEY repo secret is not configured. Production charges"
@@ -97,20 +126,27 @@ jobs:
         env:
           STRIPE_LIVE_READ_API_KEY: ${{ secrets.STRIPE_LIVE_READ_API_KEY }}
       - name: Pricing guard (live catalogue)
+        if: ${{ !cancelled() && steps.live_key.outcome == 'success' }}
         run: npm run lint:prices:live
         env:
           STRIPE_LIVE_READ_API_KEY: ${{ secrets.STRIPE_LIVE_READ_API_KEY }}
       - name: Plan-not-book language guard
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: npm run lint:plan-not-book
       - name: Absolute-claim guard (FTC §5 / Lanham §43(a))
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: npm run lint:absolute-claims
       - name: Pricing CTAs link into the app
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: npm run lint:pricing-ctas
       - name: Lookup-key contract guard
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: npm run lint:lookup-keys
       - name: Social meta guard
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: npm run lint:social-meta
       - name: Fonts are self-hosted (no third-party font CDN)
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: npm run lint:fonts
       - name: OG card is the real lockup
         # JAR-628 said marketing#32 "must be closed, not merged" because it
@@ -118,6 +154,7 @@ jobs:
         # main shipped that placeholder on every link preview. A checksum is
         # blunt, but the card is a binary this repo does not generate — there is
         # nothing subtler to assert, and blunt would have caught it.
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: npm run lint:og-card
 
       - name: Brand mark is in sync, and the generator refuses hostile sources
@@ -125,12 +162,16 @@ jobs:
         # brand/logo/, and the generator's allowlist must still refuse a source
         # SVG carrying <script>, on*, <image>, <use> or a JSX brace — it is the
         # only gate between a mark and every visitor's DOM.
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: |
           npm run logo:check
           npm run test:scripts
       - name: Lint
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: npm run lint
       - name: Build
+        id: build
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: npm run build
       # AFTER the build, because it is a claim about the build OUTPUT. The
       # Unsplash key is used only by scripts/fetch-unsplash-manifest.mjs, which
@@ -138,6 +179,8 @@ jobs:
       # carry the key into dist/. Run here rather than beside the other
       # guards — there is no bundle to inspect until the build has made one,
       # and the guard exits 2 rather than passing when dist/ is absent
-      # (JAR-1431).
+      # (JAR-1431). Chained to the build for that reason: with no dist/ it has
+      # nothing to say that the build's own red does not already say.
       - name: The Unsplash key is not in the shipped bundle
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: npm run lint:unsplash-key
