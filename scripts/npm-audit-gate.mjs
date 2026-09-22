@@ -114,20 +114,15 @@ function validateException(e) {
   return null;
 }
 
-// Pure, so the self-test can exercise it without running npm. `today` is a
-// 'YYYY-MM-DD' UTC calendar date. Returns { code, lines }.
-export function evaluate(audit, exceptions, today) {
-  const lines = [];
-  let code = 0;
-
+// Reads the report, or says why it cannot: { firing } when every high or
+// critical advisory in it is accounted for, else { refusal }, the lines that say
+// why the gate is failing closed. Pure.
+function readReport(audit) {
   // Fail closed on an unrecognized shape: if `vulnerabilities` is not an object
   // (npm 6's `advisories` shape, or a truncated/garbled report), we can't know
   // what fired, so we must not pass as clean (JAR-1734 review).
   if (typeof audit?.vulnerabilities !== 'object' || audit.vulnerabilities === null) {
-    return {
-      code: 1,
-      lines: ['BLOCKED: npm audit output has no `vulnerabilities` object — unrecognized shape, failing closed'],
-    };
+    return { refusal: ['BLOCKED: npm audit output has no `vulnerabilities` object — unrecognized shape, failing closed'] };
   }
 
   const entries = Object.entries(audit.vulnerabilities);
@@ -153,10 +148,7 @@ export function evaluate(audit, exceptions, today) {
   // (JAR-1734 review r7).
   const counts = audit?.metadata?.vulnerabilities;
   if (typeof counts !== 'object' || counts === null || typeof counts.high !== 'number' || typeof counts.critical !== 'number') {
-    return {
-      code: 1,
-      lines: ['BLOCKED: npm audit metadata has no numeric high/critical counts — unrecognized shape, failing closed'],
-    };
+    return { refusal: ['BLOCKED: npm audit metadata has no numeric high/critical counts — unrecognized shape, failing closed'] };
   }
 
   // Every entry npm counted must be one the gate read. npm builds these counts by
@@ -166,28 +158,33 @@ export function evaluate(audit, exceptions, today) {
   // shaped differently, and the ones that parse must not vouch for the rest.
   // This and the check below replace JAR-1734 r6 ("npm counts some, the gate
   // parsed none"), which they cover and which let a partial drift through when
-  // one advisory still parsed (JAR-1882).
-  const listed = (severity) => entries.filter(([, info]) => severityOf(info) === severity).length;
-  const miscounted = THRESHOLD.filter((severity) => listed(severity) !== counts[severity]);
+  // one advisory still parsed (JAR-1882). The real report in
+  // scripts/__tests__/fixtures pins the agreement: recapture it when CI moves to
+  // a new npm major, and a changed tally shows there before it turns CI red.
+  const listed = Object.fromEntries(
+    THRESHOLD.map((severity) => [severity, entries.filter(([, info]) => severityOf(info) === severity).length]),
+  );
+  const miscounted = THRESHOLD.filter((severity) => listed[severity] !== counts[severity]);
   if (miscounted.length) {
     return {
-      code: 1,
-      lines: miscounted.map(
-        (severity) => `BLOCKED: npm counts ${counts[severity]} ${severity} but its report lists ${listed(severity)}: unrecognized shape, failing closed`,
+      refusal: miscounted.map(
+        (severity) => `BLOCKED: npm counts ${counts[severity]} ${severity} but its report lists ${listed[severity]}: unrecognized shape, failing closed`,
       ),
     };
   }
 
-  // Every high or critical entry must be one the gate can read in full. Each of
-  // its advisories must carry a severity npm writes, and its own severity must
-  // be accounted for by an advisory the gate parsed, at that severity or above:
-  // one of its own, or one reached through the packages it names in `via`. That
-  // is how npm derives an entry's severity: the highest of its advisories, where
-  // a dependency's advisory reaches a dependent as the dependency's name, at
-  // that advisory's severity (arborist's Vuln and metavuln-calculator). So in a
-  // report the gate can read, every entry passes both. One that does not
-  // carries an advisory the gate cannot read, and it must not pass beside an
-  // excepted sibling (JAR-1882).
+  // Every entry must be one the gate can read in full. Its severity and each of
+  // its advisories' must be one npm writes: an unknown one (a new level, a
+  // misspelling) cannot be ranked against the gate, so the gate cannot say it is
+  // below it (JAR-1882 review). And a high or critical entry's severity must be
+  // accounted for by an advisory the gate parsed, at that severity or above: one
+  // of its own, or one reached through the packages it names in `via`. That is
+  // how npm derives an entry's severity: the highest of its advisories, where a
+  // dependency's advisory reaches a dependent as the dependency's name, at that
+  // advisory's severity (arborist's Vuln and metavuln-calculator). So in a report
+  // the gate can read, every entry passes all three. One that does not carries
+  // an advisory the gate cannot read, and it must not pass beside an excepted
+  // sibling (JAR-1882).
   const reached = new Map(
     entries.map(([pkg, info]) => [pkg, Math.max(0, ...viasOf(info).map((via) => rank(severityOf(via))))]),
   );
@@ -206,17 +203,28 @@ export function evaluate(audit, exceptions, today) {
   const unread = [];
   for (const [pkg, info] of entries) {
     const severity = severityOf(info);
-    if (!rank(severity)) continue;
-    if (viasOf(info).some((via) => typeof via === 'object' && via !== null && !SEVERITIES.includes(severityOf(via)))) {
+    if (!SEVERITIES.includes(severity)) {
+      unread.push(`BLOCKED: ${pkg} has severity ${JSON.stringify(info?.severity ?? null)}, which npm does not write: unrecognized shape, failing closed`);
+    } else if (viasOf(info).some((via) => typeof via === 'object' && via !== null && !SEVERITIES.includes(severityOf(via)))) {
       unread.push(`BLOCKED: ${pkg} is ${severity} and carries an advisory the gate cannot read: unrecognized shape, failing closed`);
     } else if (reached.get(pkg) < rank(severity)) {
       unread.push(`BLOCKED: ${pkg} is ${severity}, but no advisory the gate can read accounts for it: unrecognized shape, failing closed`);
     }
   }
-  if (unread.length) return { code: 1, lines: unread };
+  if (unread.length) return { refusal: unread };
+
+  return { firing };
+}
+
+// Pure, so the self-test can exercise it without running npm. `today` is a
+// 'YYYY-MM-DD' UTC calendar date. Returns { code, lines }.
+export function evaluate(audit, exceptions, today) {
+  const lines = [];
+  let code = 0;
 
   // A malformed entry is a gate-config bug: it blocks, and excepts nothing (so a
-  // firing advisory it meant to cover still falls to the keyhole).
+  // firing advisory it meant to cover still falls to the keyhole). Checked before
+  // the report is read, so a report the gate cannot read does not hide it.
   const valid = [];
   for (const e of exceptions) {
     const problem = validateException(e);
@@ -231,10 +239,18 @@ export function evaluate(audit, exceptions, today) {
 
   // Decision A: expired or no-longer-firing exceptions WARN, never change code.
   // Both still suppress their advisory — only `real` (the keyhole) blocks.
+  // Expiry needs no report, so it is said whatever the report is.
   for (const e of valid) {
     if (e.expires < today) {
       lines.push(`WARNING: exception ${e.id} expired ${e.expires} — re-decide it, do not just extend the date (does not block)`);
     }
+  }
+
+  const { firing, refusal } = readReport(audit);
+  if (refusal) return { code: 1, lines: [...lines, ...refusal] };
+
+  // Whether an exception still fires needs a report the gate could read.
+  for (const e of valid) {
     if (!firing.has(e.id)) {
       lines.push(`WARNING: exception ${e.id} no longer appears in the audit — delete it if fixed, update the id if the DB was renumbered (does not block)`);
     }

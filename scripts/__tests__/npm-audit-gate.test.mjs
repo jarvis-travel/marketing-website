@@ -180,6 +180,28 @@ circular.vulnerabilities.mkdirp.via = ['optimist'];
 circular.vulnerabilities.optimist.via = ['mkdirp'];
 eq(evaluate(circular, exceptAll(), TODAY).code, 1, 'entries that only name each other fail closed');
 
+// A severity npm does not write cannot be ranked against the gate, so the gate
+// cannot call it below the gate: an unknown level fails closed on any entry,
+// not only a high or critical one.
+const unknownAdvisory = report();
+unknownAdvisory.vulnerabilities['left-pad'] = { name: 'left-pad', severity: 'moderate', via: [{ severity: 'severe', title: 'a level npm does not write', url: 'https://github.com/advisories/GHSA-test-sev0-0000' }] };
+const rUnknownAdvisory = evaluate(unknownAdvisory, exceptAll(), TODAY);
+eq(rUnknownAdvisory.code, 1, 'an advisory with a severity npm does not write fails closed, even under a moderate entry');
+has(rUnknownAdvisory.lines, 'BLOCKED: left-pad is moderate and carries an advisory the gate cannot read', 'the unknown-advisory failure names the entry');
+
+const unknownEntry = report();
+unknownEntry.vulnerabilities['left-pad'] = { name: 'left-pad', severity: 'severe', via: [{ severity: 'moderate', title: 'readable', url: 'https://github.com/advisories/GHSA-test-sev1-0000' }] };
+const rUnknownEntry = evaluate(unknownEntry, exceptAll(), TODAY);
+eq(rUnknownEntry.code, 1, 'an entry with a severity npm does not write fails closed');
+has(rUnknownEntry.lines, 'BLOCKED: left-pad has severity "severe"', 'the unknown-entry failure names the entry and its severity');
+
+// A report the gate cannot read does not hide a malformed or an expired
+// exception: both are about this file, not the report, so both are said.
+const rBoth = evaluate(short, [...exceptAll(allButJson5), exc({ why: '' }), exc({ id: 'GHSA-old0-0000-0000', expires: '2026-01-01' })], TODAY);
+has(rBoth.lines, 'INVALID EXCEPTION', 'a malformed exception is reported beside a shape failure');
+has(rBoth.lines, 'expired 2026-01-01', 'an expired exception is reported beside a shape failure');
+has(rBoth.lines, 'npm counts 3 high but its report lists 2', 'and the shape failure is still reported with them');
+
 // --- End-to-end: the guard actually runs, blocks, and fails closed ---------
 const GATE = fileURLToPath(new URL('../npm-audit-gate.mjs', import.meta.url));
 
