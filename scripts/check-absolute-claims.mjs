@@ -179,6 +179,66 @@ const segments = (line, ext) => {
   return out;
 };
 
+// A promise wrapped across a line break matched nothing, because every pattern
+// ran against one line at a time. Plain-text email mirrors are hard-wrapped at
+// about 80 columns, which is exactly where a sentence splits — "…the same
+// living plan, always" / "current." was in this repo's own mirror while the
+// same sentence was caught in the HTML beside it (JAR-1728). CI's
+// failure-phrase scan had the same miss (JAR-1133).
+//
+// So the file is read a second time as ONE string: each line's segments, with
+// comment lines left out as above, joined by a single space and every run of
+// whitespace collapsed. A match that fits inside one line belongs to the pass
+// above, which reports it with the line's own text; this pass reports only
+// what spans a break, at the line where the match starts.
+//
+// The allowlist still applies per line: any line the match touches can excuse
+// it, which is what allowlisting a sentence has always meant. Matching the
+// allowlist against the joined string instead would let one allowlisted phrase
+// anywhere in a file silence a real hit two hundred lines away.
+const wrappedHits = (text, ext, allow) => {
+  const pieces = [];
+  text.split('\n').forEach((rawLine, i) => {
+    const line = fold(rawLine);
+    if (isCommentLine(line)) return;
+    for (const seg of segments(line, ext)) {
+      const t = seg.replace(/\s+/g, ' ').trim();
+      if (t) pieces.push({ text: t, line: i + 1 });
+    }
+  });
+
+  let flat = '';
+  const lineAt = []; // lineAt[n] is the source line of flat[n]
+  for (const piece of pieces) {
+    if (flat) {
+      flat += ' ';
+      lineAt.push(piece.line);
+    }
+    flat += piece.text;
+    for (let n = 0; n < piece.text.length; n++) lineAt.push(piece.line);
+  }
+
+  const out = [];
+  for (const { re, why } of BANNED) {
+    const all = new RegExp(re.source, re.flags.includes('g') ? re.flags : `${re.flags}g`);
+    for (const m of flat.matchAll(all)) {
+      const from = lineAt[m.index];
+      const to = lineAt[Math.min(m.index + m[0].length - 1, lineAt.length - 1)];
+      if (from === undefined || from === to) continue; // one line: the pass above owns it
+      // Excused two ways, and both are needed. A pattern written for one of the
+      // lines still works, which is what allowlisting a sentence has always
+      // meant — and a pattern written for the whole sentence works too, since a
+      // sentence broken by a wrap matches no single line, so a per-line-only
+      // test would leave a wrapped claim impossible to allowlist at all.
+      const touched = pieces.filter((piece) => piece.line >= from && piece.line <= to);
+      if (allow.some((a) => a.test(m[0]))) continue;
+      if (touched.some((piece) => allow.some((a) => a.test(piece.text)))) continue;
+      out.push({ line: from, why, text: m[0].trim().slice(0, 100) });
+    }
+  }
+  return out;
+};
+
 const warnings = [];
 const walk = (d, out = []) => {
   let entries;
@@ -211,7 +271,7 @@ const walk = (d, out = []) => {
   return out;
 };
 
-export { fold, BANNED, segments, isCommentLine, CONFUSABLES, SCAN_DIRS, SCAN_FILES };
+export { fold, BANNED, segments, isCommentLine, CONFUSABLES, SCAN_DIRS, SCAN_FILES, wrappedHits };
 
 const isCLI = (() => {
   try {
@@ -255,6 +315,10 @@ if (!isCLI) {
         }
       }
     });
+
+    for (const h of wrappedHits(text, ext, allow)) {
+      hits.push({ file: rel, line: h.line, why: h.why, text: h.text });
+    }
   }
 
   for (const w of warnings) console.warn(`absolute-claims warning: ${w}`);
