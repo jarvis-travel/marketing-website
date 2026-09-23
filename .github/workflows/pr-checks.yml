@@ -160,6 +160,7 @@ jobs:
       # site is about to take over. Ship without them and 88 templates lose
       # their masthead at once.
       - name: Email images this site has to serve are present
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: npm run lint:email-assets
 
       - name: Brand mark is in sync, and the generator refuses hostile sources
