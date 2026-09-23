@@ -63,6 +63,11 @@ jobs:
       # JAR-1165: same gate as pr-checks, on the droplet shipping path.
       - name: Fonts are self-hosted (no third-party font CDN)
         run: npm run lint:fonts
+      # JAR-1879: the emails hot-link their images from the apex, which this
+      # site is about to take over. Ship without them and 88 templates lose
+      # their masthead at once.
+      - name: Email images this site has to serve are present
+        run: npm run lint:email-assets
 
       # VITE_APP_ORIGIN is where every Join Now sends a visitor. appLink.ts
       # defaults it to production; requireAppOrigin() in vite.config.ts refuses
