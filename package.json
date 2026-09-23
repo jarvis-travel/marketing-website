@@ -16,7 +16,7 @@
     "logo:gen": "node scripts/gen-logo-component.mjs",
     "logo:check": "node scripts/gen-logo-component.mjs --check",
     "logo:vendor": "node scripts/vendor-logo.mjs",
-    "test:scripts": "node scripts/__tests__/gen-logo-component.test.mjs && node scripts/__tests__/check-plan-not-book.test.mjs && node scripts/__tests__/check-prices.test.mjs && node scripts/__tests__/check-absolute-claims.test.mjs && node scripts/__tests__/check-fonts.test.mjs && node scripts/__tests__/check-pricing-ctas.test.mjs && node scripts/__tests__/check-lookup-keys.test.mjs && node scripts/__tests__/check-no-unsplash-key-in-bundle.test.mjs && node scripts/__tests__/npm-audit-gate.test.mjs && node scripts/__tests__/check-email-assets.test.mjs",
+    "test:scripts": "node scripts/__tests__/gen-logo-component.test.mjs && node scripts/__tests__/check-plan-not-book.test.mjs && node scripts/__tests__/check-prices.test.mjs && node scripts/__tests__/check-absolute-claims.test.mjs && node scripts/__tests__/check-fonts.test.mjs && node scripts/__tests__/check-pricing-ctas.test.mjs && node scripts/__tests__/check-lookup-keys.test.mjs && node scripts/__tests__/check-no-unsplash-key-in-bundle.test.mjs && node scripts/__tests__/npm-audit-gate.test.mjs && node scripts/__tests__/check-workflow-steps.test.mjs && node scripts/__tests__/check-email-assets.test.mjs",
     "type-check": "tsc --noEmit",
     "lint:prices": "node scripts/check-prices.mjs",
     "lint:prices:live": "node scripts/check-prices.mjs --live",
@@ -25,6 +25,7 @@
     "sync:prices": "node scripts/check-prices.mjs --write",
     "lint:fonts": "node scripts/check-fonts.mjs",
     "lint:unsplash-key": "node scripts/check-no-unsplash-key-in-bundle.mjs",
+    "lint:workflow-steps": "node scripts/check-workflow-steps.mjs",
     "photos:fetch": "node scripts/fetch-unsplash-manifest.mjs"
   },
   "dependencies": {
@@ -44,6 +45,7 @@
     "@vitejs/plugin-react": "^4.0.0",
     "autoprefixer": "^10.4.0",
     "eslint": "^8.45.0",
+    "js-yaml": "^4.1.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.0",
     "postcss": "^8.4.0",
