@@ -27,7 +27,8 @@
 // Gates at high+critical (npm's --audit-level=high). Exit codes: 0 clean, or
 // every firing advisory is excepted (expired/stale exceptions only warn); 1 a
 // real high/critical advisory with no valid exception, a malformed exception
-// entry, or npm audit could not run (fail closed). There is no exit 2.
+// entry, a report the gate cannot fully account for, or npm audit could not run
+// (fail closed). There is no exit 2.
 
 import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
@@ -35,7 +36,9 @@ import { pathToFileURL } from 'node:url';
 // Each exception is { id, expires, why }:
 //   id      canonical advisory id as this gate prints it — a GHSA id
 //           (e.g. 'GHSA-fx2h-pf6j-xcff'), or 'npm:<n>' when npm reports no GHSA
-//           advisory url for it. Not a bare number.
+//           advisory url for it. Not a bare number, and never 'pkg:<name>':
+//           that is the key for an advisory the gate cannot identify, and it is
+//           refused (JAR-1882).
 //   expires 'YYYY-MM-DD', compared as a UTC calendar date (see `today` below).
 //           Past it the entry WARNS; it does not block (decision A).
 //   why     one line: dev-only or unreachable in what we ship, plus a ticket.
@@ -52,7 +55,28 @@ const EXCEPTIONS = [
   },
 ];
 
-const THRESHOLD = new Set(['high', 'critical']);
+// npm's severities, lowest first (arborist's `severities`). The gate blocks from
+// high up (npm's --audit-level=high): a severity's rank is its place in
+// THRESHOLD, and 0 is below the gate.
+const SEVERITIES = ['info', 'low', 'moderate', 'high', 'critical'];
+const THRESHOLD = SEVERITIES.slice(SEVERITIES.indexOf('high'));
+
+function rank(severity) {
+  return THRESHOLD.indexOf(severity) + 1;
+}
+
+// npm writes severities in lower case. Read them case-insensitively anyway, and
+// only through here, so a "High" still counts and no two checks can disagree
+// about what a severity is (JAR-1882).
+function severityOf(x) {
+  return typeof x?.severity === 'string' ? x.severity.toLowerCase() : '';
+}
+
+// An entry's `via`, or nothing when it is not the array npm writes: a string
+// would iterate as characters, and an object would throw.
+function viasOf(info) {
+  return Array.isArray(info?.via) ? info.via : [];
+}
 
 // npm's `via` mixes advisory objects with plain strings (a transitive edge);
 // only the objects carry a severity and an id. Take the url's id only when it is
@@ -73,6 +97,15 @@ function ghsaId(via) {
 function validateException(e) {
   if (!e || typeof e !== 'object') return 'not an object';
   if (typeof e.id !== 'string' || !e.id.trim()) return 'missing id';
+  // The id is matched exactly, so spaces around it would leave it matching
+  // nothing: its advisory would block while it warned "no longer appears".
+  if (e.id !== e.id.trim()) return 'id has spaces around it, so it could never match an advisory';
+  // pkg:<name> is the key the gate gives an advisory it cannot identify.
+  // Excepting it would waive every such advisory in that package, today's and
+  // any later one, which is an off switch, not a keyhole (JAR-1882).
+  if (/^pkg:/i.test(e.id)) {
+    return 'pkg:<name> keys an advisory the gate cannot identify, and cannot be excepted: it would waive every such advisory in the package';
+  }
   if (typeof e.why !== 'string' || !e.why.trim()) return 'missing reason (why)';
   if (typeof e.expires !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(e.expires)) {
     return 'expires must be YYYY-MM-DD';
@@ -84,32 +117,31 @@ function validateException(e) {
   return null;
 }
 
-// Pure, so the self-test can exercise it without running npm. `today` is a
-// 'YYYY-MM-DD' UTC calendar date. Returns { code, lines }.
-export function evaluate(audit, exceptions, today) {
-  const lines = [];
-  let code = 0;
-
-  // Fail closed on an unrecognized shape: if `vulnerabilities` is not an object
-  // (npm 6's `advisories` shape, or a truncated/garbled report), we can't know
-  // what fired, so we must not pass as clean (JAR-1734 review).
-  if (typeof audit?.vulnerabilities !== 'object' || audit.vulnerabilities === null) {
-    return {
-      code: 1,
-      lines: ['BLOCKED: npm audit output has no `vulnerabilities` object — unrecognized shape, failing closed'],
-    };
+// Reads the report, or says why it cannot: { firing } when every high or
+// critical advisory in it is accounted for, else { refusal }, the lines that say
+// why the gate is failing closed. Pure.
+function readReport(audit) {
+  // Fail closed on an unrecognized shape: if `vulnerabilities` is not the object
+  // npm writes, keyed by package (npm 6's `advisories` shape, an array, or a
+  // truncated/garbled report), we can't know what fired, so we must not pass as
+  // clean (JAR-1734 review; an array, JAR-1882 review).
+  if (typeof audit?.vulnerabilities !== 'object' || audit.vulnerabilities === null || Array.isArray(audit.vulnerabilities)) {
+    return { refusal: ['BLOCKED: npm audit output has no `vulnerabilities` object — unrecognized shape, failing closed'] };
   }
+
+  const entries = Object.entries(audit.vulnerabilities);
 
   // Every distinct advisory at or above the threshold, keyed by canonical id.
   const firing = new Map();
-  for (const [pkg, info] of Object.entries(audit.vulnerabilities)) {
-    for (const via of info?.via ?? []) {
+  for (const [pkg, info] of entries) {
+    for (const via of viasOf(info)) {
       if (typeof via !== 'object' || via === null) continue;
-      if (!THRESHOLD.has(via.severity)) continue;
+      const severity = severityOf(via);
+      if (!rank(severity)) continue;
       // An advisory we can't identify still blocks — keyed by package name, so a
       // high/critical is never silently dropped for want of an id (fail safe).
       const id = ghsaId(via) || `pkg:${pkg}`;
-      if (!firing.has(id)) firing.set(id, { severity: via.severity, title: via.title ?? '' });
+      if (!firing.has(id)) firing.set(id, { severity, title: via.title ?? '' });
     }
   }
 
@@ -120,25 +152,90 @@ export function evaluate(audit, exceptions, today) {
   // (JAR-1734 review r7).
   const counts = audit?.metadata?.vulnerabilities;
   if (typeof counts !== 'object' || counts === null || typeof counts.high !== 'number' || typeof counts.critical !== 'number') {
-    return {
-      code: 1,
-      lines: ['BLOCKED: npm audit metadata has no numeric high/critical counts — unrecognized shape, failing closed'],
-    };
+    return { refusal: ['BLOCKED: npm audit metadata has no numeric high/critical counts — unrecognized shape, failing closed'] };
   }
-  // If npm counts a high or critical but our parse found none firing, the report
-  // shape drifted (vulnerabilities as an array, the advisory under a renamed key,
-  // an unexpected severity spelling, …) and we must not pass as clean — fail
-  // closed and name npm's counts (JAR-1734 review r6).
-  const flagged = counts.high + counts.critical;
-  if (flagged > 0 && firing.size === 0) {
+
+  // Every entry npm counted must be one the gate read. npm builds these counts by
+  // tallying its own entries by severity (`metadata.vulnerabilities[vuln.severity]++`
+  // in arborist's AuditReport.toJSON, npm 10 and 11 alike), so for a report the
+  // gate can read they agree exactly. A mismatch means entries are missing or
+  // shaped differently, and the ones that parse must not vouch for the rest.
+  // This and the check below replace JAR-1734 r6 ("npm counts some, the gate
+  // parsed none"), which they cover and which let a partial drift through when
+  // one advisory still parsed (JAR-1882). The real report in
+  // scripts/__tests__/fixtures pins the agreement: recapture it when CI moves to
+  // a new npm major, and a changed tally shows there before it turns CI red.
+  const listed = Object.fromEntries(
+    THRESHOLD.map((severity) => [severity, entries.filter(([, info]) => severityOf(info) === severity).map(([pkg]) => pkg)]),
+  );
+  const miscounted = THRESHOLD.filter((severity) => listed[severity].length !== counts[severity]);
+  if (miscounted.length) {
+    // Name what the report does hold, so the drift can be diffed against
+    // `npm audit --json` rather than re-derived by hand (JAR-1882 review).
+    const named = (pkgs) => (pkgs.length > 10 ? `${pkgs.slice(0, 10).join(', ')} and ${pkgs.length - 10} more` : pkgs.join(', '));
     return {
-      code: 1,
-      lines: [`BLOCKED: npm's metadata counts ${flagged} high/critical advisory(ies) but none were parsed — unrecognized report shape, failing closed`],
+      refusal: miscounted.map(
+        (severity) =>
+          `BLOCKED: npm counts ${counts[severity]} ${severity} but its report lists ${listed[severity].length}` +
+          `${listed[severity].length ? ` (${named(listed[severity])})` : ''}: unrecognized shape, failing closed`,
+      ),
     };
   }
 
+  // Every entry must be one the gate can read in full. Its severity and each of
+  // its advisories' must be one npm writes: an unknown one (a new level, a
+  // misspelling) cannot be ranked against the gate, so the gate cannot say it is
+  // below it (JAR-1882 review). And a high or critical entry's severity must be
+  // accounted for by an advisory the gate parsed, at that severity or above: one
+  // of its own, or one reached through the packages it names in `via`. That is
+  // how npm derives an entry's severity: the highest of its advisories, where a
+  // dependency's advisory reaches a dependent as the dependency's name, at that
+  // advisory's severity (arborist's Vuln and metavuln-calculator). So in a report
+  // the gate can read, every entry passes all three. One that does not carries
+  // an advisory the gate cannot read, and it must not pass beside an excepted
+  // sibling (JAR-1882).
+  // A loop, not Math.max(...vias): spreading a pathological via list into the
+  // call throws a RangeError past a few hundred thousand elements.
+  const reached = new Map(
+    entries.map(([pkg, info]) => [pkg, viasOf(info).reduce((max, via) => Math.max(max, rank(severityOf(via))), 0)]),
+  );
+  for (let grew = true; grew; ) {
+    grew = false;
+    for (const [pkg, info] of entries) {
+      for (const via of viasOf(info)) {
+        const theirs = typeof via === 'string' ? (reached.get(via) ?? 0) : 0;
+        if (theirs > reached.get(pkg)) {
+          reached.set(pkg, theirs);
+          grew = true;
+        }
+      }
+    }
+  }
+  const unread = [];
+  for (const [pkg, info] of entries) {
+    const severity = severityOf(info);
+    if (!SEVERITIES.includes(severity)) {
+      unread.push(`BLOCKED: ${pkg} has severity ${JSON.stringify(info?.severity ?? null)}, which npm does not write: unrecognized shape, failing closed`);
+    } else if (viasOf(info).some((via) => typeof via === 'object' && via !== null && !SEVERITIES.includes(severityOf(via)))) {
+      unread.push(`BLOCKED: ${pkg} is ${severity} and carries an advisory the gate cannot read: unrecognized shape, failing closed`);
+    } else if (reached.get(pkg) < rank(severity)) {
+      unread.push(`BLOCKED: ${pkg} is ${severity}, but no advisory the gate can read accounts for it: unrecognized shape, failing closed`);
+    }
+  }
+  if (unread.length) return { refusal: unread };
+
+  return { firing };
+}
+
+// Pure, so the self-test can exercise it without running npm. `today` is a
+// 'YYYY-MM-DD' UTC calendar date. Returns { code, lines }.
+export function evaluate(audit, exceptions, today) {
+  const lines = [];
+  let code = 0;
+
   // A malformed entry is a gate-config bug: it blocks, and excepts nothing (so a
-  // firing advisory it meant to cover still falls to the keyhole).
+  // firing advisory it meant to cover still falls to the keyhole). Checked before
+  // the report is read, so a report the gate cannot read does not hide it.
   const valid = [];
   for (const e of exceptions) {
     const problem = validateException(e);
@@ -153,10 +250,18 @@ export function evaluate(audit, exceptions, today) {
 
   // Decision A: expired or no-longer-firing exceptions WARN, never change code.
   // Both still suppress their advisory — only `real` (the keyhole) blocks.
+  // Expiry needs no report, so it is said whatever the report is.
   for (const e of valid) {
     if (e.expires < today) {
       lines.push(`WARNING: exception ${e.id} expired ${e.expires} — re-decide it, do not just extend the date (does not block)`);
     }
+  }
+
+  const { firing, refusal } = readReport(audit);
+  if (refusal) return { code: 1, lines: [...lines, ...refusal] };
+
+  // Whether an exception still fires needs a report the gate could read.
+  for (const e of valid) {
     if (!firing.has(e.id)) {
       lines.push(`WARNING: exception ${e.id} no longer appears in the audit — delete it if fixed, update the id if the DB was renumbered (does not block)`);
     }

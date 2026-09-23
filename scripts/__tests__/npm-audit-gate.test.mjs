@@ -7,7 +7,7 @@
 // Each case fails if its matching rule is removed (mutation-checkable).
 import { evaluate } from '../npm-audit-gate.mjs';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, writeFileSync, copyFileSync, chmodSync, realpathSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, copyFileSync, chmodSync, realpathSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -59,6 +59,8 @@ eq(evaluate(withAdvisory('high', VITE), [exc({ expires: 'soon' })], TODAY).code,
 eq(evaluate(withAdvisory('high', VITE), [exc({ expires: '2026-13-01' })], TODAY).code, 1, 'an impossible date (month 13) blocks');
 eq(evaluate(withAdvisory('high', VITE), [exc({ expires: '2026-02-30' })], TODAY).code, 1, 'an impossible date (Feb 30) blocks');
 eq(evaluate(withAdvisory('high', VITE), [exc({ why: '' })], TODAY).code, 1, 'an exception with no reason blocks');
+// Its advisory would block anyway, unmatched, so what proves the check is the line.
+has(evaluate(withAdvisory('high', VITE), [exc({ id: ` ${VITE}` })], TODAY).lines, 'id has spaces around it', 'an id with spaces around it is named invalid: it could never match its advisory');
 // ...and a malformed entry excepts nothing, so its advisory still falls to the keyhole.
 has(evaluate(withAdvisory('high', VITE), [exc({ why: '' })], TODAY).lines, 'BLOCKED', 'a malformed exception does not suppress its advisory');
 
@@ -83,13 +85,14 @@ has(evaluate(legacyVia, [], TODAY).lines, 'npm:1234', 'a legacy npmjs.com adviso
 
 // A drifted report shape our per-advisory parse doesn't recognize (here the
 // advisory sits under a renamed key, so `via` is empty) but whose metadata still
-// counts a high. The metadata cross-check must fail closed, not pass as clean —
-// this covers the whole class (array-shaped vulnerabilities, renamed keys, an
-// unexpected severity spelling), not one shape (JAR-1734 review round 6).
+// counts a high. Nothing the gate can read accounts for the entry, so it must
+// fail closed, not pass as clean. This covers the whole class (a renamed key, a
+// via that is not an array, an advisory with no readable severity), not one
+// shape (JAR-1734 review round 6, JAR-1882).
 const drifted = { metadata: { vulnerabilities: { critical: 0, high: 1, moderate: 0, low: 0, total: 1 } }, vulnerabilities: { pkg: { severity: 'high', advisories: [{ severity: 'high', title: 'renamed key' }] } } };
 const rDrift = evaluate(drifted, [], TODAY);
-eq(rDrift.code, 1, 'metadata counts a high but none parsed → fail closed (drifted shape)');
-has(rDrift.lines, 'metadata counts', "the drift failure names npm's counts");
+eq(rDrift.code, 1, 'a high entry with no advisory the gate can read → fail closed (drifted shape)');
+has(rDrift.lines, 'BLOCKED: pkg is high', 'the drift failure names the entry');
 
 // The cross-check needs npm's numeric counts to vouch for an empty parse. If
 // metadata carries no vulnerabilities counts, a drifted report (renamed key here,
@@ -97,6 +100,127 @@ has(rDrift.lines, 'metadata counts', "the drift failure names npm's counts");
 // non-numeric counts (JAR-1734 review round 7).
 const noCounts = { metadata: {}, vulnerabilities: { pkg: { severity: 'high', advisories: [{ severity: 'high', title: 'renamed key, no counts' }] } } };
 eq(evaluate(noCounts, [], TODAY).code, 1, 'metadata without numeric high/critical counts fails closed');
+
+// --- A real report, then one drift at a time (JAR-1882) ---------------------
+// fixtures/npm-audit-report.json is `npm audit --json --package-lock-only`,
+// verbatim, for a lockfile pinning json5 2.2.1, lodash 4.17.20, minimist 1.2.5,
+// mkdirp 0.5.1, nanoid 3.1.30 and optimist 0.6.1 (npm 11.13, 2026-09-22; npm
+// 10, which CI runs, builds the report with the same code). Seven high/critical
+// advisories; mkdirp and optimist are critical only through minimist, which
+// their `via` names.
+const REPORT = JSON.parse(readFileSync(new URL('./fixtures/npm-audit-report.json', import.meta.url), 'utf8'));
+const report = () => structuredClone(REPORT);
+const JSON5 = 'GHSA-9c47-m6qq-7p4h';
+const REPORTED = [JSON5, 'GHSA-35jh-r3h4-6jhm', 'GHSA-r5fr-rjxr-66jc', 'GHSA-xvch-5gv4-984h', 'GHSA-28wg-ghj8-5hjv', 'GHSA-2v37-7h3g-55p8', 'GHSA-xwg4-73v4-xw9w'];
+const exceptAll = (ids = REPORTED) => ids.map((id) => exc({ id }));
+const allButJson5 = REPORTED.filter((id) => id !== JSON5);
+
+const rReport = evaluate(report(), [], TODAY);
+eq(rReport.code, 1, 'real report: its advisories block');
+eq(REPORTED.filter((id) => rReport.lines.some((l) => l.startsWith(`BLOCKED: ${id} `))).length, 7, 'real report: all seven are named');
+eq(evaluate(report(), exceptAll(), TODAY).code, 0, 'real report: every advisory excepted, it passes (the shape checks accept what npm writes)');
+
+// A pkg:<name> exception is refused, so an advisory the gate cannot identify
+// cannot be waived by naming its package.
+const anonymous = report();
+delete anonymous.vulnerabilities.json5.via[0].url;
+delete anonymous.vulnerabilities.json5.via[0].source;
+const rPkgExc = evaluate(anonymous, [...exceptAll(allButJson5), exc({ id: 'pkg:json5' })], TODAY);
+eq(rPkgExc.code, 1, 'a pkg:<name> exception is refused, so the unidentifiable advisory still blocks');
+has(rPkgExc.lines, 'INVALID EXCEPTION: "pkg:json5"', 'the pkg: exception is named invalid');
+
+// A severity npm did not write in lower case still counts, as the advisory it is.
+const shouting = report();
+shouting.vulnerabilities.json5.via[0].severity = 'HIGH';
+const rShouting = evaluate(shouting, exceptAll(allButJson5), TODAY);
+eq(rShouting.code, 1, 'an advisory whose severity is "HIGH" still blocks');
+has(rShouting.lines, `BLOCKED: ${JSON5} [high]`, 'and is named as that advisory, not as a shape failure');
+
+// npm counts an entry the report does not list: the entries that parse must not
+// vouch for the one that is missing.
+const short = report();
+delete short.vulnerabilities.json5;
+const rShort = evaluate(short, exceptAll(allButJson5), TODAY);
+eq(rShort.code, 1, 'a report listing fewer highs than npm counts fails closed');
+has(rShort.lines, 'npm counts 3 high but its report lists 2', 'the failure names both counts');
+has(rShort.lines, 'lists 2 (lodash, nanoid)', 'and names the entries the report does hold, to diff against npm');
+
+// An entry whose advisory the gate cannot read fails closed beside excepted
+// siblings, and so does a chain that does not reach an advisory at its severity.
+const unreadable = report();
+unreadable.vulnerabilities.json5.via = [{ kind: 'malware' }];
+const rUnreadable = evaluate(unreadable, exceptAll(allButJson5), TODAY);
+eq(rUnreadable.code, 1, 'a high entry with no readable advisory fails closed beside excepted siblings');
+has(rUnreadable.lines, 'BLOCKED: json5 is high', 'the unreadable-advisory failure names the entry');
+
+const bare = report();
+bare.vulnerabilities.json5.via = bare.vulnerabilities.json5.via[0];
+let rBare;
+try {
+  rBare = evaluate(bare, exceptAll(allButJson5), TODAY);
+} catch (err) {
+  rBare = { code: `threw ${err.name}`, lines: [] };
+}
+eq(rBare.code, 1, 'a via that is not an array fails closed with a verdict, not a throw');
+has(rBare.lines, 'BLOCKED: json5 is high', 'the non-array failure names the entry');
+
+const understated = report();
+understated.vulnerabilities.mkdirp.via = ['json5'];
+const rUnderstated = evaluate(understated, exceptAll(), TODAY);
+eq(rUnderstated.code, 1, 'a critical entry whose chain reaches only a high fails closed');
+has(rUnderstated.lines, 'BLOCKED: mkdirp is critical', 'the understated-chain failure names the entry');
+
+// An unreadable advisory must not hide behind a chain that accounts for its
+// entry: mkdirp is critical through minimist, whose advisory is excepted here.
+const hidden = report();
+hidden.vulnerabilities.mkdirp.via.push({ kind: 'malware' });
+const rHidden = evaluate(hidden, exceptAll(), TODAY);
+eq(rHidden.code, 1, 'an unreadable advisory beside an excepted chain fails closed');
+has(rHidden.lines, 'BLOCKED: mkdirp is critical and carries an advisory the gate cannot read', 'the hidden-advisory failure names the entry');
+
+const circular = report();
+circular.vulnerabilities.mkdirp.via = ['optimist'];
+circular.vulnerabilities.optimist.via = ['mkdirp'];
+eq(evaluate(circular, exceptAll(), TODAY).code, 1, 'entries that only name each other fail closed');
+
+// A severity npm does not write cannot be ranked against the gate, so the gate
+// cannot call it below the gate: an unknown level fails closed on any entry,
+// not only a high or critical one.
+const unknownAdvisory = report();
+unknownAdvisory.vulnerabilities['left-pad'] = { name: 'left-pad', severity: 'moderate', via: [{ severity: 'severe', title: 'a level npm does not write', url: 'https://github.com/advisories/GHSA-test-sev0-0000' }] };
+const rUnknownAdvisory = evaluate(unknownAdvisory, exceptAll(), TODAY);
+eq(rUnknownAdvisory.code, 1, 'an advisory with a severity npm does not write fails closed, even under a moderate entry');
+has(rUnknownAdvisory.lines, 'BLOCKED: left-pad is moderate and carries an advisory the gate cannot read', 'the unknown-advisory failure names the entry');
+
+const unknownEntry = report();
+unknownEntry.vulnerabilities['left-pad'] = { name: 'left-pad', severity: 'severe', via: [{ severity: 'moderate', title: 'readable', url: 'https://github.com/advisories/GHSA-test-sev1-0000' }] };
+const rUnknownEntry = evaluate(unknownEntry, exceptAll(), TODAY);
+eq(rUnknownEntry.code, 1, 'an entry with a severity npm does not write fails closed');
+has(rUnknownEntry.lines, 'BLOCKED: left-pad has severity "severe"', 'the unknown-entry failure names the entry and its severity');
+
+// npm writes `vulnerabilities` as an object keyed by package. An array is not
+// that, even an empty one beside zero counts, so it fails closed.
+eq(evaluate({ metadata: { vulnerabilities: { critical: 0, high: 0, moderate: 0, low: 0, total: 0 } }, vulnerabilities: [] }, [], TODAY).code, 1,
+  'an array where npm writes an object fails closed, even an empty one beside zero counts');
+
+// A pathological via list still gets a verdict. Spreading a million elements
+// into Math.max throws a RangeError, where a loop does not.
+const crowded = report();
+crowded.vulnerabilities['left-pad'] = { name: 'left-pad', severity: 'moderate', via: new Array(1_000_000).fill('minimist') };
+let rCrowded;
+try {
+  rCrowded = evaluate(crowded, exceptAll(), TODAY);
+} catch (err) {
+  rCrowded = { code: `threw ${err.name}`, lines: [] };
+}
+eq(rCrowded.code, 0, 'a million-long via list gets a verdict, not a RangeError');
+
+// A report the gate cannot read does not hide a malformed or an expired
+// exception: both are about this file, not the report, so both are said.
+const rBoth = evaluate(short, [...exceptAll(allButJson5), exc({ why: '' }), exc({ id: 'GHSA-old0-0000-0000', expires: '2026-01-01' })], TODAY);
+has(rBoth.lines, 'INVALID EXCEPTION', 'a malformed exception is reported beside a shape failure');
+has(rBoth.lines, 'expired 2026-01-01', 'an expired exception is reported beside a shape failure');
+has(rBoth.lines, 'npm counts 3 high but its report lists 2', 'and the shape failure is still reported with them');
 
 // --- End-to-end: the guard actually runs, blocks, and fails closed ---------
 const GATE = fileURLToPath(new URL('../npm-audit-gate.mjs', import.meta.url));
