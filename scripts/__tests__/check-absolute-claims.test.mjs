@@ -98,6 +98,46 @@ test('passes present-tense practice', () => {
   assert(clean(`const s = 'Jarvis is sent your trip, not your identity.';`), 'false positive');
 });
 
+// --- a promise that wrapped across a line break -----------------------
+//
+// Every pattern ran against one line at a time, so a sentence split by a hard
+// wrap matched nothing: in JSX, where a paragraph is written over several
+// lines, and in plain-text email mirrors, which wrap at about 80 columns. The
+// live example was design-library's mirror — "…the same living plan, always" /
+// "current." — caught in the HTML beside it and not in the text (JAR-1728).
+// CI's failure-phrase scan had the same class of miss (JAR-1133).
+test('catches a promise wrapped across a line break', () => {
+  assert(
+    flags('<p>\n  Everyone sees the same living plan, always\n  current for everyone.\n</p>'),
+    'a wrapped "always current" passed — the scan is still per line',
+  );
+});
+
+test('the allowlist still excuses a wrapped sentence', () => {
+  withTempDir((d) => {
+    writeFileSync(join(d, '.absolute-claims-allow.txt'), 'always\\s+current\n');
+    const r = runCheck(d, '<p>\n  the same living plan, always\n  current for everyone.\n</p>');
+    assert(r.code === 0, 'the allowlist did not excuse a wrapped sentence');
+  });
+});
+
+test('a wrapped promise is reported once, not twice', () => {
+  withTempDir((d) => {
+    const r = runCheck(d, '<p>\n  the same living plan, always\n  current for everyone.\n</p>');
+    const hits = (r.out.match(/forward-looking promise/g) || []).length;
+    assert(hits === 1, `reported ${hits} time(s), want 1 — the two passes are double-counting`);
+  });
+});
+
+test('a break between two sentences is not a promise', () => {
+  // The joined pass must not invent a claim from the end of one sentence and
+  // the start of the next.
+  assert(
+    clean('<p>\n  We keep your plan current today.\n  Always read the details.\n</p>'),
+    'two sentences either side of a break were read as one claim',
+  );
+});
+
 // --- scope: what the guard must NOT flag ------------------------------
 test('the §17550 not-a-seller-of-travel line is allowlisted, not banned', () => {
   // Without the allowlist it is a "never sells" hit; the allowlist is what
