@@ -169,6 +169,15 @@ understated.vulnerabilities.mkdirp.via = ['json5'];
 const rUnderstated = evaluate(understated, exceptAll(), TODAY);
 eq(rUnderstated.code, 1, 'a critical entry whose chain reaches only a high fails closed');
 has(rUnderstated.lines, 'BLOCKED: mkdirp is critical', 'the understated-chain failure names the entry');
+has(rUnderstated.lines, 'its chain reached only high', 'and says how far its chain did reach (JAR-1897)');
+
+// A via naming no entry is where a chain usually breaks. The refusal names the
+// reference, so the drift can be diffed against npm audit --json (JAR-1897).
+const dangling = report();
+dangling.vulnerabilities.mkdirp.via = ['minimist-renamed'];
+const rDangling = evaluate(dangling, exceptAll(), TODAY);
+eq(rDangling.code, 1, 'a critical entry whose via names no entry fails closed');
+has(rDangling.lines, 'its chain reached no high or critical advisory; via names no entry for minimist-renamed', 'the failure names the reference it could not follow');
 
 // An unreadable advisory must not hide behind a chain that accounts for its
 // entry: mkdirp is critical through minimist, whose advisory is excepted here.
