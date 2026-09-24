@@ -169,10 +169,10 @@ function readReport(audit) {
     THRESHOLD.map((severity) => [severity, entries.filter(([, info]) => severityOf(info) === severity).map(([pkg]) => pkg)]),
   );
   const miscounted = THRESHOLD.filter((severity) => listed[severity].length !== counts[severity]);
+  // Both refusals below name what they found, so the drift can be diffed
+  // against `npm audit --json` rather than re-derived by hand (JAR-1882 review).
+  const named = (pkgs) => (pkgs.length > 10 ? `${pkgs.slice(0, 10).join(', ')} and ${pkgs.length - 10} more` : pkgs.join(', '));
   if (miscounted.length) {
-    // Name what the report does hold, so the drift can be diffed against
-    // `npm audit --json` rather than re-derived by hand (JAR-1882 review).
-    const named = (pkgs) => (pkgs.length > 10 ? `${pkgs.slice(0, 10).join(', ')} and ${pkgs.length - 10} more` : pkgs.join(', '));
     return {
       refusal: miscounted.map(
         (severity) =>
@@ -219,7 +219,15 @@ function readReport(audit) {
     } else if (viasOf(info).some((via) => typeof via === 'object' && via !== null && !SEVERITIES.includes(severityOf(via)))) {
       unread.push(`BLOCKED: ${pkg} is ${severity} and carries an advisory the gate cannot read: unrecognized shape, failing closed`);
     } else if (reached.get(pkg) < rank(severity)) {
-      unread.push(`BLOCKED: ${pkg} is ${severity}, but no advisory the gate can read accounts for it: unrecognized shape, failing closed`);
+      // Say what the chain lacks: how far it did reach, and each `via` naming no
+      // entry, which is where a chain usually breaks (JAR-1897).
+      const got = reached.get(pkg) ? `only ${THRESHOLD[reached.get(pkg) - 1]}` : 'no high or critical advisory';
+      const dangling = viasOf(info).filter((via) => typeof via === 'string' && !Object.hasOwn(audit.vulnerabilities, via));
+      unread.push(
+        `BLOCKED: ${pkg} is ${severity}, but no advisory the gate can read accounts for it` +
+          ` (its chain reached ${got}${dangling.length ? `; via names no entry for ${named(dangling)}` : ''})` +
+          ': unrecognized shape, failing closed',
+      );
     }
   }
   if (unread.length) return { refusal: unread };
