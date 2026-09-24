@@ -1,0 +1,5 @@
+{
+  "note": "PUBLISHED COPY, from core's config/concierge/answer-ceiling.json. Do not edit here: change core's canonical and re-publish this copy. core's check (config/concierge/check-published-copy.sh) runs on every core PR and daily, and fails core's required job if this copy and core's own numbers differ. web-app's check (scripts/check-answer-ceiling.mjs) holds its wait for a Jarvis answer to these numbers, so raising core's ceiling fails web-app CI until the app waits long enough. This repo hosts the copy because it is the one public repo every consumer's CI can read token-free. JAR-1975.",
+  "completion_ceiling_ms": 600000,
+  "write_margin_ms": 30000
+}
