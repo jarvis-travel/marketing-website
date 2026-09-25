@@ -24,7 +24,9 @@ const SECTIONS: Section[] = [
         We collect information you provide directly, including name, email, and
         travel preferences. We also collect usage data to improve our service.
         We don&rsquo;t collect card details; payments are processed by Stripe,
-        and card details never touch our servers.
+        and card details never touch our servers. Waitlist sign-ups are
+        confirmed through our email delivery provider, which stores the
+        address to send that confirmation.
       </>
     ),
   },

@@ -5,7 +5,7 @@
 //
 // JAR-2059: this page is the single Terms document of record. The waitlist
 // repo's public/terms.html is a hand-off page pointing here: edit this file,
-// not that one. Sections 5-6 are ported from the retired waitlist terms.
+// not that one. Sections 5-7 are ported from the retired waitlist terms.
 
 interface Section {
   title: string;
@@ -66,7 +66,20 @@ const SECTIONS: Section[] = [
     ],
   },
   {
-    title: '5. The early-access waitlist',
+    title: '5. Disclaimers and limitation of liability',
+    paragraphs: [
+      <>
+        JarvisTravel is a travel-planning product in development. We make no
+        warranties about availability, reliability, or suitability of the
+        product for any purpose. To the maximum extent permitted by law,
+        JarvisTravel is not liable for any indirect, incidental, or
+        consequential damages arising from your use of JarvisTravel or the
+        waitlist.
+      </>,
+    ],
+  },
+  {
+    title: '6. The early-access waitlist',
     paragraphs: [
       <>
         By joining the early-access waitlist you ask JarvisTravel to notify
@@ -81,7 +94,7 @@ const SECTIONS: Section[] = [
     ],
   },
   {
-    title: '6. Changes',
+    title: '7. Changes',
     paragraphs: [
       <>
         We may update these terms as the product develops. The current
