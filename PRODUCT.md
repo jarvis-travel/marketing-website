@@ -37,7 +37,7 @@ Inferred from the codebase: visitors arrive on phones and desktops, usually part
 ## Brand Commitments
 
 - The name is "JarvisTravel", one word. The assistant is "Jarvis".
-- Voice follows the `jarvistravel-copy` skill: benefit first, plain speech, second person, short sentences, and every feature line landing on what the traveler gets. Approved anchor lines: "Your vacation should be a break, not a second job." "Enjoy your vacation." "Planning is hard. Jarvis does the heavy lifting."
+- Voice follows the `jarvistravel-copy` skill: benefit first, plain speech, second person, short sentences, and every feature line landing on what the traveler gets. Approved anchor lines: "Your vacation should be a break, not a second job." "Enjoy Your Vacation." "Planning is hard. Jarvis does the heavy lifting."
 - Fatigue Index band words lead (chill, balanced, packed). Digits appear only where the 1 to 9 scale is explained, and the verb is "rate", never "score".
 - No em dashes, no emoji, no scarcity or urgency, and no disclaimer captions on images.
 - Brand system: Meridian (palette, Inter, logo lockup) and the NINE marketing language already on the site.

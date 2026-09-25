@@ -329,7 +329,7 @@ export function HomePage() {
         <ContourArcs className="absolute -bottom-52 -right-44 w-[520px] h-[520px]" />
         <div className="relative max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-50 [text-wrap:balance] mb-4">
-            Enjoy your vacation.
+            Enjoy Your Vacation.
           </h2>
           <p className="text-lg text-sky-100 mb-10">
             Planning is hard. Jarvis does the heavy lifting.
