@@ -2,6 +2,10 @@
 // ground). The seller-of-travel section (2) is the load-bearing legal copy
 // and stays verbatim; the rest is placeholder pending final legal review.
 // The prose plugin is not installed, so sections are styled directly.
+//
+// JAR-2059: this page is the single Terms document of record. The waitlist
+// repo's public/terms.html is a hand-off page pointing here — edit this file,
+// not that one. Sections 5-6 are ported from the retired waitlist terms.
 
 interface Section {
   title: string;
@@ -61,6 +65,30 @@ const SECTIONS: Section[] = [
       </>,
     ],
   },
+  {
+    title: '5. The early-access waitlist',
+    paragraphs: [
+      <>
+        By joining the early-access waitlist you ask JarvisTravel to notify
+        you when early access opens. Joining does not guarantee an invitation,
+        a timeline, or access to any product feature.
+      </>,
+      <>
+        You confirm that the email address you provide is yours and that you
+        want to receive waitlist communications at it. You can leave the list
+        at any time by contacting us.
+      </>,
+    ],
+  },
+  {
+    title: '6. Changes',
+    paragraphs: [
+      <>
+        We may update these terms as the product develops. The current
+        version is always the one published on this page.
+      </>,
+    ],
+  },
 ];
 
 export function TermsPage() {
@@ -75,7 +103,7 @@ export function TermsPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-gray-50 leading-tight [text-wrap:balance]">
             Terms of Service
           </h1>
-          <p className="text-sky-200 text-sm mt-4">Last updated: July 2026</p>
+          <p className="text-sky-200 text-sm mt-4">Last updated: September 25, 2026</p>
         </div>
       </section>
 
