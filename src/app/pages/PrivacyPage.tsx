@@ -77,8 +77,8 @@ const SECTIONS: Section[] = [
         to storage and never becomes a history of where you have been. Place-name
         searches are answered through OpenStreetMap&rsquo;s Nominatim service;
         your precise device location is not shared with it or with any other
-        third party. You can change or withdraw your choice at any time in the
-        app&rsquo;s Settings.
+        third party. You can change your choice at any time in the app&rsquo;s
+        Settings.
       </>
     ),
   },
