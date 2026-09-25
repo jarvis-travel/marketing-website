@@ -1,6 +1,18 @@
 // Privacy Policy (JAR-432) - Meridian shell (Ateneo header band, Moonlight
 // ground). Placeholder content is honest and current; final copy drops in
 // later. The prose plugin is not installed, so sections are styled directly.
+//
+// JAR-2059: sections 1-4 and the location section describe the JarvisTravel
+// product at app.jarvistravel.com, not this website. Only the cookies section
+// is scoped to this website (JAR-770). Every claim in the location section was
+// verified against web-app and core at merge time; re-verify before editing:
+// consent is enforced by type (web-app `useCurrentLocationOnce.ts`), tiers and
+// the ephemeral session are core `internal/location` (never persisted),
+// geosearch queries are never logged or stored (core `location/geosearch.go`),
+// and the POI/nearby route does not exist yet (JAR-422). When nearby or map
+// centering ships, the map tile host receives coordinates for rendering and
+// becomes a third party this section must name; re-verify the whole section
+// at that point.
 
 interface Section {
   title: string;
@@ -15,7 +27,9 @@ const SECTIONS: Section[] = [
         We collect information you provide directly, including name, email, and
         travel preferences. We also collect usage data to improve our service.
         We don&rsquo;t collect card details; payments are processed by Stripe,
-        and card details never touch our servers.
+        and card details never touch our servers. Waitlist sign-ups are
+        confirmed through our email delivery provider, which stores the
+        address to send that confirmation.
       </>
     ),
   },
@@ -55,6 +69,23 @@ const SECTIONS: Section[] = [
     ),
   },
   {
+    title: '5. Location information',
+    body: (
+      <>
+        The app uses your location only to answer the question you asked:
+        nearby recommendations and places you search for. Nothing runs until you
+        allow it, and you choose the precision: city-level, neighborhood-level,
+        your lodging area, or a single precise fix for one search. A precise fix
+        is used for that one search and then discarded; it is not written
+        to storage and never becomes a history of where you have been. Place-name
+        searches are answered through OpenStreetMap&rsquo;s Nominatim service;
+        your precise device location is not shared with it or with any other
+        third party. You can change your choice at any time in the app&rsquo;s
+        Settings.
+      </>
+    ),
+  },
+  {
     // Scoped to THIS WEBSITE on purpose, and verified rather than asserted:
     // no document.cookie, no localStorage, no analytics tag and no external
     // script, font or CDN reference anywhere in the source, and the deployed
@@ -62,11 +93,10 @@ const SECTIONS: Section[] = [
     // references are the two social links in the footer, which are links, not
     // embeds.
     //
-    // It deliberately says nothing about the app at app.jarvistravel.com. That
-    // is a different surface with a different answer, and its policy is
-    // JAR-69. Claiming anything here about a surface this page does not cover
-    // is the shape of overclaim this ticket exists to remove.
-    title: '5. Cookies',
+    // Every other section on this page describes the app at
+    // app.jarvistravel.com (JAR-2059). This is the one section that is about
+    // the website itself, and it deliberately says nothing about the app.
+    title: '6. Cookies (this website)',
     body: (
       <>
         This website doesn&rsquo;t set cookies. No analytics, no advertising
@@ -89,7 +119,7 @@ export function PrivacyPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-gray-50 leading-tight [text-wrap:balance]">
             Privacy Policy
           </h1>
-          <p className="text-sky-200 text-sm mt-4">Last updated: August 2026</p>
+          <p className="text-sky-200 text-sm mt-4">Last updated: September 25, 2026</p>
         </div>
       </section>
 
