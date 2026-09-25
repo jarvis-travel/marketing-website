@@ -4,7 +4,7 @@
 // The prose plugin is not installed, so sections are styled directly.
 //
 // JAR-2059: this page is the single Terms document of record. The waitlist
-// repo's public/terms.html is a hand-off page pointing here — edit this file,
+// repo's public/terms.html is a hand-off page pointing here: edit this file,
 // not that one. Sections 5-6 are ported from the retired waitlist terms.
 
 interface Section {

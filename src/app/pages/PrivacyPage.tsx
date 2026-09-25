@@ -5,7 +5,7 @@
 // JAR-2059: sections 1-4 and the location section describe the JarvisTravel
 // product at app.jarvistravel.com, not this website. Only the cookies section
 // is scoped to this website (JAR-770). Every claim in the location section was
-// verified against web-app and core at merge time; re-verify before editing —
+// verified against web-app and core at merge time; re-verify before editing:
 // consent is enforced by type (web-app `useCurrentLocationOnce.ts`), tiers and
 // the ephemeral session are core `internal/location` (never persisted),
 // geosearch queries are never logged or stored (core `location/geosearch.go`),
@@ -67,11 +67,11 @@ const SECTIONS: Section[] = [
     title: '5. Location information',
     body: (
       <>
-        The app uses your location only to answer the question you asked &mdash;
+        The app uses your location only to answer the question you asked:
         nearby recommendations and places you search for. Nothing runs until you
         allow it, and you choose the precision: city-level, neighborhood-level,
         your lodging area, or a single precise fix for one search. A precise fix
-        is used for that one search and then discarded &mdash; it is not written
+        is used for that one search and then discarded; it is not written
         to storage and never becomes a history of where you have been. Place-name
         searches are answered through OpenStreetMap&rsquo;s Nominatim service;
         your precise device location is not shared with it or with any other
