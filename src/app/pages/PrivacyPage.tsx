@@ -9,7 +9,10 @@
 // consent is enforced by type (web-app `useCurrentLocationOnce.ts`), tiers and
 // the ephemeral session are core `internal/location` (never persisted),
 // geosearch queries are never logged or stored (core `location/geosearch.go`),
-// and the POI/nearby route does not exist yet (JAR-422).
+// and the POI/nearby route does not exist yet (JAR-422). When nearby or map
+// centering ships, the map tile host receives coordinates for rendering and
+// becomes a third party this section must name; re-verify the whole section
+// at that point.
 
 interface Section {
   title: string;
