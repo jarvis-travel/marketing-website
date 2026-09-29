@@ -61,22 +61,30 @@ export const termsDoc: LegalDocContent = {
           "p": "How a Trip Pass works."
         },
         {
-          "p": "•\tOne trip. A Trip Pass covers one trip. It is used when you start planning a trip with it, and from then on it belongs to that trip. Deleting the trip does not restore the Trip Pass."
+          "ul": [
+            "One trip. A Trip Pass covers one trip. It is used when you start planning a trip with it, and from then on it belongs to that trip. Deleting the trip does not restore the Trip Pass."
+          ]
         },
         {
-          "p": "•\tChanging dates. The start and end dates of a trip planned with a Trip Pass can be changed twice. An edit that changes both dates at once counts as one change. Adding dates to a trip that was created without them is not a change. After the second change, the trip's dates cannot be changed again, whether by you, by anyone you have invited to the trip, or by Jarvis."
+          "ul": [
+            "Changing dates. The start and end dates of a trip planned with a Trip Pass can be changed twice. An edit that changes both dates at once counts as one change. Adding dates to a trip that was created without them is not a change. After the second change, the trip's dates cannot be changed again, whether by you, by anyone you have invited to the trip, or by Jarvis."
+          ]
         },
         {
-          "p": "•\tWhen planning closes. Planning for the trip closes at 12:00 noon Coordinated Universal Time (UTC) on the day after the trip's end date. From then on, the trip's plan cannot be changed, including its itinerary, accommodation, flights and budget. No one new can be invited to the trip, and Jarvis can no longer plan it."
+          "ul": [
+            "When planning closes. Planning for the trip closes at 12:00 noon Coordinated Universal Time (UTC) on the day after the trip's end date. From then on, the trip's plan cannot be changed, including its itinerary, accommodation, flights and budget. No one new can be invited to the trip, and Jarvis can no longer plan it."
+          ]
         },
         {
-          "p": "•\tExpenses. For seven business days after planning closes, you can still record expenses and receipts for the trip and match bank transactions to it. Business days are Monday to Friday, and public holidays count as business days."
+          "ul": [
+            "Expenses. For seven business days after planning closes, you can still record expenses and receipts for the trip and match bank transactions to it. Business days are Monday to Friday, and public holidays count as business days.",
+            "What stays open. After planning closes you can still view the trip, keep and add to its journal, share it, remove people from it, disconnect a linked bank account, and delete it."
+          ]
         },
         {
-          "p": "•\tWhat stays open. After planning closes you can still view the trip, keep and add to its journal, share it, remove people from it, disconnect a linked bank account, and delete it."
-        },
-        {
-          "p": "•\tExplore. The limits in (b), (c) and (d) do not apply while the trip's owner has an active Explore subscription. If that subscription ends, they apply again."
+          "ul": [
+            "Explore. The limits in (b), (c) and (d) do not apply while the trip's owner has an active Explore subscription. If that subscription ends, they apply again."
+          ]
         },
         {
           "p": "For more information about our third-party payment processors and your payment information, please review our Privacy Policy."
@@ -93,13 +101,19 @@ export const termsDoc: LegalDocContent = {
           "p": "Payments to JarvisTravel are non-refundable, except where a refund is required by law or is expressly stated in these Terms."
         },
         {
-          "p": "•\tExplore. Cancelling a subscription does not entitle you to a refund or credit for any part of the billing period you have already paid for."
+          "ul": [
+            "Explore. Cancelling a subscription does not entitle you to a refund or credit for any part of the billing period you have already paid for."
+          ]
         },
         {
-          "p": "•\tTrip Pass. A Trip Pass is non-refundable, whether or not you have used it."
+          "ul": [
+            "Trip Pass. A Trip Pass is non-refundable, whether or not you have used it."
+          ]
         },
         {
-          "p": "•\tPartial billing periods and unused access are not refunded."
+          "ul": [
+            "Partial billing periods and unused access are not refunded."
+          ]
         },
         {
           "p": "We may issue a refund at our discretion in an individual case. Doing so does not waive this section or create any entitlement to a refund in any other case."
@@ -298,7 +312,7 @@ export const privacyDoc: LegalDocContent = {
       "heading": "1. Overview",
       "blocks": [
         {
-          "p": "JarvisTravel, Inc. (\"JarvisTravel,\" \"we,\" \"us,\" or \"our\") operates the JarvisTravel platform, a subscription software product for planning personal travel. JarvisTravel sells software access only and is not a travel agency or seller of travel; we do not sell, book, or take commission on any travel service. This Privacy Policy explains how we collect, use, disclose, and retain personal information when you visit our website www.jarvistravel.com (the “Website”), use our applications or services, communicate with us, participate in research or demos, or otherwise interact with or provide personal information to JarvisTravel. For purposes of this Privacy Policy, \"Services\" means the Website together with these data-collectiontouchpoints, which is broader than, and not limited to, the \"Services\" defined in our Terms of Service; where this Policyaddresses your use of the platform itself, that use remains subject to the Terms of Service definition of \"Services.\""
+          "p": "JarvisTravel, Inc. (\"JarvisTravel,\" \"we,\" \"us,\" or \"our\") operates the JarvisTravel platform, a subscription software product for planning personal travel. JarvisTravel sells software access only and is not a travel agency or seller of travel; we do not sell, book, or take commission on any travel service. This Privacy Policy explains how we collect, use, disclose, and retain personal information when you visit our website www.jarvistravel.com (the “Website”), use our applications or services, communicate with us, participate in research or demos, or otherwise interact with or provide personal information to JarvisTravel. For purposes of this Privacy Policy, \"Services\" means the Website together with these data-collection touchpoints, which is broader than, and not limited to, the \"Services\" defined in our Terms of Service; where this Policy addresses your use of the platform itself, that use remains subject to the Terms of Service definition of \"Services.\""
         },
         {
           "p": "This Policy is designed to supplement our Terms of Service and Cookie Policy, each incorporated herein. If you do not agree with this Privacy Policy, do not use the Services."
@@ -331,7 +345,9 @@ export const privacyDoc: LegalDocContent = {
           ]
         },
         {
-          "p": "•\tSensitive personal information: information related to your travel and preference information that includes accessibility needs you choose to describe in free-text fields and dietary restriction selections (e.g., religious dietary observance, such as Halal or Kosher, and health-adjacent dietary status, such as gluten-free or dairy-free)."
+          "ul": [
+            "Sensitive personal information: information related to your travel and preference information that includes accessibility needs you choose to describe in free-text fields and dietary restriction selections (e.g., religious dietary observance, such as Halal or Kosher, and health-adjacent dietary status, such as gluten-free or dairy-free)."
+          ]
         },
         {
           "ul": [
@@ -377,13 +393,11 @@ export const privacyDoc: LegalDocContent = {
           "p": "We collect personal information:"
         },
         {
-          "p": "•\tDirectly from you when you provide us your personal information through our Website through webforms including our waitlist."
-        },
-        {
-          "p": "•\tIndirectly from you through cookies and automatic data technologies that collect your browser-level information when you navigate through and interact with our Website or use our Services."
-        },
-        {
-          "p": "•\tFrom service providers and other third parties acting on our behalf, including from our payment processor; from our authentication provider; from our financial data provider, Plaid, if you choose to connect a bank account; from travel-, map-, weather-, event-, and budget-data sources connected to the Services; and from public or commercial sources where permitted by law."
+          "ul": [
+            "Directly from you when you provide us your personal information through our Website through webforms including our waitlist.",
+            "Indirectly from you through cookies and automatic data technologies that collect your browser-level information when you navigate through and interact with our Website or use our Services.",
+            "From service providers and other third parties acting on our behalf, including from our payment processor; from our authentication provider; from our financial data provider, Plaid, if you choose to connect a bank account; from travel-, map-, weather-, event-, and budget-data sources connected to the Services; and from public or commercial sources where permitted by law."
+          ]
         }
       ]
     },
@@ -394,37 +408,19 @@ export const privacyDoc: LegalDocContent = {
           "p": "We collect, use, and disclose personal information for the following business and commercial purposes:"
         },
         {
-          "p": "•\tto provide and operate the Services;"
-        },
-        {
-          "p": "•\tto create, personalize, and improve itineraries, recommendations, and budget estimates for your travel;"
-        },
-        {
-          "p": "•\tto authenticate users;"
-        },
-        {
-          "p": "•\tto process subscriptions and recurring or renewal payments;"
-        },
-        {
-          "p": "•\tto provide customer support;"
-        },
-        {
-          "p": "•\tto send transactional notices and confirmation;"
-        },
-        {
-          "p": "•\tto send you service-related marketing campaigns and communications;"
-        },
-        {
-          "p": "•\tto maintain security and prevent fraud;"
-        },
-        {
-          "p": "•\tto analyze performance and usage;"
-        },
-        {
-          "p": "•\tto improve our models, features, and workflows;"
-        },
-        {
-          "p": "•\tto comply with law enforcements, contracts, and our legal obligations."
+          "ul": [
+            "to provide and operate the Services;",
+            "to create, personalize, and improve itineraries, recommendations, and budget estimates for your travel;",
+            "to authenticate users;",
+            "to process subscriptions and recurring or renewal payments;",
+            "to provide customer support;",
+            "to send transactional notices and confirmation;",
+            "to send you service-related marketing campaigns and communications;",
+            "to maintain security and prevent fraud;",
+            "to analyze performance and usage;",
+            "to improve our models, features, and workflows;",
+            "to comply with law enforcements, contracts, and our legal obligations."
+          ]
         }
       ]
     },
@@ -435,31 +431,17 @@ export const privacyDoc: LegalDocContent = {
           "p": "We disclose the categories of personal information above to the following categories of service providers and processors, each of which receives only the information necessary to perform its function:"
         },
         {
-          "p": "•\tauthentication services;"
-        },
-        {
-          "p": "•\tcloud hosting, database, and object storage providers;"
-        },
-        {
-          "p": "•\tpayment processing;"
-        },
-        {
-          "p": "•\ttransactional email delivery;"
-        },
-        {
-          "p": "•\tSMS messaging;"
-        },
-        {
-          "p": "•\tbank-account connection and financial data services;"
-        },
-        {
-          "p": "•\tAI model providers;"
-        },
-        {
-          "p": "•\tdestination imagery, photo providers, map tile, weather, and flight-status data providers;"
-        },
-        {
-          "p": "•\tand, where activated, product analytics services."
+          "ul": [
+            "authentication services;",
+            "cloud hosting, database, and object storage providers;",
+            "payment processing;",
+            "transactional email delivery;",
+            "SMS messaging;",
+            "bank-account connection and financial data services;",
+            "AI model providers;",
+            "destination imagery, photo providers, map tile, weather, and flight-status data providers;",
+            "and, where activated, product analytics services."
+          ]
         },
         {
           "p": "Some content in the app version of our offering, including photographs, maps, and other features for signing in or connecting to a bank account, may be delivered by a third party rather than us. When your device displays that content, it connects to the third party directly, and they receive your IP address, along with the standard information any browser sends with a request, e.g., your browser type, device type and your language preference. We limit what travels with those requests. We ask your browser not to send the address of the page you are viewing, and we do not pass on your name, your email address, your account details, or the contents of your trips. We also request destination photographs in a way that avoids naming the destination. Note that some content is inherently descriptive of itself, e.g., a map tile, for example, covers the area you are looking at, and may reveal additional information about you or your destination location."
@@ -513,16 +495,12 @@ export const privacyDoc: LegalDocContent = {
           "p": "Subject to certain restrictions and exceptions, we may process your Personal Information requests to:"
         },
         {
-          "p": "•\tConfirm and access your personal information. This enables you to confirm whether we are processing your personal information and to access the personal information requested."
-        },
-        {
-          "p": "•\tRequest correction of the personal information that we maintain about you. This enables you to have any inaccurate data we hold about you corrected, though we may need to verify the accuracy of the new data you provide to us."
-        },
-        {
-          "p": "•\tRequest deletion of your personal information in certain circumstances. This enables you to ask us to delete or remove personal information where there is no good reason for us continuing to process it, including when you no longer wish to continue our Services."
-        },
-        {
-          "p": "•\tUnsubscribe or Opt-out of direct marketing. When we send a promotional communication to you, you can opt-out of further promotional communications by clicking the unsubscribe button. Please note that notwithstanding the promotional preferences you indicate by either unsubscribing or opting out, we may continue to send you administrative emails including, for example, updates with respect to our policies or terms you may be subject to."
+          "ul": [
+            "Confirm and access your personal information. This enables you to confirm whether we are processing your personal information and to access the personal information requested.",
+            "Request correction of the personal information that we maintain about you. This enables you to have any inaccurate data we hold about you corrected, though we may need to verify the accuracy of the new data you provide to us.",
+            "Request deletion of your personal information in certain circumstances. This enables you to ask us to delete or remove personal information where there is no good reason for us continuing to process it, including when you no longer wish to continue our Services.",
+            "Unsubscribe or Opt-out of direct marketing. When we send a promotional communication to you, you can opt-out of further promotional communications by clicking the unsubscribe button. Please note that notwithstanding the promotional preferences you indicate by either unsubscribing or opting out, we may continue to send you administrative emails including, for example, updates with respect to our policies or terms you may be subject to."
+          ]
         },
         {
           "p": "If you wish to submit a request for us to take any of the above actions, please send an email to privacy@jarvistravel.com or call (408) 475-2928."
