@@ -1,8 +1,14 @@
 // AUTO-GENERATED from counsel-final docs (Procopio, 2026-08-28) — see JAR-69.
-// Verbatim legal text; do not hand-edit. Cookie effective-date and contact
-// placeholders were filled to match the Privacy Policy, and the Privacy
-// section 6 provider clause was resolved to plain text, both per Brent
-// (2026-09-29). Regenerate from the source docs rather than editing prose here.
+// Verbatim legal text; do not hand-edit — regenerate from the source docs.
+//
+// Brent-directed edits applied during generation (2026-09-29):
+//  - Cookie effective-date + contact placeholders filled to match the Privacy Policy.
+//  - Privacy section 6 provider clause resolved to plain text.
+//  - Age thresholds set to eighteen (18) throughout ("no users under 18"):
+//    Privacy sections 5 and 9.
+//  - SMS text-message clauses added (Fury draft, PENDING COUNSEL RATIFICATION):
+//    Terms new "SMS text message alerts" section; Privacy section 4 purpose and
+//    section 5 no-share sentences. Counsel to fold these into the source doc.
 
 export interface LegalBlock { p?: string; ul?: string[]; }
 export interface LegalSection { heading: string; blocks: LegalBlock[]; }
@@ -294,7 +300,24 @@ export const termsDoc: LegalDocContent = {
       ]
     },
     {
-      "heading": "22. Contact information",
+      "heading": "22. SMS text message alerts",
+      "blocks": [
+        {
+          "p": "JarvisTravel Alerts is an optional text-message program from JarvisTravel, Inc. If you turn on SMS Notifications in the app's Settings, or text START to +1 (888) 260-3716, you agree to receive recurring automated text messages from JarvisTravel at the mobile number on your account. The messages are alerts about your trips while you are traveling, such as changes to your flights and reminders about your plans. Consent to receive text messages is not a condition of any purchase."
+        },
+        {
+          "p": "Message frequency varies with your trips. Message and data rates may apply; check your mobile plan for details."
+        },
+        {
+          "p": "You can cancel at any time. Text STOP to +1 (888) 260-3716 to stop all messages. You will receive one message confirming you have been unsubscribed, and no more after that. You can also turn off SMS Notifications in Settings. To start again, text START or UNSTOP, or turn SMS Notifications back on. For help, text HELP to +1 (888) 260-3716 or email admin@jarvistravel.com."
+        },
+        {
+          "p": "Mobile carriers are not liable for delayed or undelivered messages. The program is available only for mobile numbers in the United States. We handle your mobile number and your consent as described in our Privacy Policy."
+        }
+      ]
+    },
+    {
+      "heading": "23. Contact information",
       "blocks": [
         {
           "p": "Questions, notices, and requests should be sent to privacy@jarvistravel.com."
@@ -415,6 +438,7 @@ export const privacyDoc: LegalDocContent = {
             "to process subscriptions and recurring or renewal payments;",
             "to provide customer support;",
             "to send transactional notices and confirmation;",
+            "to send the text-message alerts you ask for, if you turn them on, and to keep a record of your consent and of any opt-out;",
             "to send you service-related marketing campaigns and communications;",
             "to maintain security and prevent fraud;",
             "to analyze performance and usage;",
@@ -444,6 +468,9 @@ export const privacyDoc: LegalDocContent = {
           ]
         },
         {
+          "p": "No mobile information will be shared with third parties or affiliates for marketing or promotional purposes. All the above categories exclude text messaging originator opt-in data and consent; this information will not be shared with any third parties."
+        },
+        {
           "p": "Some content in the app version of our offering, including photographs, maps, and other features for signing in or connecting to a bank account, may be delivered by a third party rather than us. When your device displays that content, it connects to the third party directly, and they receive your IP address, along with the standard information any browser sends with a request, e.g., your browser type, device type and your language preference. We limit what travels with those requests. We ask your browser not to send the address of the page you are viewing, and we do not pass on your name, your email address, your account details, or the contents of your trips. We also request destination photographs in a way that avoids naming the destination. Note that some content is inherently descriptive of itself, e.g., a map tile, for example, covers the area you are looking at, and may reveal additional information about you or your destination location."
         },
         {
@@ -453,7 +480,7 @@ export const privacyDoc: LegalDocContent = {
           "p": "We use cookies, local storage, and similar technologies for essential site functions, security, and limited functional purposes such as preference retention. We do not currently operate analytics or advertising cookies, as described in our Cookie Policy."
         },
         {
-          "p": "JarvisTravel does not sell or share your personal information for cross-context behavioral or targeted advertising. We do not use advertising or social media cookies and other similar tracking technologies on our website or through the use of our Services. We do not knowingly collect, use, disclose, sell or share for cross-context behavioral or targeted advertising, or otherwise process personal information of individuals below 16 years of age."
+          "p": "JarvisTravel does not sell or share your personal information for cross-context behavioral or targeted advertising. We do not use advertising or social media cookies and other similar tracking technologies on our website or through the use of our Services. We do not knowingly collect, use, disclose, sell or share for cross-context behavioral or targeted advertising, or otherwise process personal information of individuals below 18 years of age."
         }
       ]
     },
@@ -511,7 +538,7 @@ export const privacyDoc: LegalDocContent = {
       "heading": "9. Children’s privacy",
       "blocks": [
         {
-          "p": "The Services are not directed to children under thirteen (13), and we do not knowingly collect personal information directly from children under thirteen without appropriate authorization. If you are a parent or guardian, you may provide limited information about children in your travel party (such as age bands) for itinerary-planning purposes; children themselves are not users of the Services and do not create accounts. If you believe a child has provided personal information unlawfully, contact us so we can investigate and take appropriate action. If local law imposes a higher age threshold, we will honor applicable requirements."
+          "p": "The Services are not directed to children under eighteen (18), and we do not knowingly collect personal information directly from children under eighteen without appropriate authorization. If you are a parent or guardian, you may provide limited information about children in your travel party (such as age bands) for itinerary-planning purposes; anyone under eighteen (18) is not a user of the Services and does not create an account. If you believe a child has provided personal information unlawfully, contact us so we can investigate and take appropriate action. If local law imposes a higher age threshold, we will honor applicable requirements."
         }
       ]
     },
