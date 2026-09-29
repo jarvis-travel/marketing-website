@@ -10,8 +10,9 @@ const SOCIAL = [
 
 // Footer (JAR-432) - Ateneo ground per Meridian (the old bg-gray-900 was
 // Neverything ink used as a web surface, which the brand bans). Every link
-// resolves to a page that exists: Careers, Press and the duplicate Cookie
-// Policy pointed nowhere and are gone until they have real destinations.
+// resolves to a page that exists: Careers and Press pointed nowhere and are
+// gone until they have real destinations. The Cookie Policy link is back now
+// that /cookies serves the counsel document of record (JAR-69).
 // Wordmark stands alone pending the commissioned mark (JAR-354).
 
 const FOOTER_LINKS: Record<
@@ -29,6 +30,7 @@ const FOOTER_LINKS: Record<
   Legal: [
     { name: 'Privacy Policy', path: '/privacy' },
     { name: 'Terms of Service', path: '/terms' },
+    { name: 'Cookie Policy', path: '/cookies' },
     { name: 'Data Security', path: '/data-security' },
   ],
 };

@@ -58,6 +58,11 @@ export const ROUTE_META: Record<string, RouteMeta> = {
     title: 'Terms of Service: JarvisTravel',
     description: 'The terms that govern your use of JarvisTravel.',
   },
+  '/cookies': {
+    title: 'Cookie Policy: JarvisTravel',
+    description:
+      'How JarvisTravel uses cookies and local storage: the strictly necessary ones that sign you in, and the choices that stay yours.',
+  },
   '/data-security': {
     title: 'Data Security: JarvisTravel',
     description:
