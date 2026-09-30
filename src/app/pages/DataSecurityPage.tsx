@@ -53,7 +53,7 @@ const BUILT = [
 const DONT = [
   'We don’t sell your personal information.',
   'We don’t run ads, and we don’t take money to put anything in your plan.',
-  'We don’t track you across other websites. The cookies we rely on keep you signed in and secure, and analytics is switched off.',
+  'We don’t track you across other websites. The cookies we rely on keep you signed in and secure.',
   'We don’t share your phone number for anyone’s marketing, and text alerts stay off until you turn them on.',
 ];
 
