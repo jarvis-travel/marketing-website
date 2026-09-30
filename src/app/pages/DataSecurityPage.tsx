@@ -16,6 +16,12 @@ import { Link } from 'react-router-dom';
 //   - A destination photo request carries no account details and doesn't name
 //     the destination, and no phone number is shared for marketing (Privacy §5).
 //   - Text alerts are opt-in (Terms, SMS text message alerts).
+//   - TLS 1.2/1.3, HSTS, the CSP, X-Frame-Options and nosniff are core
+//     infra/nginx/sites-jarvistravel.conf. Database connections use
+//     sslmode=verify-full (core deployments/podman-compose.yml), and the
+//     database is DigitalOcean managed PostgreSQL: LUKS AES-256 at rest, with
+//     encrypted backups (DigitalOcean's PostgreSQL security docs). Bank tokens
+//     use AES-256-GCM (core shared/security/encryption.go).
 // Present tense only: no absolute or forward-looking promises about data
 // (jarvistravel-copy rule 9, and the lint:absolute-claims guard).
 
@@ -44,9 +50,24 @@ const BUILT = [
     name: 'Destination photos load without your name on them.',
     desc: 'Your device fetches each photo straight from the photo provider. The provider sees what any website sees, like your IP address, but not your name, email or account, and we ask for the photo without naming where you’re going.',
   },
+];
+
+const TECHNICAL = [
   {
-    name: 'Encrypted on the way.',
-    desc: 'Your plans, your journal and your chats with Jarvis are encrypted on their way between your device and JarvisTravel.',
+    name: 'Encryption in transit',
+    desc: 'Every connection to JarvisTravel uses HTTPS with TLS 1.2 or 1.3, and HSTS tells your browser not to connect to us any other way. Our servers reach our database over TLS too, with its certificate checked.',
+  },
+  {
+    name: 'Encryption at rest',
+    desc: 'The database that holds your account and your trips is encrypted at rest with AES-256, and so are its backups.',
+  },
+  {
+    name: 'A second lock on bank connections',
+    desc: 'The token that links your bank is encrypted with AES-256-GCM before it’s stored, on top of the database’s own encryption.',
+  },
+  {
+    name: 'Browser protections',
+    desc: 'A Content Security Policy limits which scripts can run on our pages, X-Frame-Options stops other sites from framing the app, and X-Content-Type-Options stops browsers from guessing file types.',
   },
 ];
 
@@ -58,16 +79,28 @@ const DONT = [
 ];
 
 const CHOICES = [
-  'Download your data, from Settings',
-  'Delete your account and its data, from Settings',
-  'Correct your details whenever you like',
-  'Choose how precise your location is, in Settings',
-  'Disconnect your bank, from your trip’s budget',
-  'Turn off text alerts in Settings, or text STOP',
+  'Download your data',
+  'Delete your account and its data',
+  'Choose how precise your location is',
+  'Disconnect your bank',
+  'Turn off text alerts, or text STOP',
   'Unsubscribe from marketing email in one click',
 ];
 
 const LINK = 'text-sky-600 underline underline-offset-4 decoration-1 hover:text-sky-700';
+
+function DetailList({ items }: { items: { name: string; desc: string }[] }) {
+  return (
+    <ul className="border-t border-gray-200">
+      {items.map((item) => (
+        <li key={item.name} className="py-5 border-b border-gray-200">
+          <h3 className="font-semibold text-gray-900 mb-1">{item.name}</h3>
+          <p className="text-gray-600 leading-relaxed">{item.desc}</p>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 function CheckList({ items }: { items: string[] }) {
   return (
@@ -114,14 +147,17 @@ export function DataSecurityPage() {
               Each part of JarvisTravel, and each service that helps run it, gets only
               what it needs to do its job.
             </p>
-            <ul className="border-t border-gray-200">
-              {BUILT.map((item) => (
-                <li key={item.name} className="py-5 border-b border-gray-200">
-                  <h3 className="font-semibold text-gray-900 mb-1">{item.name}</h3>
-                  <p className="text-gray-600 leading-relaxed">{item.desc}</p>
-                </li>
-              ))}
-            </ul>
+            <DetailList items={BUILT} />
+          </div>
+
+          <div>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+              The technical details
+            </h2>
+            <p className="text-lg text-gray-600 leading-relaxed mb-6">
+              For anyone who wants the specifics.
+            </p>
+            <DetailList items={TECHNICAL} />
           </div>
 
           <div>
