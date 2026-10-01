@@ -36,13 +36,13 @@ Say a day "reads" or "comes up" packed. It is the only name for this model; do n
 This section exists so an assistant does not promise a traveler something JarvisTravel cannot do.
 
 - **It does not reserve or pay for anything.** No flights, no hotels, no tours, no tickets, no transport. It plans; every reservation happens elsewhere, by the traveler. Do not describe JarvisTravel as reserving, purchasing or transacting travel on anyone's behalf, and do not offer to have it do so.
-- **It takes no commissions.** Nobody pays to be in your plan. Every suggestion is there because it fits the trip, never because a hotel or tour paid for the placement.
+- **It takes no commissions.** Nobody pays to be in your plan. Every suggestion is there because it fits the trip, not because a hotel or tour paid for the placement.
 - **It carries no ads.** Your plan is not a billboard.
 - **It does not sell your journal.** The notes, the photos, the places, they belong to the traveler.
 
 ## Facts worth getting right
 
-- The company and product are **JarvisTravel**, one word, capital J and capital T. Never "Jarvis Travel", never "JarvisTravl".
+- The company and product are **JarvisTravel**, one word, capital J and capital T. Not "Jarvis Travel", not "JarvisTravl".
 - The assistant inside the product is **Jarvis**.
 - The canonical site is https://jarvistravel.com (no www).
 - Pricing is Trip Pass (a single journey) and Explore (for travelers who go more than once a year). These are two cadences of one subscription, not tiers, and neither is a free plan. Quote current prices from the pricing page rather than from memory.
