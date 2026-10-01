@@ -81,7 +81,14 @@ for (const dir of COMPONENT_DIRS) {
     scanned.add(rel);
     // Normalise separators: join() yields backslashes on Windows, so comparing
     // against a forward-slash literal silently failed to exclude the file.
-    if (rel.split(sep).join('/') === 'src/app/data/pricing.ts') continue; // the one place amounts belong
+    const relPosix = rel.split(sep).join('/');
+    if (relPosix === 'src/app/data/pricing.ts') continue; // the one place amounts belong
+    // The counsel legal documents of record (verbatim, auto-generated) carry
+    // statutory and liability-cap dollar amounts — e.g. the ToS §15 aggregate-
+    // liability cap "US$100" — that are not product prices and cannot be routed
+    // through priceOf(). Excluded by exact path, the same auditable mechanism as
+    // pricing.ts above (JAR-69). Kept generated + verbatim, so no drift risk.
+    if (relPosix === 'src/app/pages/legal/content.ts') continue;
 
     const text = readFileSync(join(ROOT, rel), 'utf8');
     let inBlockComment = false;

@@ -1,4 +1,16 @@
 # plan-not-book allowlist - one case-insensitive regex per line.
 # A flagged source line is permitted when any pattern here matches it.
 # Keep entries narrow; every entry is a standing legal-review exception.
-# (No exceptions currently required for the marketing site.)
+#
+# JAR-69: the counsel-final Terms of Service and Privacy Policy (Procopio,
+# verbatim in src/app/pages/legal/content.ts) use "book"/"booking" only to
+# DISCLAIM that JarvisTravel books travel — the opposite of the advertising the
+# CA Seller-of-Travel guard exists to stop. Each phrase below is that document's
+# own wording; they are legal disclaimers, not product copy.
+does not sell, book, resell
+do not sell, book, or take commission
+maps, booking engines
+any booking, purchase, reservation
+a user-selected booking
+bookings, travel opportunities
+maps, booking tools, and external content

@@ -9,6 +9,7 @@ import { AboutPage } from '../pages/AboutPage';
 import { ContactPage } from '../pages/ContactPage';
 import { PrivacyPage } from '../pages/PrivacyPage';
 import { TermsPage } from '../pages/TermsPage';
+import { CookiesPage } from '../pages/CookiesPage';
 import { DataSecurityPage } from '../pages/DataSecurityPage';
 
 function MarketingLayout({ children }: { children: React.ReactNode }) {
@@ -85,6 +86,14 @@ export function PageRouter() {
         element={
           <MarketingLayout>
             <TermsPage />
+          </MarketingLayout>
+        }
+      />
+      <Route
+        path="/cookies"
+        element={
+          <MarketingLayout>
+            <CookiesPage />
           </MarketingLayout>
         }
       />

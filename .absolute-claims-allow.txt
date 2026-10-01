@@ -5,4 +5,16 @@
 # legal status claim about travel, NOT a data claim, and counsel asked us to
 # keep it in substance. It is the only "never sells" that stays.
 never sells travel
+#
+# JAR-69: the counsel-final Terms of Service (Procopio, verbatim in
+# src/app/pages/legal/content.ts) uses "guarantee(s)" only to DISCLAIM
+# guarantees ("does not guarantee ...", "no ... guarantees"). These are legal
+# risk disclaimers, the opposite of a marketing promise, and are the document's
+# own wording. Each entry matches one disclaimer segment.
+not guarantees, instructions, or professional advice
+does not guarantee the accuracy, availability
+does not guarantee that information presented
+does not guarantee uninterrupted service
+do not guarantee the accuracy of, and disclaims
+representations, warranties, or guarantees
 
