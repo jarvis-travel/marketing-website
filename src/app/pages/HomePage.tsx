@@ -298,7 +298,7 @@ export function HomePage() {
                 Nobody pays to be in your plan.
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Every suggestion is there because it fits your trip, never
+                Every suggestion is there because it fits your trip, not
                 because a hotel or tour paid us.
               </p>
             </li>
