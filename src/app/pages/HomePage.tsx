@@ -96,7 +96,7 @@ const FEATURES: Feature[] = [
   {
     icon: BookOpen,
     name: 'Trip journal',
-    desc: 'Notes, photos, receipts and places become a story worth rereading. Yours to keep.',
+    desc: 'Notes, receipts and places become a story worth rereading. Yours to keep.',
     voice: 'journal',
   },
   {
@@ -315,7 +315,7 @@ export function HomePage() {
                 Your memories belong to you.
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Your journal is yours: the notes, the photos, the places. We
+                Your journal is yours: the notes, the receipts, the places. We
                 do not sell it.
               </p>
             </li>
