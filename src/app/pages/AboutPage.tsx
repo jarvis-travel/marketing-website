@@ -39,7 +39,7 @@ export function AboutPage() {
               Two commitments have shaped everything since. JarvisTravel plans;
               it doesn&rsquo;t sell travel. No commissions, no placements; nothing
               appears in your plan because someone paid for the spot. And the
-              trip you take is yours: the journal, the photos, the places
+              trip you take is yours: the journal, the notes, the places
               belong to you.
             </p>
             <p>

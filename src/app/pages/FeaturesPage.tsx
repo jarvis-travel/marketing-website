@@ -61,7 +61,7 @@ const MOMENTS: Moment[] = [
   },
   {
     name: 'Bring the trip home with you',
-    desc: 'Your notes, photos, receipts and places come together in a journal worth rereading. It’s yours to keep.',
+    desc: 'Your notes, receipts and places come together in a journal worth rereading. It’s yours to keep.',
     soWhat: 'So the trip doesn’t evaporate when the tan does.',
     capture: {
       image: JOURNAL,

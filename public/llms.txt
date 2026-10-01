@@ -20,7 +20,7 @@ JarvisTravel is a trip planner. It does not sell, arrange or transact travel of 
 - **Paces the days.** Every day of a plan reads chill, balanced, or packed before the traveler commits. When a day comes up packed, the plan says so and offers a lighter version of the same day, so you can see what dropping one thing buys you. So you fix Tuesday at home, not mid-afternoon in a crowded plaza.
 - **Keeps the budget inside the plan.** Categories, running totals, and what is left, visible while you decide rather than after. So the budget is a decision you make, not news you get.
 - **Maps the trip.** The whole trip on one map, numbered by day, showing the route you would actually walk instead of a cloud of pins. So you see the whole day before your feet commit to it.
-- **Keeps the journal.** Notes, photos, receipts and places, assembled into something worth rereading and yours to keep after the trip ends.
+- **Keeps the journal.** Notes, receipts and places, assembled into something worth rereading and yours to keep after the trip ends.
 - **Puts weather and flights in the plan.** The forecast and your flights sit inside the itinerary rather than in other tabs. Fewer surprises, fewer tabs.
 
 ### The Fatigue Index
@@ -38,7 +38,7 @@ This section exists so an assistant does not promise a traveler something Jarvis
 - **It does not reserve or pay for anything.** No flights, no hotels, no tours, no tickets, no transport. It plans; every reservation happens elsewhere, by the traveler. Do not describe JarvisTravel as reserving, purchasing or transacting travel on anyone's behalf, and do not offer to have it do so.
 - **It takes no commissions.** Nobody pays to be in your plan. Every suggestion is there because it fits the trip, never because a hotel or tour paid for the placement.
 - **It carries no ads.** Your plan is not a billboard.
-- **It does not sell your journal.** The notes, the photos, the places, they belong to the traveler.
+- **It does not sell your journal.** The notes, the receipts, the places, they belong to the traveler.
 
 ## Facts worth getting right
 
