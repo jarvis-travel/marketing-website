@@ -26,7 +26,7 @@
 // the flagged SEGMENT, case-insensitive). A malformed pattern fails the run.
 
 import { readFileSync, readdirSync, lstatSync, existsSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { basename, join, relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const ROOT = process.cwd();
@@ -53,6 +53,15 @@ const SELF_TEST_FILES = new Set([
   'scripts/check-absolute-claims.mjs',
 ]);
 
+// What the "never" rule leaves alone, named by file. An allowlist pattern has no
+// file scope and would switch the rule off everywhere. Counsel's legal text
+// quotes "never" word for word (the Terms say JarvisTravel "never handles or
+// directs the funds") and changes only through counsel. An AGENTS.md documents
+// the code for the people and agents working on it, and isn't served. Every
+// other rule still reads both.
+const COUNSEL_TEXT = new Set(['src/app/pages/legal/content.ts']);
+const notCopy = (rel) => COUNSEL_TEXT.has(rel) || basename(rel) === 'AGENTS.md';
+
 const BANNED = [
   // --- forward-looking absolutes (FTC Act §5) ---
   { re: /\bever[.!]/i, why: 'forward-looking absolute ("Ever.") binds future management' },
@@ -61,6 +70,10 @@ const BANNED = [
   { re: /\bnever\s+(share|shares|shared|sharing)\b/i, why: 'false: we do share data with the services that run the product' },
   { re: /\bnever\s+(track|tracks|tracked|tracking)\s+(you|your)\b/i, why: 'absolute; state present practice instead' },
   { re: /\b(forever|in perpetuity)\b/i, why: 'perpetual promise' },
+  // Brent's rule (2026-09-30), copy rule 11: no "never" in anything a visitor
+  // reads, data claim or not. "Never because a hotel paid us" and "it never
+  // sells travel" were both on this site until that day.
+  { re: /\bnever\b/i, why: 'no "never" in copy (rule 11); say what is true today: "not", "doesn\'t"', skip: notCopy },
   { re: /\bguarantee(d|s)?\b/i, why: 'guarantee language; state what the product does instead' },
 
   // "always X" is a promise about the future, which is the same thing rule 9
@@ -141,6 +154,24 @@ const loadAllow = () => {
 
 const isCommentLine = (line) => /^\s*(\/\/|\/\*|\*|\{\/\*|#)/.test(line);
 
+// Which lines are comment: those isCommentLine sees, and the rest of a block
+// comment after the line it opens on, which otherwise read as prose. "Colour
+// follows the surface, never #fff" reached this guard from a JSX comment's
+// second line. A block counts only when it opens a line, as isCommentLine
+// requires, so a "/*" inside a string can't start one.
+const commentLines = (lines) => {
+  let open = false;
+  return lines.map((line) => {
+    if (open) {
+      open = !line.includes('*/');
+      return true;
+    }
+    if (!isCommentLine(line)) return false;
+    open = /^\s*\{?\/\*/.test(line) && !line.includes('*/', line.indexOf('/*') + 2);
+    return true;
+  });
+};
+
 // A line that is nothing but prose. This is how multi-line JSX text looks, and
 // a legal guard that cannot see the most natural way to write a paragraph is
 // worth very little.
@@ -196,11 +227,12 @@ const segments = (line, ext) => {
 // it, which is what allowlisting a sentence has always meant. Matching the
 // allowlist against the joined string instead would let one allowlisted phrase
 // anywhere in a file silence a real hit two hundred lines away.
-const wrappedHits = (text, ext, allow) => {
+const wrappedHits = (text, ext, allow, rel = '') => {
   const pieces = [];
-  text.split('\n').forEach((rawLine, i) => {
-    const line = fold(rawLine);
-    if (isCommentLine(line)) return;
+  const lines = text.split('\n').map(fold);
+  const comment = commentLines(lines);
+  lines.forEach((line, i) => {
+    if (comment[i]) return;
     for (const seg of segments(line, ext)) {
       const t = seg.replace(/\s+/g, ' ').trim();
       if (t) pieces.push({ text: t, line: i + 1 });
@@ -219,7 +251,8 @@ const wrappedHits = (text, ext, allow) => {
   }
 
   const out = [];
-  for (const { re, why } of BANNED) {
+  for (const { re, why, skip } of BANNED) {
+    if (skip?.(rel)) continue;
     const all = new RegExp(re.source, re.flags.includes('g') ? re.flags : `${re.flags}g`);
     for (const m of flat.matchAll(all)) {
       const from = lineAt[m.index];
@@ -304,11 +337,13 @@ if (!isCLI) {
       warnings.push(`unreadable ${file}: ${e.message}`);
       continue;
     }
-    text.split('\n').forEach((rawLine, i) => {
-      const line = fold(rawLine);
-      if (isCommentLine(line)) return; // comments document, they don't advertise
+    const lines = text.split('\n').map(fold);
+    const comment = commentLines(lines);
+    lines.forEach((line, i) => {
+      if (comment[i]) return; // comments document, they don't advertise
       for (const seg of segments(line, ext)) {
-        for (const { re, why } of BANNED) {
+        for (const { re, why, skip } of BANNED) {
+          if (skip?.(rel)) continue;
           if (re.test(seg) && !allow.some((a) => a.test(seg))) {
             hits.push({ file: rel, line: i + 1, why, text: seg.trim().slice(0, 100) });
           }
@@ -316,7 +351,7 @@ if (!isCLI) {
       }
     });
 
-    for (const h of wrappedHits(text, ext, allow)) {
+    for (const h of wrappedHits(text, ext, allow, rel)) {
       hits.push({ file: rel, line: h.line, why: h.why, text: h.text });
     }
   }
