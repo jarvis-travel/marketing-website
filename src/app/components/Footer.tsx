@@ -15,10 +15,14 @@ const SOCIAL = [
 // that /cookies serves the counsel document of record (JAR-69).
 // Wordmark stands alone pending the commissioned mark (JAR-354).
 
-const FOOTER_LINKS: Record<
-  'Product' | 'Company' | 'Legal',
-  { name: string; path: string }[]
-> = {
+// An entry is either an internal route (`path`, a router Link) or an external
+// URL (`href`, a plain anchor opening in a new tab) — the Status page lives off
+// this site (JAR-2647).
+type FooterLink =
+  | { name: string; path: string }
+  | { name: string; href: string };
+
+const FOOTER_LINKS: Record<'Product' | 'Company' | 'Legal', FooterLink[]> = {
   Product: [
     { name: 'How it works', path: '/features' },
     { name: 'Pricing', path: '/pricing' },
@@ -26,6 +30,7 @@ const FOOTER_LINKS: Record<
   Company: [
     { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' },
+    { name: 'Status', href: 'https://status.jarvistravel.com/' },
   ],
   Legal: [
     { name: 'Privacy Policy', path: '/privacy' },
@@ -74,12 +79,23 @@ export function Footer() {
               <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={link.name}>
-                    <Link
-                      to={link.path}
-                      className="text-sky-100 hover:text-gray-50 transition-colors"
-                    >
-                      {link.name}
-                    </Link>
+                    {'href' in link ? (
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sky-100 hover:text-gray-50 transition-colors"
+                      >
+                        {link.name}
+                      </a>
+                    ) : (
+                      <Link
+                        to={link.path}
+                        className="text-sky-100 hover:text-gray-50 transition-colors"
+                      >
+                        {link.name}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
