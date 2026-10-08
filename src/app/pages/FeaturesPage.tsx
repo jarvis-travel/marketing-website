@@ -222,7 +222,7 @@ export function FeaturesPage() {
           <div className="text-center mt-12">
             <a
               href={appSignInUrl()}
-              className="inline-block px-8 py-4 bg-amber-400 text-gray-900 rounded-sm font-semibold hover:bg-amber-300 transition-colors"
+              className="inline-block px-8 py-4 bg-amber-400 text-gray-900 rounded-xs font-semibold hover:bg-amber-300 transition-colors"
             >
               Join Now
             </a>

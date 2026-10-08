@@ -77,7 +77,7 @@ export function Navigation() {
             {showJoinNow && (
               <a
                 href={appSignInUrl()}
-                className="px-5 py-2.5 bg-amber-400 text-gray-900 rounded-sm font-medium hover:bg-amber-300 transition-colors"
+                className="px-5 py-2.5 bg-amber-400 text-gray-900 rounded-xs font-medium hover:bg-amber-300 transition-colors"
               >
                 Join Now
               </a>
@@ -118,7 +118,7 @@ export function Navigation() {
               <div className="mt-4 pt-4 border-t border-gray-100 space-y-2">
                 <a
                   href={appSignInUrl()}
-                  className="w-full py-3 bg-amber-400 text-gray-900 rounded-sm font-medium block text-center"
+                  className="w-full py-3 bg-amber-400 text-gray-900 rounded-xs font-medium block text-center"
                 >
                   Join Now
                 </a>

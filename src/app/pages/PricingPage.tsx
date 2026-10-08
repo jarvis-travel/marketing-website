@@ -146,7 +146,7 @@ export function PricingPage() {
                 {TRIP_PASS_POINTS.map((point) => (
                   <li key={point} className="flex items-start gap-3">
                     <Check
-                      className={`w-4 h-4 flex-shrink-0 mt-1 transition-colors ${
+                      className={`w-4 h-4 shrink-0 mt-1 transition-colors ${
                         tripActive ? 'text-sky-300' : 'text-sky-600'
                       }`}
                       strokeWidth={2}
@@ -168,7 +168,7 @@ export function PricingPage() {
                   open is the app's call, not this site's. */}
               <a
                 href={appJoinUrl('jt_trip_pass')}
-                className={`self-start px-8 py-3.5 rounded-sm font-semibold border transition-colors ${
+                className={`self-start px-8 py-3.5 rounded-xs font-semibold border transition-colors ${
                   tripActive ? heroAction : quietAction
                 }`}
               >
@@ -242,7 +242,7 @@ export function PricingPage() {
                             the 11px label readable. */}
                         {option.best && SAVING_PCT !== null && (
                           <span
-                            className={`text-[11px] font-semibold tracking-wide uppercase border px-2 py-0.5 rounded-sm transition-colors ${
+                            className={`text-[11px] font-semibold tracking-wide uppercase border px-2 py-0.5 rounded-xs transition-colors ${
                               exploreHot
                                 ? 'text-amber-400 bg-amber-400/[0.12] border-amber-400/30'
                                 : 'text-amber-700 bg-white border-amber-700/40'
@@ -292,7 +292,7 @@ export function PricingPage() {
                 {EXPLORE_POINTS.map((point) => (
                   <li key={point} className="flex items-start gap-3">
                     <Check
-                      className={`w-4 h-4 flex-shrink-0 mt-1 transition-colors ${
+                      className={`w-4 h-4 shrink-0 mt-1 transition-colors ${
                         exploreHot ? 'text-sky-300' : 'text-sky-600'
                       }`}
                       strokeWidth={2}
@@ -314,7 +314,7 @@ export function PricingPage() {
                   asked for a second time. */}
               <a
                 href={appJoinUrl(cadence.lookupKey)}
-                className={`mt-auto w-full py-3.5 rounded-sm font-semibold text-center border transition-colors ${
+                className={`mt-auto w-full py-3.5 rounded-xs font-semibold text-center border transition-colors ${
                   exploreHot ? heroAction : quietAction
                 }`}
               >

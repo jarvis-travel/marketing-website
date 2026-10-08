@@ -37,13 +37,13 @@ happens.
 ### Global entry points (outside `src/app/`)
 
 - `src/main.tsx` — renders the React tree into `#root` with `BrowserRouter` > `ScrollToTop` + `PageRouter`
-- `src/index.css` — Tailwind directives (`@tailwind base; @tailwind components; @tailwind utilities`)
+- `src/index.css` — Tailwind entry (`@import "tailwindcss"`, `@source` list, and the `@theme` brand palette; no `tailwind.config.js` since JAR-2751)
 
 ## Work Guidance
 
 1. **New pages** — create the file in `pages/`, export from `pages/index.ts`, add a route in `PageRouter.tsx`. Use `MarketingLayout` for public pages.
 2. **Type safety** — `strict: true` in tsconfig. No `any`, no `// @ts-expect-error` without justification. Keep TypeScript errors at zero.
-3. **Tailwind** — use utility classes directly in JSX. Avoid custom CSS unless the design system requires it. The `tailwind.config.js` `theme.extend` block is where project-specific tokens go.
+3. **Tailwind** — use utility classes directly in JSX. Avoid custom CSS unless the design system requires it. Project-specific tokens live in the `@theme` block of `src/index.css` (v3's `tailwind.config.js` was removed in JAR-2751). v4 class-name notes: `rounded-sm` is now `rounded-xs` for the old 0.125rem radius, and bare `ring`/`shadow`/`transition` behave differently than in v3 — prefer explicitly colored/sized utilities.
 
 ## Verification
 

@@ -108,7 +108,7 @@ function CheckList({ items }: { items: string[] }) {
       {items.map((line) => (
         <li key={line} className="flex items-start gap-3">
           <Check
-            className="w-4 h-4 text-sky-600 flex-shrink-0 mt-1.5"
+            className="w-4 h-4 text-sky-600 shrink-0 mt-1.5"
             strokeWidth={2}
             aria-hidden="true"
           />
