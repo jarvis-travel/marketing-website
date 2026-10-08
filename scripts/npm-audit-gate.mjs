@@ -45,6 +45,17 @@ import { pathToFileURL } from 'node:url';
 // An empty list is the goal.
 const EXCEPTIONS = [
   {
+    id: 'GHSA-vfj7-8cjw-p6xm',
+    expires: '2027-01-08',
+    // braces stack-exhaustion DoS via deeply nested patterns (GHSA-vfj7-8cjw-p6xm,
+    // <= 3.0.3 affected) — dev-only here: braces reaches the tree through the
+    // tailwindcss 3 toolchain (chokidar -> micromatch -> braces) and is never part
+    // of the static production build. No fixed braces release exists (3.0.3 is the
+    // latest published); the advisory clears only with the Tailwind 3 -> 4
+    // migration, which drops the chain entirely — JAR-2751.
+    why: 'braces dev-only DoS via tailwind 3 toolchain; unreachable in the static prod build; no fixed release exists, cleared by the tailwind 4 migration, JAR-2751',
+  },
+  {
     id: 'GHSA-fx2h-pf6j-xcff',
     expires: '2026-12-16',
     // vite server.fs.deny bypass on Windows alternate paths (GHSA-fx2h-pf6j-xcff,
