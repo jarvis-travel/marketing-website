@@ -43,17 +43,7 @@ import { pathToFileURL } from 'node:url';
 //           Past it the entry WARNS; it does not block (decision A).
 //   why     one line: dev-only or unreachable in what we ship, plus a ticket.
 // An empty list is the goal.
-const EXCEPTIONS = [
-  {
-    id: 'GHSA-fx2h-pf6j-xcff',
-    expires: '2026-12-16',
-    // vite server.fs.deny bypass on Windows alternate paths (GHSA-fx2h-pf6j-xcff,
-    // <=6.4.2 affected) — dev-server only; a static production build never runs
-    // the vite dev server, so visitor exposure is nil. Fixed in vite >= 6.4.3
-    // (6.4.3, 7.x or 8.x all clear it): JAR-1765.
-    why: 'vite dev-server-only server.fs.deny bypass; unreachable in the static prod build; fixed in vite >= 6.4.3 (6.4.3/7.x/8.x), JAR-1765',
-  },
-];
+const EXCEPTIONS = [];
 
 // npm's severities, lowest first (arborist's `severities`). The gate blocks from
 // high up (npm's --audit-level=high): a severity's rank is its place in
