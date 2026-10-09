@@ -121,7 +121,7 @@ in every template becomes a broken image at once.
 
 - **React 18** + **TypeScript** (strict mode, `strict: true`)
 - **Vite 5** with `@vitejs/plugin-react`
-- **Tailwind CSS 3** via PostCSS — utility-first styling, no CSS modules
+- **Tailwind CSS 4** via `@tailwindcss/postcss` — utility-first styling, no CSS modules. Theme tokens live in the `@theme` block of `src/index.css` (the v3 `tailwind.config.js` was removed in JAR-2751); brand palette changes go there, and `npm run logo:check` fails if the favicon greys drift from it
 - **Lucide React** for icons (import individual icons from `lucide-react`)
 - **react-router-dom v7** for client-side routing
 

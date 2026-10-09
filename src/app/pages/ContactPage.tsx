@@ -39,7 +39,7 @@ export function ContactPage() {
             </p>
             <a
               href={appSignInUrl()}
-              className="inline-block px-8 py-4 bg-amber-400 text-gray-900 rounded-sm font-semibold hover:bg-amber-300 transition-colors"
+              className="inline-block px-8 py-4 bg-amber-400 text-gray-900 rounded-xs font-semibold hover:bg-amber-300 transition-colors"
             >
               Join Now
             </a>
@@ -50,7 +50,7 @@ export function ContactPage() {
             <h2 className="text-xl font-semibold text-gray-900 mb-6">Email</h2>
             <ul className="space-y-5">
               <li className="flex items-center gap-4">
-                <span className="w-9 h-9 rounded-lg bg-sky-600/10 text-sky-600 flex items-center justify-center flex-shrink-0">
+                <span className="w-9 h-9 rounded-lg bg-sky-600/10 text-sky-600 flex items-center justify-center shrink-0">
                   <Mail className="w-5 h-5" strokeWidth={2} aria-hidden="true" />
                 </span>
                 <div>
@@ -64,7 +64,7 @@ export function ContactPage() {
                 </div>
               </li>
               <li className="flex items-center gap-4">
-                <span className="w-9 h-9 rounded-lg bg-sky-600/10 text-sky-600 flex items-center justify-center flex-shrink-0">
+                <span className="w-9 h-9 rounded-lg bg-sky-600/10 text-sky-600 flex items-center justify-center shrink-0">
                   <Mail className="w-5 h-5" strokeWidth={2} aria-hidden="true" />
                 </span>
                 <div>
@@ -78,7 +78,7 @@ export function ContactPage() {
                 </div>
               </li>
               <li className="flex items-center gap-4">
-                <span className="w-9 h-9 rounded-lg bg-sky-600/10 text-sky-600 flex items-center justify-center flex-shrink-0">
+                <span className="w-9 h-9 rounded-lg bg-sky-600/10 text-sky-600 flex items-center justify-center shrink-0">
                   <Mail className="w-5 h-5" strokeWidth={2} aria-hidden="true" />
                 </span>
                 <div>

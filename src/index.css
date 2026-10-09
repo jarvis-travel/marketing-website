@@ -1,3 +1,77 @@
+@import "tailwindcss" source(none);
+/* Sources mirror the v3 `content` array exactly (tailwind.config.js, removed in
+   JAR-2751): automatic content detection would also scan scripts/ and public/,
+   where guards and manifests contain class-shaped strings that would silently
+   emit extra utilities. Paths resolve relative to this file (src/). */
+@source "../index.html";
+@source "./**/*.{js,ts,jsx,tsx}";
+
+@theme {
+  /* ── Meridian brand (guide v1.0) ──
+     Carried from tailwind.config.js `theme.extend` (JAR-2751). Extend
+     semantics are preserved: ONLY the remapped/extended shades are declared —
+     stock shades not listed are unchanged. Do NOT add `--color-*: initial`
+     here: that resets the stock palettes (and bg-white), which this site uses.
+
+     The site's working scales are remapped onto the palette: sky resolves
+     to the Ateneo family (per the no-rainbow rule), the gray light end
+     becomes Magical Moonlight with Neverything ink at the dark end, and
+     amber is Sea Buckthorn — the CTA color, always with ink text. Stock
+     shades not listed are unchanged.
+     The old rainbow remaps (blue/indigo/purple) and the mauve data
+     extension were dropped in JAR-438: the NINE redesign folded every
+     rainbow accent into Ateneo, so none are referenced anywhere. A stray
+     stock class like `bg-blue-600` should surface in review, not get
+     silently recolored on-brand. */
+  --color-sky-50: #EDF4FA;
+  --color-sky-100: #DBE9F4;
+  --color-sky-200: #B7D3E9;
+  --color-sky-300: #8CC0E8;
+  --color-sky-400: #5E9DD1;
+  --color-sky-500: #2E6FA3;
+  --color-sky-600: #003A6C;
+  --color-sky-700: #083258;
+  --color-sky-800: #0B2B49;
+  --color-sky-900: #0E2A47;
+  --color-sky-950: #081E33;
+
+  --color-amber-300: #FFCC85;
+  --color-amber-400: #FFBF65;
+  --color-amber-500: #F0A94D;
+  --color-amber-600: #C98A2E;
+  --color-amber-700: #9A5B00;
+
+  --color-gray-50: #F0EEEB;
+  --color-gray-100: #E8E4DE;
+  --color-gray-200: #DAD5CD;
+  --color-gray-300: #C7C1B8;
+  --color-gray-400: #8E9AA4;
+  --color-gray-500: #5C6B77;
+  --color-gray-600: #4A5560;
+  --color-gray-700: #3A444C;
+  --color-gray-800: #262E33;
+  --color-gray-900: #13181B;
+  --color-gray-950: #0C1013;
+
+  /* Only the two shades the site uses; the rest of slate stays stock. */
+  --color-slate-900: #0E2A47;
+  --color-slate-950: #081E33;
+
+  /* Meridian data-set extension (matches the app's categorical colors):
+     coral is the journal's family. */
+  --color-coral-400: #FD8973;
+  --color-coral-500: #C94F36;
+  --color-coral-600: #B23F2C;
+  --color-coral-700: #8F3223;
+
+  /* The v3 config pinned the default ring color to sky-500 via
+     `theme.extend.ringColor` (JAR-438). v4's default ring color is
+     currentColor and exposes no theme key for it. Audited in JAR-2751: no
+     bare `ring` utility exists anywhere in src/ — every ring names its color
+     explicitly — so the pin has no remaining caller and is not translated.
+     If a bare `ring` ever lands, pair it with an explicit ring color. */
+}
+
 /* ---------------------------------------------------------------------------
    Inter, self-hosted (JAR-1152).
 
@@ -38,10 +112,6 @@
     U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
     U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 /* ============================================================================
    JARVISTRAVEL - GLOBAL STYLES
@@ -90,6 +160,16 @@
     outline: 2px solid var(--focus-ring, #003a6c);
     outline-offset: 3px;
     border-radius: 4px;
+  }
+
+  /* Tailwind 3's preflight gave buttons `cursor: pointer`; v4's removes it on
+     purpose (buttons follow the OS default again). JAR-2751 diff-audit found
+     this site's two <button> elements (mobile menu toggle, photo-credit link)
+     rendered as the arrow on every prior build, so the v3 behaviour is carried
+     explicitly rather than shipped as an untracked cursor change. */
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
   }
 }
 
