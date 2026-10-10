@@ -1,0 +1,125 @@
+{
+  "note": "PUBLISHED COPY, from core's config/fi/outdoor-fit.json. Do not edit here: change core's canonical and re-publish this copy. core's check (config/fi/check-published-copy.sh) runs on every core PR and daily, and fails core's required job if this copy and core's own rows differ. web-app's check (scripts/check-outdoor-fit.mjs) runs its own dayOutdoorFit over these rows, so moving a threshold on one side alone fails the other's CI. The rows are the contract rather than the four thresholds, because core folds web's two `if` lines into one branch: only the answers can be compared, and rows also pin which branch runs first. This repo hosts the copy because it is the one public repo every consumer's CI can read token-free. JAR-2828.",
+  "contract": "fi-outdoor-fit",
+  "rows": [
+    {
+      "case": "a plain fine day",
+      "condition": "sunny",
+      "precip_probability": 0,
+      "high_f": 70,
+      "fit": "good"
+    },
+    {
+      "case": "cloudy is not a condition either side names",
+      "condition": "cloudy",
+      "precip_probability": 34,
+      "high_f": 72,
+      "fit": "good"
+    },
+    {
+      "case": "storms are poor on the condition alone",
+      "condition": "stormy",
+      "precip_probability": 0,
+      "high_f": 70,
+      "fit": "poor"
+    },
+    {
+      "case": "snow is poor on the condition alone, and beats the cold clause",
+      "condition": "snowy",
+      "precip_probability": 0,
+      "high_f": 20,
+      "fit": "poor"
+    },
+    {
+      "case": "the poor precip boundary: 60 is poor",
+      "condition": "sunny",
+      "precip_probability": 60,
+      "high_f": 70,
+      "fit": "poor"
+    },
+    {
+      "case": "one below it is not poor, and 59 still passes the marginal clause",
+      "condition": "sunny",
+      "precip_probability": 59,
+      "high_f": 70,
+      "fit": "marginal"
+    },
+    {
+      "case": "rain is marginal on the condition alone",
+      "condition": "rainy",
+      "precip_probability": 0,
+      "high_f": 70,
+      "fit": "marginal"
+    },
+    {
+      "case": "wind is marginal on the condition alone",
+      "condition": "windy",
+      "precip_probability": 0,
+      "high_f": 70,
+      "fit": "marginal"
+    },
+    {
+      "case": "the marginal precip boundary: 35 is marginal",
+      "condition": "sunny",
+      "precip_probability": 35,
+      "high_f": 70,
+      "fit": "marginal"
+    },
+    {
+      "case": "one below it is good",
+      "condition": "sunny",
+      "precip_probability": 34,
+      "high_f": 70,
+      "fit": "good"
+    },
+    {
+      "case": "the heat boundary: a high of 97 is marginal",
+      "condition": "sunny",
+      "precip_probability": 0,
+      "high_f": 97,
+      "fit": "marginal"
+    },
+    {
+      "case": "one below it is good",
+      "condition": "sunny",
+      "precip_probability": 0,
+      "high_f": 96,
+      "fit": "good"
+    },
+    {
+      "case": "the cold boundary: a high of 30 is marginal",
+      "condition": "sunny",
+      "precip_probability": 0,
+      "high_f": 30,
+      "fit": "marginal"
+    },
+    {
+      "case": "one above it is good",
+      "condition": "sunny",
+      "precip_probability": 0,
+      "high_f": 31,
+      "fit": "good"
+    },
+    {
+      "case": "two clauses at once: rain AND 70% is POOR, because the poor branch runs first",
+      "condition": "rainy",
+      "precip_probability": 70,
+      "high_f": 70,
+      "fit": "poor"
+    },
+    {
+      "case": "three marginal clauses and no poor one stays marginal",
+      "condition": "windy",
+      "precip_probability": 40,
+      "high_f": 98,
+      "fit": "marginal"
+    },
+    {
+      "case": "everything at once is still just poor",
+      "condition": "stormy",
+      "precip_probability": 100,
+      "high_f": 110,
+      "fit": "poor"
+    }
+  ]
+}
