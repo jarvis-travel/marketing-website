@@ -138,7 +138,14 @@ in every template becomes a broken image at once.
 - **SPA** — no server-side rendering. All pages are client-rendered React.
 - **Marketing layout** — `MarketingLayout` in `PageRouter.tsx` wraps all public-facing pages with `<Navigation />` + `<Footer />`. New marketing routes should follow the same pattern.
 - **No auth**: pre-launch marketing site; the simulated client-side auth stack was removed as dead code (JAR-429). Sign-up and sign-in live in the app: every "Join Now" opens the app's sign-up through `appJoinUrl()` in `appLink.ts`, the pricing page's plan CTAs carry the chosen plan, and the pricing page has a "Sign in" link to the app's sign-in for existing accounts (Brent, 2026-10-14, JAR-3180, which superseded JAR-1692's route to sign-in; that had reversed JAR-1630's route to `/pricing`). `scripts/check-pricing-ctas.mjs` enforces all three.
-- **Static output** — `npm run build` produces `dist/`. The GitHub Actions workflow uploads `dist/` to GitHub Pages or rsyncs it to the Droplet.
+- **Deployment (JAR-3203)** — `deploy-droplet.yml` rsyncs `dist/` to
+  `/var/www/jarvistravel-marketing/` on **both** serving droplets behind
+  `jarvis-prod-lb` (`DROPLET_HOST`, `DROPLET_HOST_2`); both host-key
+  fingerprints are pinned (`DROPLET_HOST_KEY`, `DROPLET_HOST_KEY_2`) and the
+  step fails closed if any of the four is empty, then verifies the two hosts
+  hold the same `index.html` hash before reporting success. The LB
+  round-robins, so an artifact on one droplet is a half-updated site
+- **Static output** — `npm run build` produces `dist/`. The GitHub Actions workflow uploads `dist/` to GitHub Pages or rsyncs it to both Droplets.
 - **Sourcemaps enabled** in production builds (`vite.config.ts` `sourcemap: true`).
 
 ## Work Guidance
