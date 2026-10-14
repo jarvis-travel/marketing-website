@@ -6,7 +6,7 @@
 // match a regex; this one proves it would have caught the real thing.
 
 import { mkdtempSync, writeFileSync, rmSync, mkdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { execSync } from 'node:child_process';
 
@@ -237,6 +237,78 @@ test('a forward-looking "always" promise is caught', () => {
 test('"always" about behaviour is not a promise about the future', () => {
   assert(clean(`export const L = 'This always runs before the sync.';`), 'a behaviour statement was flagged');
   assert(clean(`export const L = 'Always ask before sharing';`), 'a settings label was flagged');
+});
+
+// --- no "never" in copy (copy rule 11) --------------------------------
+//
+// Brent's rule (2026-09-30): no "never" in anything a visitor reads, data claim
+// or not. Both of these were on this site until that day.
+
+const writeAt = (d, file, src) => {
+  mkdirSync(join(d, dirname(file)), { recursive: true });
+  return runCheck(d, src, file);
+};
+const COUNSEL_QUOTE = `export const T = 'JarvisTravel never handles or directs the funds.';`;
+
+test('catches a bare "never" in copy', () => {
+  assert(flags(`export const L = 'Every suggestion is there because it fits your trip, never because a hotel or tour paid us.';`), '"never because" not caught');
+  assert(flags(`export const L = 'JarvisTravel plans; it never sells travel.';`), '"it never sells travel" not caught');
+  withTempDir((d) => {
+    const r = writeAt(d, 'public/llms.txt', 'Every suggestion is there because it fits the trip, never because a hotel or tour paid for the placement.');
+    assert(r.code === 1, 'not caught in llms.txt');
+  });
+});
+
+test('passes the present-tense rewrite', () => {
+  assert(clean(`export const L = 'Every suggestion is there because it fits your trip, not because a hotel or tour paid us.';`), 'false positive');
+});
+
+// Counsel's legal text quotes "never" and changes only through counsel, so the
+// rule skips that one file by exact path, and only that rule skips it.
+test(`counsel's legal text keeps its "never"`, () => {
+  withTempDir((d) => {
+    const r = writeAt(d, 'src/app/pages/legal/content.ts', COUNSEL_QUOTE);
+    assert(r.code === 0, `counsel's text was flagged:\n${r.out}`);
+  });
+});
+
+test('the skip is that one file: the same line beside it is caught', () => {
+  withTempDir((d) => {
+    const r = writeAt(d, 'src/app/pages/legal/terms.ts', COUNSEL_QUOTE);
+    assert(r.code === 1, 'a "never" in another file in the legal folder passed');
+  });
+});
+
+test(`every other rule still reads counsel's text`, () => {
+  withTempDir((d) => {
+    const r = writeAt(d, 'src/app/pages/legal/content.ts', `export const T = 'Bank-level security for your data.';`);
+    assert(r.code === 1, 'the legal file is skipped by every rule, not just "never"');
+  });
+});
+
+test('an AGENTS.md keeps its "never": it documents the code and is not served', () => {
+  withTempDir((d) => {
+    assert(writeAt(d, 'src/app/AGENTS.md', 'Never import from a sibling app.').code === 0, 'AGENTS.md was flagged');
+  });
+  withTempDir((d) => {
+    assert(writeAt(d, 'src/app/Notes.md', 'Never import from a sibling app.').code === 1, 'any other Markdown passed');
+  });
+});
+
+// --- block comments ------------------------------------------------------
+//
+// Only the line a block comment opens on looks like a comment, so its later
+// lines read as prose. "Colour follows the surface, never #fff" reached this
+// guard from the second line of a JSX comment in Navigation.tsx.
+
+test(`a block comment's later lines are not copy`, () => {
+  assert(clean(`{/* The lockup is inlined.\n    Colour follows the surface, never #fff.\n */}`), 'a JSX comment line was flagged');
+  assert(clean(`/* The mark stands free,\n   never on a tile. */`, 'src/Page.css'), 'a CSS comment line was flagged');
+});
+
+test('copy after a block comment closes is read', () => {
+  assert(flags(`/* A note\n   about the line below. */\nexport const L = 'We never sell your data.';`), 'copy after a closed comment was skipped');
+  assert(flags(`/* A note on one line. */\nexport const L = 'It never sells travel.';`), 'copy after a one-line comment was skipped');
 });
 
 console.log(`\n${passed} passed, ${failed} failed`);
