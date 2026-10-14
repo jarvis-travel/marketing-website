@@ -3,7 +3,6 @@ import { DevicePair } from '../components/DevicePair';
 import {
   BUDGET,
   DAY_DETAIL,
-  DAY_ROUTE,
   JOURNAL,
   LIGHTER_DAY,
   type AppCaptureImage,
@@ -41,15 +40,14 @@ const MOMENTS: Moment[] = [
       alt: 'A packed day in Rome beside a lighter version of it. Now, the day is rated 7, packed. Lighter, it is rated 6, balanced, with lunch moved to a lighter day and less spent that day. Below them, why the lighter day flows better.',
     },
   },
-  {
-    name: 'Your day on one map',
-    desc: 'Your stops in order, on the route you’d walk, with the backtracking already taken out.',
-    soWhat: 'So you see the whole day before your feet commit to it.',
-    capture: {
-      image: DAY_ROUTE,
-      alt: 'A walking route through central Rome with numbered stops. Dashed lines mark the cross-town detours Jarvis skipped, about 23 minutes and 1.1 miles less on foot.',
-    },
-  },
+  // The day-route moment is off the page for now (JAR-3139, Brent: "lets also
+  // remove the 'jarvis saved you' langauge for now so that we are not over
+  // promising"). Its picture read "Jarvis saved you about 23 minutes on foot",
+  // its alt text said the same, and its line promised "the backtracking already
+  // taken out" when core does not yet order a day by distance (JAR-2884) and the
+  // map draws straight lines rather than walking routes. It returns with
+  // JAR-2884, from a fresh capture and with words Brent approves; the capture
+  // files are still in src/assets/captures, unregistered.
   {
     name: 'Keep the budget in view',
     desc: 'Your budget lives inside the plan: what you’ve set aside, what you’ve spent and what’s left, right next to your days.',

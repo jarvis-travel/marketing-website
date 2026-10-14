@@ -50,14 +50,6 @@ import budgetTrackerPhone390 from '../../assets/captures/mobile/budget-tracker-l
 import budgetTrackerPhone780 from '../../assets/captures/mobile/budget-tracker-light-780.webp';
 import budgetTrackerPhonePng from '../../assets/captures/mobile/budget-tracker-light-390.png';
 
-import flowMap720 from '../../assets/captures/desktop/flow-map-light-720.webp';
-import flowMap960 from '../../assets/captures/desktop/flow-map-light-960.webp';
-import flowMap1440 from '../../assets/captures/desktop/flow-map-light-1440.webp';
-import flowMapPng from '../../assets/captures/desktop/flow-map-light-720.png';
-import flowMapPhone390 from '../../assets/captures/mobile/flow-map-light-390.webp';
-import flowMapPhone780 from '../../assets/captures/mobile/flow-map-light-780.webp';
-import flowMapPhonePng from '../../assets/captures/mobile/flow-map-light-390.png';
-
 import journalDay720 from '../../assets/captures/desktop/journal-day-light-720.webp';
 import journalDay960 from '../../assets/captures/desktop/journal-day-light-960.webp';
 import journalDay1440 from '../../assets/captures/desktop/journal-day-light-1440.webp';
@@ -112,12 +104,12 @@ export const BUDGET: AppCaptureImage = {
   phoneFallback: budgetTrackerPhonePng,
 };
 
-export const DAY_ROUTE: AppCaptureImage = {
-  desktop: srcSet([flowMap720, 720], [flowMap960, 960], [flowMap1440, 1440]),
-  phone: srcSet([flowMapPhone390, 390], [flowMapPhone780, 780]),
-  fallback: flowMapPng,
-  phoneFallback: flowMapPhonePng,
-};
+// DAY_ROUTE, the flow-map capture, is unregistered for now (JAR-3139). The
+// import is what makes Vite emit the file, so taking the page's reference out is
+// not enough on its own: left registered, the picture that says "Jarvis saved
+// you about 23 minutes on foot" still ships into dist/assets where a grep of the
+// built site finds it. The files stay in src/assets/captures, so the only thing
+// needed to bring it back with JAR-2884 is a fresh capture and this block.
 
 /** A journal day with a place card open, not the journal's cover (JAR-1618). */
 export const JOURNAL: AppCaptureImage = {
