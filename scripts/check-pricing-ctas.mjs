@@ -1,21 +1,23 @@
 #!/usr/bin/env node
 // Signup CTA guard. One decision about where "Join Now" goes, in two halves
-// (Brent, 2026-09-16, JAR-1692, which reversed JAR-1630 for this site):
+// (Brent, 2026-10-14, JAR-3180: Join Now opens the app's sign-up. That
+// superseded his 2026-09-16 decision to send it to sign-in while sign-up was
+// closed, JAR-1692, which had reversed JAR-1630 for this site):
 //
-//   pricing page    -> the app's sign-in carrying the chosen plan, via
-//                      appJoinUrl(), naming a plan the shared contract knows
-//   everywhere else -> the app's sign-in with no plan, via appSignInUrl(),
+//   pricing page    -> the app's sign-up carrying the chosen plan, via
+//                      appJoinUrl(<plan>), naming a plan the shared contract knows
+//   everywhere else -> the app's sign-up with no plan, via appJoinUrl(),
 //                      because no plan was chosen there
 //
-// Both are asserted, and so is the one place the destination is spelled:
-// every app link appLink.ts builds goes to /auth/sign-in. So is the pricing
-// page's sign-in link for people who already have an account.
+// Both are asserted, and so is the one place each destination is spelled:
+// appLink.ts's appJoinUrl() builds /auth/sign-up and its appSignInUrl() builds
+// /auth/sign-in. So is the pricing page's "Sign in" link for people who already
+// have an account, which goes through appSignInUrl().
 //
 // Why this exists. Until JAR-1184 both CTAs routed to /contact, the waitlist
 // form, behind a comment saying they would change when the payment flow was
-// live. They now link to app.jarvistravel.com/auth/sign-in?plan=<lookup key>,
-// which the app reads to send the visitor straight to checkout for the plan
-// they picked.
+// live. They now link to app.jarvistravel.com/auth/sign-up?plan=<lookup key>,
+// which the app reads so the plan they picked arrives selected.
 //
 // Two ways that quietly breaks, neither of which the type system sees:
 //
@@ -43,11 +45,13 @@ const PAGE = 'src/app/pages/PricingPage.tsx';
 const PRICING = 'src/app/data/pricing.ts';
 const APP_LINK = 'src/app/data/appLink.ts';
 const SIGN_IN_PATH = '/auth/sign-in';
+const SIGN_UP_PATH = '/auth/sign-up';
 const SIGN_IN_CALL = 'appSignInUrl()';
+const JOIN_CALL = 'appJoinUrl()';
 
-// The other files carrying a signup CTA. Every "Join Now" in these goes to the
-// app's sign-in with no plan, and THIS LIST IS WHERE THAT DECISION IS RECORDED
-// (JAR-1692; before it, JAR-1630 sent them to /pricing).
+// The other files carrying a signup CTA. Every "Join Now" in these opens the
+// app's sign-up with no plan, and THIS LIST IS WHERE THAT DECISION IS RECORDED
+// (JAR-3180; before it, JAR-1692 sent them to sign-in and JAR-1630 to /pricing).
 //
 // The guard is deliberately two-sided. Asserting only "pricing CTAs use
 // appJoinUrl" leaves the other five free to drift in either direction, which is
@@ -68,21 +72,22 @@ const OFF_PRICING = [
 ];
 
 /**
- * Every "Join Now" in `source`, paired with the target of the <a>/<Link> that
- * encloses it. Shared by both halves rather than written twice: the backward
- * scan below is the subtle part, and a second copy would drift from this one
- * exactly as the CTAs drifted from each other.
+ * Every `label` ("Join Now" unless told otherwise) in `source`, paired with the
+ * target of the <a>/<Link> that encloses it. Shared by both halves and by the
+ * "Sign in" check rather than written three times: the backward scan below is
+ * the subtle part, and a second copy would drift from this one exactly as the
+ * CTAs drifted from each other.
  */
-function ctaTargets(source, file, problems) {
-  const labels = [...source.matchAll(/>\s*Join Now\s*</g)];
+function ctaTargets(source, file, problems, label = 'Join Now') {
+  const labels = [...source.matchAll(new RegExp(`>\\s*${label}\\s*<`, 'g'))];
   if (labels.length === 0) {
-    problems.push(`${file}: no "Join Now" CTA found at all — either the page changed shape or this guard is now watching nothing`);
+    problems.push(`${file}: no "${label}" CTA found at all: either the page changed shape or this guard is now watching nothing`);
     return [];
   }
 
   const found = [];
-  for (const label of labels) {
-    const before = source.slice(0, label.index);
+  for (const hit of labels) {
+    const before = source.slice(0, hit.index);
     // Boundary-checked, not prefix-checked: `<a` alone also matches `<article`
     // and `<aside`, so a formatter nesting a card between the anchor open and
     // the label made the scan read the WRONG tag and flag a correct CTA
@@ -103,12 +108,15 @@ function ctaTargets(source, file, problems) {
       if (closesAfter <= opensAfter) { open = at; break; }
     }
     if (open === -1) {
-      problems.push(`${file}: a "Join Now" label has no <a> or <Link> before it`);
+      problems.push(`${file}: a "${label}" label has no <a> or <Link> before it`);
       continue;
     }
-    const tag = before.slice(open, label.index + 1);
-    const target = (tag.match(/(?:href|to)=\{?["']?([^"'}\n(]+)/) || [, '(none)'])[1];
-    found.push({ tag, target });
+    const tag = before.slice(open, hit.index + 1);
+    // The whole expression in braces, or the quoted string: appJoinUrl() and
+    // appJoinUrl('jt_explore_annual') differ only inside the parentheses, so a
+    // message naming just "appJoinUrl" would not say which one it found.
+    const m = tag.match(/(?:href|to)=(?:\{([^}\n]+)\}|["']([^"'\n]+)["'])/);
+    found.push({ tag, target: m?.[1] ?? m?.[2] ?? '(none)' });
   }
   return found;
 }
@@ -127,43 +135,58 @@ export function checkPricingCtas(root = ROOT) {
   }
 
   // Every Join Now on the pricing page must sit inside an element whose target
-  // calls appJoinUrl.
+  // calls appJoinUrl WITH a plan. The plan is optional since JAR-3180, because
+  // the other pages' Join Nows pass none, so a pricing CTA that dropped it would
+  // compile and lose the plan the visitor just picked.
   for (const { tag, target } of ctaTargets(page, PAGE, problems)) {
-    if (!tag.includes('appJoinUrl')) {
-      problems.push(`${PAGE}: a "Join Now" CTA targets ${target} instead of appJoinUrl(...) — visitors land there instead of signup`);
+    if (!tag.includes('appJoinUrl(')) {
+      problems.push(`${PAGE}: a "Join Now" CTA targets ${target} instead of appJoinUrl(<plan>): visitors land there instead of sign-up`);
+    } else if (!/appJoinUrl\(\s*[^)\s]/.test(tag)) {
+      problems.push(`${PAGE}: a "Join Now" CTA calls appJoinUrl() with no plan: the plan the visitor picked here would not arrive selected in the app`);
     }
   }
 
-  // And every Join Now OUTSIDE it must go to the app's sign-in, with no plan.
+  // And every Join Now OUTSIDE it must open the app's sign-up, with no plan.
   // This half fails on a migration, which is the point: see OFF_PRICING above.
   for (const file of OFF_PRICING) {
     const source = readFileSync(join(root, file), 'utf8');
     for (const { tag, target } of ctaTargets(source, file, problems)) {
-      if (!tag.includes(SIGN_IN_CALL)) {
+      if (!tag.includes(JOIN_CALL)) {
         problems.push(
-          `${file}: a "Join Now" CTA targets ${target}, not ${SIGN_IN_CALL}: every signup CTA outside the pricing page goes to the app's sign-in with no plan, by decision (JAR-1692). ` +
+          `${file}: a "Join Now" CTA targets ${target}, not ${JOIN_CALL}: every signup CTA outside the pricing page opens the app's sign-up with no plan, by decision (Brent, 2026-10-14, JAR-3180). ` +
           `If that decision changed, edit OFF_PRICING in this guard in the same commit: this file is where the split is recorded, and a migration that does not touch it is drift.`,
         );
       }
     }
   }
 
-  // People who already have an account get a way in from the pricing page.
-  if (!page.includes(SIGN_IN_CALL)) {
-    problems.push(`${PAGE}: no ${SIGN_IN_CALL} link: the pricing page's sign-in for people who already have an account is gone (JAR-1692)`);
+  // People who already have an account get a way in from the pricing page, and
+  // it goes to sign-in, not to the sign-up every Join Now opens.
+  for (const { tag, target } of ctaTargets(page, PAGE, problems, 'Sign in')) {
+    if (!tag.includes(SIGN_IN_CALL)) {
+      problems.push(`${PAGE}: the "Sign in" link targets ${target}, not ${SIGN_IN_CALL}: people who already have an account would land on sign-up (JAR-3180)`);
+    }
   }
 
-  // The destination is spelled in one place. Every app link appLink.ts builds
-  // must go to the sign-in path; a Join Now that reads right here could still
-  // land on sign-up if the helper drifted.
+  // Each destination is spelled in one place, read here from the body of the
+  // helper that builds it: a Join Now that reads right in its page could still
+  // land on sign-in if appJoinUrl drifted, and "Sign in" on sign-up if
+  // appSignInUrl did.
   const appLink = readFileSync(join(root, APP_LINK), 'utf8');
-  const paths = [...appLink.matchAll(/\$\{APP_ORIGIN\}([^`?$]*)/g)].map((m) => m[1]);
-  if (paths.length === 0) {
-    problems.push(`${APP_LINK}: builds no app link from APP_ORIGIN, so this guard cannot see where Join Now goes`);
-  }
-  for (const path of paths) {
-    if (path !== SIGN_IN_PATH) {
-      problems.push(`${APP_LINK}: builds an app link to ${path}, not ${SIGN_IN_PATH}: every Join Now goes to the app's sign-in (JAR-1692)`);
+  for (const [helper, want, why] of [
+    ['appJoinUrl', SIGN_UP_PATH, "every Join Now opens the app's sign-up"],
+    ['appSignInUrl', SIGN_IN_PATH, "\"Sign in\" opens the app's sign-in"],
+  ]) {
+    // From the helper's name to its closing brace at column 0.
+    const body = appLink.match(new RegExp(`function ${helper}\\b[\\s\\S]*?\\n\\}`))?.[0] ?? '';
+    const paths = [...body.matchAll(/\$\{APP_ORIGIN\}([^`?$]*)/g)].map((m) => m[1]);
+    if (paths.length === 0) {
+      problems.push(`${APP_LINK}: ${helper}() builds no app link from APP_ORIGIN, so this guard cannot see where it goes`);
+    }
+    for (const path of paths) {
+      if (path !== want) {
+        problems.push(`${APP_LINK}: ${helper}() builds an app link to ${path}, not ${want}: ${why} (JAR-3180)`);
+      }
     }
   }
 
@@ -185,6 +208,6 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   // regardless of what the caller aimed it at.
   const problems = checkPricingCtas(process.cwd());
   for (const p of problems) console.error(`  ${p}`);
-  console.log(problems.length ? `\n${problems.length} problem(s)` : "signup CTAs OK: every Join Now goes to the app's sign-in, and pricing's carry the chosen plan");
+  console.log(problems.length ? `\n${problems.length} problem(s)` : "signup CTAs OK: every Join Now opens the app's sign-up, pricing's carry the chosen plan, and Sign in opens sign-in");
   process.exit(problems.length ? 1 : 0);
 }

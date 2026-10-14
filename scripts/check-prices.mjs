@@ -14,14 +14,16 @@
 // Half two — Stripe agrees. A shared constant nobody verifies drifts exactly
 // as fast as a literal did, so the constants are reconciled against Stripe by
 // lookup_key. Needs a read-only key. Without one it says so loudly and skips,
-// rather than passing quietly and implying it checked.
+// rather than passing quietly and implying it checked. The Early Access coupon
+// (JAR-3180) is reconciled the same way, by id: the page takes its amount_off
+// off the annual price, so the key needs Coupons: Read as well as Prices: Read.
 //
 // Fail closed: an unreadable file, an unparseable module or a Stripe error is
 // a failure, never a pass.
 
 import { classifyAccountError } from './lib/account-error.mjs';
 import { modeOf, refuseUnexpectedMode } from './lib/account-mode.mjs';
-import { comparePrice } from './lib/price-compare.mjs';
+import { comparePrice, compareCoupon, couponReadProblem } from './lib/price-compare.mjs';
 import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
 import { join, extname, sep } from 'node:path';
 
@@ -267,6 +269,26 @@ if (missing.length || extra.length) {
   );
 }
 
+// The coupon mirror: one generated line between its markers, parsed strictly
+// for the same reason as the prices. A shape this cannot read is a price on the
+// page that nothing compared against Stripe, so it fails rather than skipping.
+const COUPON_BLOCK = /\/\/ BEGIN GENERATED COUPON[^\n]*\n(.*)\n\/\/ END GENERATED COUPON/;
+const COUPON_ENTRY =
+  /^export const EARLY_ACCESS_COUPON: Coupon = \{ id: '([a-z0-9_]+)', amountOffCents: (\d+), currency: '([a-z]+)', duration: '([a-z]+)' \};$/;
+const couponBlock = module_.match(COUPON_BLOCK);
+if (!couponBlock) fail('pricing.ts has no GENERATED COUPON block holding exactly one line to reconcile');
+const couponEntry = couponBlock[1].match(COUPON_ENTRY);
+if (!couponEntry) {
+  fail('pricing.ts: could not parse EARLY_ACCESS_COUPON. The guard would have skipped it and reported ok. ' +
+    'Fix the entry, or the parser if the shape changed.');
+}
+const localCoupon = {
+  id: couponEntry[1],
+  amountOffCents: Number(couponEntry[2]),
+  currency: couponEntry[3],
+  duration: couponEntry[4],
+};
+
 // Fetch with a 10s timeout and 2 retries with backoff. A Stripe incident or
 // blackholed connection must not hang a job or fail every PR/deploy on a
 // transient (review deleg_dd2f886e Sec-M2 / Design-F5). With --network-warn
@@ -384,12 +406,21 @@ async function stripePrices() {
   return out;
 }
 
+async function stripeCoupon(id) {
+  const res = await stripeFetch(`/v1/coupons/${encodeURIComponent(id)}`);
+  const problem = couponReadProblem(res.status, id, KEY_NAME);
+  if (problem) fail(problem);
+  return res.json();
+}
+
 await assertAccount();
 
 const remote = new Map();
 for (const price of await stripePrices()) {
   if (price.lookup_key) remote.set(price.lookup_key, price);
 }
+
+const remoteCoupon = await stripeCoupon(localCoupon.id);
 
 const mismatches = [];
 
@@ -399,6 +430,7 @@ const mismatches = [];
 for (const [key, want] of local) {
   mismatches.push(...comparePrice(key, want, remote.get(key)));
 }
+mismatches.push(...compareCoupon(localCoupon, remoteCoupon));
 
 if (WRITE) {
   // Everything below is interpolated into a committed .ts file, so every field
@@ -446,8 +478,31 @@ if (WRITE) {
     '};',
     '// END GENERATED PRICES',
   ].join('\n');
-  writeFileSync(PRICING_FILE, module_.replace(BLOCK, rebuilt));
-  console.log(`prices: rewrote ${local.size} prices in pricing.ts from Stripe`);
+
+  // The coupon, validated the same way before it becomes source code. Each
+  // refusal is a coupon the page cannot describe truthfully, so writing it
+  // would only produce a file that still fails, or a sentence that is false.
+  const c = remoteCoupon;
+  if (!Number.isSafeInteger(c.amount_off) || c.amount_off <= 0) {
+    fail(`cannot rewrite: coupon ${localCoupon.id} has amount_off ${JSON.stringify(c.amount_off)}; the page can only take a fixed amount off`);
+  }
+  if (c.currency !== 'usd') {
+    fail(`cannot rewrite: coupon ${localCoupon.id} is ${JSON.stringify(c.currency)}, expected usd`);
+  }
+  if (c.duration !== 'once') {
+    fail(`cannot rewrite: coupon ${localCoupon.id} has duration ${JSON.stringify(c.duration)}; the page says "first year", which is only true for once`);
+  }
+  if (c.valid !== true) {
+    fail(`cannot rewrite: coupon ${localCoupon.id} is no longer valid in Stripe; take the offer off the page instead of mirroring it`);
+  }
+  const rebuiltCoupon = [
+    '// BEGIN GENERATED COUPON (npm run sync:prices)',
+    `export const EARLY_ACCESS_COUPON: Coupon = { id: '${localCoupon.id}', amountOffCents: ${c.amount_off}, currency: '${c.currency}', duration: '${c.duration}' };`,
+    '// END GENERATED COUPON',
+  ].join('\n');
+
+  writeFileSync(PRICING_FILE, module_.replace(BLOCK, rebuilt).replace(COUPON_BLOCK, rebuiltCoupon));
+  console.log(`prices: rewrote ${local.size} prices and coupon ${localCoupon.id} in pricing.ts from Stripe`);
   process.exit(0);
 }
 
@@ -459,4 +514,4 @@ if (mismatches.length) {
   process.exit(1);
 }
 
-console.log(`prices: ok — ${local.size} prices match Stripe`);
+console.log(`prices: ok, ${local.size} prices and coupon ${localCoupon.id} match Stripe`);
