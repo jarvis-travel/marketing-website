@@ -1,4 +1,4 @@
-import { appSignInUrl } from '../data/appLink';
+import { appJoinUrl } from '../data/appLink';
 import { DevicePair } from '../components/DevicePair';
 import {
   BUDGET,
@@ -219,7 +219,7 @@ export function FeaturesPage() {
 
           <div className="text-center mt-12">
             <a
-              href={appSignInUrl()}
+              href={appJoinUrl()}
               className="inline-block px-8 py-4 bg-amber-400 text-gray-900 rounded-xs font-semibold hover:bg-amber-300 transition-colors"
             >
               Join Now

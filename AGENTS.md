@@ -15,7 +15,7 @@ binding work contract for its subtree.
 
 React TypeScript marketing website for JarvisTravel — a standalone SPA deployed
 to the production Droplet (mktg.jarvistravel.com) and GitHub Pages. Serves as the public-facing landing experience: marketing pages for a
-pre-launch product (no auth on this site; every "Join Now" goes to the app's sign-in, and the pricing page's plan CTAs carry the chosen plan: JAR-1692).
+pre-launch product (no auth on this site; every "Join Now" opens the app's sign-up, and the pricing page's plan CTAs carry the chosen plan: JAR-3180, which superseded JAR-1692's sign-in).
 
 ## Ownership
 
@@ -70,6 +70,14 @@ keyed by the same
 `lookup_key` the backend resolves at checkout). The `lint:prices` guard fails
 CI when the site and Stripe disagree; `check-prices.mjs` also fails when a
 dollar amount reappears as a literal in a component.
+
+The Early Access coupon (`ea_annual`, JAR-3180) is mirrored the same way, in
+its own generated block in `pricing.ts`, and the page shows the annual price
+minus its amount off. The guard reads `/v1/coupons/ea_annual`, so every key it
+runs with (`STRIPE_READ_API_KEY`, `STRIPE_LIVE_READ_API_KEY`) needs **Coupons:
+Read** as well as Prices: Read; without it the guard fails, on PRs and deploys
+alike, rather than skipping the coupon. Which plan the coupon applies to is
+core's rule, mirrored by hand as `EARLY_ACCESS_LOOKUP_KEY`.
 
 **Changing a price or adding a plan (runbook):**
 1. Edit/create the price in the Stripe dashboard (test mode; same lookup_key
@@ -129,7 +137,7 @@ in every template becomes a broken image at once.
 
 - **SPA** — no server-side rendering. All pages are client-rendered React.
 - **Marketing layout** — `MarketingLayout` in `PageRouter.tsx` wraps all public-facing pages with `<Navigation />` + `<Footer />`. New marketing routes should follow the same pattern.
-- **No auth** — pre-launch marketing site; the simulated client-side auth stack was removed as dead code (JAR-429). Sign-in lives in the app: every "Join Now" links to the app's sign-in through `appLink.ts`, the pricing page's plan CTAs carry the chosen plan, and the pricing page has a sign-in link for existing accounts (JAR-1692, which reversed JAR-1630's route to `/pricing`). `scripts/check-pricing-ctas.mjs` enforces all three.
+- **No auth**: pre-launch marketing site; the simulated client-side auth stack was removed as dead code (JAR-429). Sign-up and sign-in live in the app: every "Join Now" opens the app's sign-up through `appJoinUrl()` in `appLink.ts`, the pricing page's plan CTAs carry the chosen plan, and the pricing page has a "Sign in" link to the app's sign-in for existing accounts (Brent, 2026-10-14, JAR-3180, which superseded JAR-1692's route to sign-in; that had reversed JAR-1630's route to `/pricing`). `scripts/check-pricing-ctas.mjs` enforces all three.
 - **Static output** — `npm run build` produces `dist/`. The GitHub Actions workflow uploads `dist/` to GitHub Pages or rsyncs it to the Droplet.
 - **Sourcemaps enabled** in production builds (`vite.config.ts` `sourcemap: true`).
 

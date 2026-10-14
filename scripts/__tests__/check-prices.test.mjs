@@ -19,7 +19,7 @@ import { spawnSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { NAMED_ACCOUNT_RE, classifyAccountError } from '../lib/account-error.mjs';
 import { modeOf, refuseUnexpectedMode } from '../lib/account-mode.mjs';
-import { comparePrice } from '../lib/price-compare.mjs';
+import { comparePrice, compareCoupon, couponReadProblem } from '../lib/price-compare.mjs';
 
 const ROOT = new URL('../..', import.meta.url).pathname;
 const SCRIPT = resolve(ROOT, 'scripts/check-prices.mjs');
@@ -352,6 +352,89 @@ test('a missing price reports ONCE, not once per rule', () => {
   // problem first.
   const out = comparePrice('k', OK_WANT, undefined);
   if (out.length !== 1) throw new Error(`expected 1 message, got ${out.length}: ${out.join(' | ')}`);
+});
+
+
+// ── JAR-3180: the Early Access coupon, reconciled like a price ──────────────
+//
+// The pricing page shows the annual price minus this coupon's amount_off, so a
+// coupon that drifted in Stripe is a wrong price on the page exactly as a
+// drifted price is. Same shape as above: one agreeing fixture, and each case
+// breaks one field so a failure names the rule that caught it.
+
+const OK_COUPON_WANT = { id: 'ea_annual', amountOffCents: 2000, currency: 'usd', duration: 'once' };
+const OK_COUPON_GOT = {
+  id: 'ea_annual',
+  object: 'coupon',
+  amount_off: 2000,
+  percent_off: null,
+  currency: 'usd',
+  duration: 'once',
+  valid: true,
+};
+const withCoupon = (o) => ({ ...OK_COUPON_GOT, ...o });
+
+test('a coupon that agrees with the mirror reports nothing: the control', () => {
+  const out = compareCoupon(OK_COUPON_WANT, OK_COUPON_GOT);
+  if (out.length !== 0) throw new Error(`expected silence, got: ${out.join(' | ')}`);
+});
+
+test('a changed amount_off is caught, naming both amounts', () => {
+  const out = compareCoupon(OK_COUPON_WANT, withCoupon({ amount_off: 2500 }));
+  if (out.length !== 1) throw new Error(`expected exactly one mismatch, got ${out.length}: ${out.join(' | ')}`);
+  if (!out[0].includes('ea_annual')) throw new Error('the coupon must be named');
+  if (!out[0].includes('$20.00') || !out[0].includes('$25.00')) throw new Error(`both amounts must be named: ${out[0]}`);
+});
+
+test('a percent-off coupon is caught: the page can only take a fixed amount off', () => {
+  // amount_off is null on a percent-off coupon. A check reading it loosely
+  // (`!got.amount_off` skipped, or null coerced to 0) would wave this through.
+  const out = compareCoupon(OK_COUPON_WANT, withCoupon({ amount_off: null, percent_off: 20 }));
+  if (out.length !== 1) throw new Error(`expected exactly one mismatch, got ${out.length}: ${out.join(' | ')}`);
+  if (!out[0].includes('percent_off 20')) throw new Error(`the message must say what Stripe has instead: ${out[0]}`);
+});
+
+test('currency and duration are each caught', () => {
+  const currency = compareCoupon(OK_COUPON_WANT, withCoupon({ currency: 'eur' }));
+  if (currency.length !== 1 || !currency[0].includes('eur')) throw new Error(`currency rule: ${currency.join(' | ')}`);
+  // 'once' is what makes the page's "first year, then the regular price" true.
+  // 'forever' would make the struck price a lie every year after the first.
+  for (const duration of ['forever', 'repeating']) {
+    const out = compareCoupon(OK_COUPON_WANT, withCoupon({ duration }));
+    if (out.length !== 1 || !out[0].includes(duration)) throw new Error(`duration ${duration}: ${out.join(' | ')}`);
+  }
+});
+
+test('an invalid coupon is caught, and an ABSENT valid is not read as valid', () => {
+  // valid is false once a coupon is past redeem_by or out of max_redemptions:
+  // the page would advertise a price nobody is given.
+  const invalid = compareCoupon(OK_COUPON_WANT, withCoupon({ valid: false }));
+  if (invalid.length !== 1 || !/no longer valid/.test(invalid[0])) throw new Error(`valid:false: ${invalid.join(' | ')}`);
+  // The discriminating case: `got.valid === false` would pass this, and must not.
+  const bare = withCoupon({});
+  delete bare.valid;
+  const absent = compareCoupon(OK_COUPON_WANT, bare);
+  if (absent.length !== 1) throw new Error(`an absent valid must fail closed, got ${absent.length}: ${absent.join(' | ')}`);
+});
+
+test('a coupon Stripe refused to show us (401/403) fails, naming the permission', () => {
+  // The CI keys are restricted. One without Coupons: Read still reads prices,
+  // so without this the run would reconcile the prices, skip the coupon, and
+  // print ok over a page price nothing checked.
+  for (const status of [401, 403]) {
+    const msg = couponReadProblem(status, 'ea_annual', 'STRIPE_READ_API_KEY');
+    if (!msg) throw new Error(`HTTP ${status} must be a failure, not a pass`);
+    if (!msg.includes('Coupons: Read')) throw new Error(`the failure must name the missing permission: ${msg}`);
+    if (!msg.includes('STRIPE_READ_API_KEY')) throw new Error(`the failure must name the key to fix: ${msg}`);
+  }
+});
+
+test('a missing coupon and any other Stripe error fail too; only a 2xx is readable', () => {
+  if (couponReadProblem(200, 'ea_annual', 'K') !== null) throw new Error('a 200 must be readable');
+  const missing = couponReadProblem(404, 'ea_annual', 'K');
+  if (!missing || !/no coupon ea_annual/.test(missing)) throw new Error(`404: ${missing}`);
+  if (!couponReadProblem(400, 'ea_annual', 'K')) throw new Error('a 400 must fail');
+  if (!couponReadProblem(500, 'ea_annual', 'K')) throw new Error('a 500 that survived the retries must fail');
 });
 
 console.log(`\n${passed} passed, ${failed} failed`);

@@ -1,4 +1,5 @@
-// One Stripe Price compared against the one entry the site renders for it.
+// One Stripe Price compared against the one entry the site renders for it,
+// and the Early Access coupon against the site's mirror of it (JAR-3180).
 //
 // Extracted from check-prices.mjs so the comparison can be tested against
 // fixtures instead of against Stripe. The guard's other decisions already live
@@ -68,4 +69,64 @@ export function comparePrice(key, want, got) {
   }
 
   return out;
+}
+
+/**
+ * The Early Access coupon compared against the site's mirror of it (JAR-3180).
+ * The page shows the annual price minus this coupon's amount_off, so the same
+ * contract as comparePrice: mismatch strings, empty means agreement.
+ *
+ * @param want  the site's mirror, parsed out of pricing.ts
+ * @param got   the Stripe Coupon object (couponReadProblem has ruled out the rest)
+ */
+export function compareCoupon(want, got) {
+  const id = `coupon ${want.id}`;
+  const out = [];
+
+  // amount_off is null on a percent-off coupon, which the page cannot show as
+  // "the list price minus a fixed amount" at all.
+  if (got.amount_off !== want.amountOffCents) {
+    const stripe = got.amount_off == null ? `no fixed amount off (percent_off ${got.percent_off})` : `${money(got.amount_off)} off`;
+    out.push(`${id}: site says ${money(want.amountOffCents)} off, Stripe says ${stripe}`);
+  }
+
+  if (got.currency !== want.currency) {
+    out.push(`${id}: site says ${want.currency}, Stripe says ${got.currency}`);
+  }
+
+  // 'once' takes it off the first invoice only, which on a yearly price is the
+  // first year. It is what makes the page's "first year, then the regular price"
+  // true; 'forever' would make the struck price false every year after.
+  if (got.duration !== want.duration) {
+    out.push(`${id}: site says duration ${want.duration}, Stripe says ${got.duration}`);
+  }
+
+  // valid is Stripe's answer to "can this still be redeemed": false once the
+  // coupon is past redeem_by or out of max_redemptions. Absent fails too.
+  if (got.valid !== true) {
+    out.push(`${id}: Stripe says it is no longer valid, so the page advertises a price nobody is given. ` +
+      'Take the offer off the page, or fix the coupon in Stripe');
+  }
+
+  return out;
+}
+
+/**
+ * Why a GET /v1/coupons/<id> answer cannot be compared, or null when it can.
+ *
+ * Every non-2xx is a failure. The CI keys are restricted, and one without
+ * Coupons: Read gets a 403 here while its price reads still work, so treating
+ * this as skippable would print ok over a page price nothing checked. Stripe's
+ * own message is not echoed: it quotes part of the key.
+ */
+export function couponReadProblem(status, id, keyName) {
+  if (status >= 200 && status < 300) return null;
+  if (status === 401 || status === 403) {
+    return `cannot read coupon ${id} (HTTP ${status}): ${keyName} needs the "Coupons: Read" permission. ` +
+      'Grant it on that restricted key in the Stripe dashboard. Until then the page\'s Early Access price is unchecked, so this fails.';
+  }
+  if (status === 404) {
+    return `Stripe has no coupon ${id} in this mode, so the page's Early Access price is one nobody is given`;
+  }
+  return `Stripe error (${status}) reading coupon ${id}`;
 }

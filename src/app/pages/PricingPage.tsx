@@ -1,14 +1,20 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Check } from 'lucide-react';
-import { priceOf, periodOf, annualSavingPercent, type PriceLookupKey } from '../data/pricing';
+import { priceOf, periodOf, annualSavingPercent, earlyAccessPriceOf, earlyAccessSavingPercent, type PriceLookupKey } from '../data/pricing';
 import { appJoinUrl, appSignInUrl } from '../data/appLink';
 
 // Approved offer structure (pricing handoff, 2026-07): exactly two offers.
 // Trip Pass is a real single-trip product, not a trial. Explore is the hero
 // offer; Annual and Monthly are billing cadences of ONE subscription, never
 // separate tiers. Quarterly is deliberately not shown (brand-owner call,
-// JAR-430). No scarcity language, no discount framing, no future tiers.
-// Bullet copy is the handoff's card language verbatim.
+// JAR-430). No future tiers. Bullet copy is the handoff's card language
+// verbatim, except the Explore Annual line, which carries the offer below.
+//
+// The one offer on the page is Brent's: on 2026-10-14 he asked for the regular
+// annual price struck through, with the Early Access price beside it "for a
+// limited time" (JAR-3180). All users get the Early Access coupon for now, and
+// it comes off the first year only, so wherever the annual price appears it
+// says "first year" and what it renews at. Monthly and Trip Pass are unchanged.
 //
 // The highlight travels (brand-owner direction): exactly one card wears the
 // Ateneo treatment at a time. Explore holds it by default; while the visitor
@@ -23,16 +29,48 @@ const TRIP_PASS_POINTS = [
   'Good for travelers who have one trip in mind right now',
 ];
 
-// Derived from the generated PRICES block, so the badge and this bullet can
-// never disagree with the amounts rendered beside them.
+// Derived from the generated blocks, so neither can disagree with the amounts
+// rendered beside them. SAVING_PCT compares the REGULAR annual price with paying
+// monthly, so the bullet attaches it to the price Explore Annual renews at. The
+// badge sits beside the first-year price, so while the offer runs it shows what
+// that first year saves (Brent, 2026-10-14, JAR-3180).
 const SAVING_PCT = annualSavingPercent();
+const BADGE_PCT = earlyAccessPriceOf('jt_explore_annual') ? earlyAccessSavingPercent() : SAVING_PCT;
 
-const EXPLORE_POINTS = [
-  'Full subscription access',
-  'Best choice for travelers planning more than one trip',
-  SAVING_PCT !== null
-    ? `Explore Annual is ${priceOf('jt_explore_annual')} per ${periodOf('jt_explore_annual')}, ${SAVING_PCT}% less than paying monthly`
-    : `Explore Annual is ${priceOf('jt_explore_annual')} per ${periodOf('jt_explore_annual')}`,
+/**
+ * A regular price, struck through. Screen readers mostly do not announce a
+ * strike, so the struck amount is labelled in words: otherwise "$99 $79" is
+ * read as two prices with nothing to say which one is charged.
+ */
+function Struck({ children }: { children: string }) {
+  return (
+    <>
+      <span className="sr-only">Regular price </span>
+      <s>{children}</s>
+    </>
+  );
+}
+
+const ANNUAL: PriceLookupKey = 'jt_explore_annual';
+const ANNUAL_OFFER = earlyAccessPriceOf(ANNUAL);
+const ANNUAL_RATE = `${priceOf(ANNUAL)} per ${periodOf(ANNUAL)}${
+  SAVING_PCT !== null ? `, ${SAVING_PCT}% less than paying monthly` : ''
+}`;
+
+const EXPLORE_POINTS: { key: string; text: ReactNode }[] = [
+  { key: 'access', text: 'Full subscription access' },
+  { key: 'trips', text: 'Best choice for travelers planning more than one trip' },
+  {
+    key: 'annual',
+    text: ANNUAL_OFFER ? (
+      <>
+        For a limited time, Explore Annual is <Struck>{priceOf(ANNUAL)}</Struck> {ANNUAL_OFFER} for
+        your first {periodOf(ANNUAL)}. It renews at {ANNUAL_RATE}.
+      </>
+    ) : (
+      `Explore Annual is ${ANNUAL_RATE}`
+    ),
+  },
 ];
 
 type CadenceKey = 'annual' | 'monthly';
@@ -75,6 +113,8 @@ const quietAction = 'bg-transparent border-sky-600 text-sky-600';
 export function PricingPage() {
   const [cadenceKey, setCadenceKey] = useState<CadenceKey>('annual');
   const cadence = CADENCES.find((c) => c.key === cadenceKey) ?? CADENCES[0];
+  // The first-year price when the selected cadence has one (Annual), else null.
+  const offer = earlyAccessPriceOf(cadence.lookupKey);
 
   // True while the visitor is over (or keyboard-focused inside) Trip Pass.
   const [tripActive, setTripActive] = useState(false);
@@ -211,6 +251,7 @@ export function PricingPage() {
               >
                 {CADENCES.map((option) => {
                   const selected = cadenceKey === option.key;
+                  const optionOffer = earlyAccessPriceOf(option.lookupKey);
                   // Both states give a clear hover fill (Meridian sky tints),
                   // so the unselected cadence responds when the visitor moves
                   // over it - not just a border change.
@@ -227,7 +268,7 @@ export function PricingPage() {
                       type="button"
                       aria-pressed={selected}
                       onClick={() => setCadenceKey(option.key)}
-                      className={`flex items-center justify-between rounded-xl border px-4 py-3 text-left transition-colors ${rowClass}`}
+                      className={`flex flex-wrap items-center justify-between gap-x-4 gap-y-1 rounded-xl border px-4 py-3 text-left transition-colors ${rowClass}`}
                     >
                       <span className="flex items-center gap-3">
                         <span
@@ -240,7 +281,7 @@ export function PricingPage() {
                         {/* On the white card the badge sits on the selected option's
                             navy tint, which darkens its ground; its own white keeps
                             the 11px label readable. */}
-                        {option.best && SAVING_PCT !== null && (
+                        {option.best && BADGE_PCT !== null && (
                           <span
                             className={`text-[11px] font-semibold tracking-wide uppercase border px-2 py-0.5 rounded-xs transition-colors ${
                               exploreHot
@@ -248,23 +289,47 @@ export function PricingPage() {
                                 : 'text-amber-700 bg-white border-amber-700/40'
                             }`}
                           >
-                            Save {SAVING_PCT}%
+                            Save {BADGE_PCT}%
                           </span>
                         )}
                       </span>
+                      {/* ml-auto keeps the price on the right when a narrow
+                          screen wraps it under the label. */}
                       <span
-                        className={`[font-variant-numeric:tabular-nums] transition-colors ${
+                        className={`ml-auto text-right [font-variant-numeric:tabular-nums] transition-colors ${
                           exploreHot ? 'text-sky-100' : 'text-gray-600'
                         }`}
                       >
-                        {priceOf(option.lookupKey)}
-                        <span
-                          className={`transition-colors ${
-                            exploreHot ? 'text-sky-200' : 'text-gray-500'
-                          }`}
-                        >
-                          /{periodOf(option.lookupKey)}
-                        </span>
+                        {optionOffer ? (
+                          <>
+                            <Struck>{priceOf(option.lookupKey)}</Struck> {optionOffer}
+                            <span
+                              className={`transition-colors ${
+                                exploreHot ? 'text-sky-200' : 'text-gray-500'
+                              }`}
+                            >
+                              {' '}first {periodOf(option.lookupKey)}
+                            </span>
+                            <span
+                              className={`block text-xs transition-colors ${
+                                exploreHot ? 'text-sky-200' : 'text-gray-500'
+                              }`}
+                            >
+                              for a limited time, then {priceOf(option.lookupKey)}/{periodOf(option.lookupKey)}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            {priceOf(option.lookupKey)}
+                            <span
+                              className={`transition-colors ${
+                                exploreHot ? 'text-sky-200' : 'text-gray-500'
+                              }`}
+                            >
+                              /{periodOf(option.lookupKey)}
+                            </span>
+                          </>
+                        )}
                       </span>
                     </button>
                   );
@@ -272,25 +337,46 @@ export function PricingPage() {
               </div>
 
               <div className="mb-6 [font-variant-numeric:tabular-nums]">
+                {offer && (
+                  <span
+                    className={`mr-2 text-2xl font-semibold transition-colors ${
+                      exploreHot ? 'text-sky-200' : 'text-gray-500'
+                    }`}
+                  >
+                    {/* A real space, not only the margin: without one the two
+                        amounts reach a screen reader as one run, "$99$79". */}
+                    <Struck>{priceOf(cadence.lookupKey)}</Struck>{' '}
+                  </span>
+                )}
                 <span
                   className={`text-4xl font-bold transition-colors ${
                     exploreHot ? 'text-gray-50' : 'text-gray-900'
                   }`}
                 >
-                  {priceOf(cadence.lookupKey)}
+                  {offer ?? priceOf(cadence.lookupKey)}
                 </span>
                 <span
                   className={`ml-2 transition-colors ${
                     exploreHot ? 'text-sky-200' : 'text-gray-500'
                   }`}
                 >
-                  per {periodOf(cadence.lookupKey)}
+                  {offer ? 'first' : 'per'} {periodOf(cadence.lookupKey)}
                 </span>
+                {offer && (
+                  <p
+                    className={`mt-2 text-sm transition-colors ${
+                      exploreHot ? 'text-sky-100' : 'text-gray-600'
+                    }`}
+                  >
+                    For a limited time. Renews at {priceOf(cadence.lookupKey)} per{' '}
+                    {periodOf(cadence.lookupKey)}.
+                  </p>
+                )}
               </div>
 
               <ul className="space-y-3 mb-8">
-                {EXPLORE_POINTS.map((point) => (
-                  <li key={point} className="flex items-start gap-3">
+                {EXPLORE_POINTS.map(({ key, text }) => (
+                  <li key={key} className="flex items-start gap-3">
                     <Check
                       className={`w-4 h-4 shrink-0 mt-1 transition-colors ${
                         exploreHot ? 'text-sky-300' : 'text-sky-600'
@@ -303,7 +389,7 @@ export function PricingPage() {
                         exploreHot ? 'text-sky-100' : 'text-gray-600'
                       }`}
                     >
-                      {point}
+                      {text}
                     </span>
                   </li>
                 ))}
