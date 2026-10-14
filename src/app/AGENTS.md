@@ -32,7 +32,7 @@ happens.
 
 ### No auth
 
-- This is a pre-launch marketing site with **no authentication**. The simulated client-side auth stack (`context/`, `ProtectedRoute`, `RouterContext`, and the sign-in/up/dashboard pages) was removed as dead code (JAR-429). "Join Now" links go to the app's sign-in, and the pricing page's carry the chosen plan (JAR-1692). The sign-in itself lives in the app.
+- This is a pre-launch marketing site with **no authentication**. The simulated client-side auth stack (`context/`, `ProtectedRoute`, `RouterContext`, and the sign-in/up/dashboard pages) was removed as dead code (JAR-429). "Join Now" links open the app's sign-up, and the pricing page's carry the chosen plan (JAR-3180, which superseded JAR-1692's sign-in). Sign-up and sign-in themselves live in the app.
 
 ### Global entry points (outside `src/app/`)
 

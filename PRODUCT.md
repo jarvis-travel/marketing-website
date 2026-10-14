@@ -29,17 +29,17 @@ Inferred from the codebase: visitors arrive on phones and desktops, usually part
 ## Capabilities and Constraints
 
 - Shipped features the site may describe: Jarvis-drafted trip plans; the Fatigue Index, with a lighter version of a packed day; a budget inside the plan; the trip map with the walking route; weather and flights inside the plan; the trip journal (notes, photos, receipts, places).
-- Prices come only from `src/app/data/pricing.ts`, which mirrors Stripe: Trip Pass for one trip, and Explore as one subscription with annual and monthly cadences. No invented tiers.
+- Prices come only from `src/app/data/pricing.ts`, which mirrors Stripe: Trip Pass for one trip, and Explore as one subscription with annual and monthly cadences. No invented tiers. The one offer is the Early Access price on Explore Annual (Brent, 2026-10-14, JAR-3180): the regular price struck through, the first-year price beside it, and what it renews at, all from Stripe.
 - JarvisTravel plans; it never sells or books travel. No booking language anywhere, enforced by `lint:plan-not-book`.
 - No absolute or forward-looking claims about data, enforced by `lint:absolute-claims`.
-- Join Now is the sign-up call to action. Every Join Now outside Pricing leads to `/pricing`, and Pricing's own actions link into the app. `lint:pricing-ctas` enforces both.
+- Join Now is the sign-up call to action. Every Join Now opens the app's sign-up, and Pricing's carry the plan the visitor picked; Pricing's "Sign in" link opens the app's sign-in (JAR-3180). `lint:pricing-ctas` enforces all three.
 
 ## Brand Commitments
 
 - The name is "JarvisTravel", one word. The assistant is "Jarvis".
 - Voice follows the `jarvistravel-copy` skill: benefit first, plain speech, second person, short sentences, and every feature line landing on what the traveler gets. Approved anchor lines: "Your vacation should be a break, not a second job." "Enjoy Your Vacation." "Planning is hard. Jarvis does the heavy lifting."
 - Fatigue Index band words lead (chill, balanced, packed). Digits appear only where the 1 to 9 scale is explained, and the verb is "rate", never "score".
-- No em dashes, no emoji, no scarcity or urgency, and no disclaimer captions on images.
+- No em dashes, no emoji, no scarcity or urgency, and no disclaimer captions on images. One exception, Brent's: the Early Access price says "for a limited time" (JAR-3180).
 - Brand system: Meridian (palette, Inter, logo lockup) and the NINE marketing language already on the site.
 - Imagery: no recognisable faces, landmark and property rights checked, and every Unsplash photo carries its credit. App screenshots show the in-app photos, as the app does.
 
