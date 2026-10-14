@@ -78,7 +78,7 @@ const FEATURES: Feature[] = [
   {
     icon: Sparkles,
     name: 'Trip planning',
-    desc: 'Jarvis drafts your days around your pace and the daylight you actually have. You decide; it does the homework.',
+    desc: 'Jarvis drafts your days around your pace. You decide; it does the homework.',
     voice: 'accent',
   },
   {
