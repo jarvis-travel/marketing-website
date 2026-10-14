@@ -130,9 +130,23 @@ export function earlyAccessPriceOf(key: PriceLookupKey): string | null {
  *  Returns null rather than guessing when annual is not actually cheaper, which
  *  keeps the badge honest if the catalogue ever changes shape. */
 export function annualSavingPercent(): number | null {
-  const year = PRICES.jt_explore_annual.amountCents;
+  return savingAgainstMonthly(PRICES.jt_explore_annual.amountCents);
+}
+
+/** What the Early Access first year saves against twelve months at the monthly
+ *  price, as a whole percent, or null when the comparison cannot honestly be
+ *  made. While the offer runs, this is the badge's number (Brent, 2026-10-14,
+ *  JAR-3180): the first year is what a visitor pays now. The renewal's own
+ *  saving is annualSavingPercent. */
+export function earlyAccessSavingPercent(): number | null {
+  const annual = PRICES[EARLY_ACCESS_LOOKUP_KEY];
+  return savingAgainstMonthly(annual.amountCents - EARLY_ACCESS_COUPON.amountOffCents);
+}
+
+/** A year at yearCents against twelve months at the monthly price. */
+function savingAgainstMonthly(yearCents: number): number | null {
   const month = PRICES.jt_explore_monthly.amountCents;
-  if (!Number.isFinite(year) || !Number.isFinite(month) || month <= 0) return null;
-  const pct = Math.round((1 - year / (month * 12)) * 100);
+  if (!Number.isFinite(yearCents) || !Number.isFinite(month) || month <= 0) return null;
+  const pct = Math.round((1 - yearCents / (month * 12)) * 100);
   return pct > 0 ? pct : null;
 }

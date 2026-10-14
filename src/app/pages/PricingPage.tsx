@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { Check } from 'lucide-react';
-import { priceOf, periodOf, annualSavingPercent, earlyAccessPriceOf, type PriceLookupKey } from '../data/pricing';
+import { priceOf, periodOf, annualSavingPercent, earlyAccessPriceOf, earlyAccessSavingPercent, type PriceLookupKey } from '../data/pricing';
 import { appJoinUrl, appSignInUrl } from '../data/appLink';
 
 // Approved offer structure (pricing handoff, 2026-07): exactly two offers.
@@ -29,11 +29,13 @@ const TRIP_PASS_POINTS = [
   'Good for travelers who have one trip in mind right now',
 ];
 
-// Derived from the generated PRICES block, so the badge and this bullet can
-// never disagree with the amounts rendered beside them. It compares the REGULAR
-// annual price with paying monthly, not the first-year offer, so the bullet
-// attaches it to the price Explore Annual renews at.
+// Derived from the generated blocks, so neither can disagree with the amounts
+// rendered beside them. SAVING_PCT compares the REGULAR annual price with paying
+// monthly, so the bullet attaches it to the price Explore Annual renews at. The
+// badge sits beside the first-year price, so while the offer runs it shows what
+// that first year saves (Brent, 2026-10-14, JAR-3180).
 const SAVING_PCT = annualSavingPercent();
+const BADGE_PCT = earlyAccessPriceOf('jt_explore_annual') ? earlyAccessSavingPercent() : SAVING_PCT;
 
 /**
  * A regular price, struck through. Screen readers mostly do not announce a
@@ -279,7 +281,7 @@ export function PricingPage() {
                         {/* On the white card the badge sits on the selected option's
                             navy tint, which darkens its ground; its own white keeps
                             the 11px label readable. */}
-                        {option.best && SAVING_PCT !== null && (
+                        {option.best && BADGE_PCT !== null && (
                           <span
                             className={`text-[11px] font-semibold tracking-wide uppercase border px-2 py-0.5 rounded-xs transition-colors ${
                               exploreHot
@@ -287,7 +289,7 @@ export function PricingPage() {
                                 : 'text-amber-700 bg-white border-amber-700/40'
                             }`}
                           >
-                            Save {SAVING_PCT}%
+                            Save {BADGE_PCT}%
                           </span>
                         )}
                       </span>
