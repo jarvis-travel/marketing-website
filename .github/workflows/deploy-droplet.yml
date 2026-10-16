@@ -1,6 +1,8 @@
 # Deploy marketing website to production Droplet
 # Runs on every push to main (same trigger as node.js.yml's Pages deploy), or manually.
-# Built artifact is rsynced to /var/www/jarvistravel-marketing/ on the DO Droplet.
+# Built artifact is rsynced to /var/www/jarvistravel-marketing/ on BOTH serving
+# droplets behind jarvis-prod-lb (JAR-3203; a single-host deploy left prod-2 an
+# eight-day-old build that the load balancer served to half of all visitors).
 #
 # JAR-683: this workflow previously filtered on a hardcoded path list (src/**,
 # index.html, vite.config.ts, package.json, package-lock.json) that drifted —
@@ -9,7 +11,10 @@
 # never reached the droplet (silent staleness; see JAR-683/JAR-1023). Removing
 # the filter keeps the Pages and Droplet deploy paths in lockstep by construction.
 #
-# Reuses the same DROPLET_SSH_KEY and DROPLET_HOST secrets as core & web-app.
+# Reuses the same DROPLET_SSH_KEY, DROPLET_HOST, DROPLET_HOST_KEY,
+# DROPLET_HOST_2 and DROPLET_HOST_KEY_2 secrets as core & web-app. Both host
+# pairs are REQUIRED (JAR-3203): the deploy fails fast if either host or
+# fingerprint is empty rather than shipping to one droplet.
 
 name: Deploy marketing site to Droplet
 
@@ -86,22 +91,75 @@ jobs:
           SSH_KEY: ${{ secrets.DROPLET_SSH_KEY }}
           HOST: ${{ secrets.DROPLET_HOST }}
           DROPLET_HOST_KEY: ${{ secrets.DROPLET_HOST_KEY }}
+          # JAR-3203: jarvis-prod-lb round-robins between TWO serving droplets,
+          # and this step used to rsync dist/ to DROPLET_HOST alone. Measured on
+          # 2026-10-14: eight LB requests with `Host: mktg.jarvistravel.com`
+          # alternated between two different index.html bodies (prod-1 fresh,
+          # prod-2 carrying a build from 2026-10-06) — half of all visitors were
+          # served an eight-day-old site. Same class of defect as the web-app
+          # incident of 2026-10-08 (JAR-590: a stale backend serving a new
+          # index.html against hashed assets that existed on only one host), and
+          # the same secret shape core's deploy.yml and web-app's
+          # deploy-droplet.yml already use. Both host secrets are REQUIRED —
+          # the deploy fails fast if either is empty, so a missing sync can
+          # never silently ship to one droplet again.
+          HOST_2: ${{ secrets.DROPLET_HOST_2 }}
+          DROPLET_HOST_KEY_2: ${{ secrets.DROPLET_HOST_KEY_2 }}
         run: |
           set -euo pipefail
+
+          # Fail closed before anything ships: a single-host marketing deploy is
+          # the defect this step exists to prevent (JAR-3203).
+          if [ -z "${HOST:-}" ] || [ -z "${HOST_2:-}" ]; then
+            echo "::error::both serving droplets are required (DROPLET_HOST, DROPLET_HOST_2) - a single-host deploy leaves a stale backend behind the load balancer"
+            exit 1
+          fi
+          if [ -z "${DROPLET_HOST_KEY:-}" ] || [ -z "${DROPLET_HOST_KEY_2:-}" ]; then
+            echo "::error::both host-key fingerprints are required (DROPLET_HOST_KEY, DROPLET_HOST_KEY_2) - fail closed instead of TOFU"
+            exit 1
+          fi
+
+          KNOWN_HOSTS="$(mktemp)"
           # JAR-749 review deleg_689cdd26 (web-app#187 F2): the key must never
           # touch the persistent runner disk — load it into a job-scoped
           # in-memory ssh-agent instead.
           eval "$(ssh-agent -s)"
-          trap 'ssh-agent -k >/dev/null 2>&1 || true' EXIT
+          trap 'ssh-agent -k >/dev/null 2>&1 || true; rm -f "$KNOWN_HOSTS"' EXIT
           echo "$SSH_KEY" | ssh-add - >/dev/null
-          # Host-key pin (F3): the expected SHA256 fingerprint secret must
-          # match ANY of the host's presented keys (a host often emits
-          # ed25519 + rsa; the order is not a contract) — fail closed
-          # instead of TOFU, and never swallow keyscan errors.
-          HOST_KEY="$(ssh-keyscan -H "$HOST" 2>&1 || true)"
-          if [ -z "$DROPLET_HOST_KEY" ] || ! printf '%s\n' "$HOST_KEY" | ssh-keygen -lf - 2>/dev/null | awk '{print $2}' | grep -qx "$DROPLET_HOST_KEY"; then
-            echo "::error::Droplet host key mismatch — refusing to deploy (expected fingerprint ${DROPLET_HOST_KEY})"
-            exit 1
-          fi
-          printf '%s\n' "$HOST_KEY" > ~/.ssh/known_hosts
-          rsync -avz --delete -e "ssh -o BatchMode=yes -o StrictHostKeyChecking=yes" dist/ "root@$HOST:/var/www/jarvistravel-marketing/"
+
+          # Host-key pin (F3): the expected SHA256 fingerprint must match ANY of
+          # the host's presented keys (a host often emits ed25519 + rsa; the
+          # order is not a contract) — fail closed instead of TOFU, and never
+          # swallow keyscan errors. BOTH hosts are pinned: an unpinned second
+          # host is how a half-deploy would look healthy.
+          for TARGET in "$HOST:$DROPLET_HOST_KEY" "$HOST_2:$DROPLET_HOST_KEY_2"; do
+            TARGET_HOST="${TARGET%%:*}"
+            TARGET_KEY="${TARGET#*:}"
+            HOST_KEY="$(ssh-keyscan -H "$TARGET_HOST" 2>&1 || true)"
+            if ! printf '%s\n' "$HOST_KEY" | ssh-keygen -lf - 2>/dev/null | awk '{print $2}' | grep -qx "$TARGET_KEY"; then
+              echo "::error::${TARGET_HOST} host key mismatch — refusing to deploy (expected fingerprint ${TARGET_KEY})"
+              exit 1
+            fi
+            printf '%s\n' "$HOST_KEY" >> "$KNOWN_HOSTS"
+          done
+          install -m 600 "$KNOWN_HOSTS" ~/.ssh/known_hosts
+
+          for TARGET_HOST in "$HOST" "$HOST_2"; do
+            echo "::notice::shipping dist/ to ${TARGET_HOST}:/var/www/jarvistravel-marketing/"
+            rsync -avz --delete -e "ssh -o BatchMode=yes -o StrictHostKeyChecking=yes" dist/ "root@${TARGET_HOST}:/var/www/jarvistravel-marketing/"
+          done
+
+          # Prove the two backends converged instead of trusting rsync's exit
+          # status: a divergence here is exactly what the LB serves alternately,
+          # so the run must not report success while the hosts disagree.
+          FIRST=""
+          for TARGET_HOST in "$HOST" "$HOST_2"; do
+            SUM="$(ssh -o BatchMode=yes -o StrictHostKeyChecking=yes "root@${TARGET_HOST}" "sha256sum /var/www/jarvistravel-marketing/index.html | cut -d' ' -f1")"
+            echo "::notice::${TARGET_HOST} index.html sha256 ${SUM}"
+            if [ -z "$FIRST" ]; then
+              FIRST="$SUM"
+            elif [ "$SUM" != "$FIRST" ]; then
+              echo "::error::the serving droplets hold different marketing builds (${FIRST} on ${HOST}, ${SUM} on ${TARGET_HOST}) - the load balancer would serve both"
+              exit 1
+            fi
+          done
