@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 //     an account erasure removes the Item at Plaid (core plaid.Service
 //     revokeItem and EraseForUser).
 //   - Payment runs on Stripe's hosted checkout (web-app redirects to its URL).
-//   - The Fatigue Index has no person attached (fatigue_logs has no user_id).
+//   - The Fatigue Index has no person attached (core fatigue.RateDay rates a day from the itinerary and takes no user id).
 //   - A destination photo request carries no account details and doesn't name
 //     the destination, and no phone number is shared for marketing (Privacy §5).
 //   - Text alerts are opt-in (Terms, SMS text message alerts).
