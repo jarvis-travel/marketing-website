@@ -254,7 +254,7 @@ export function HomePage() {
             <div className="relative">
               <DevicePair
                 image={TRIP_HOME}
-                alt="A trip's home screen for a week in Rome: today's schedule, what is left of the budget, and the week's pacing, with two days running packed."
+                alt="A trip's home screen for a week in Rome: today's schedule, what is left of the budget, and the week's pacing, with three days running heavy and a nudge toward a lighter day."
                 ground="plane"
                 sizes={{ desktop: '(min-width: 1152px) 860px, 80vw', phone: '(min-width: 1152px) 260px, 24vw' }}
               />
