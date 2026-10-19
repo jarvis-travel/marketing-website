@@ -1,0 +1,12 @@
+{
+  "repo": "jarvis-travel/core",
+  "workflow": ".github/workflows/code-review.yml",
+  "lane_reviews_all": false,
+  "paths_ignore": [
+    "**/*.md",
+    "docs/**",
+    "AGENTS.md",
+    "**/go.mod",
+    "**/go.sum"
+  ]
+}

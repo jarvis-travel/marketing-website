@@ -1,0 +1,6 @@
+{
+  "repo": "jarvis-travel/web-app",
+  "workflow": ".github/workflows/code-review.yml",
+  "lane_reviews_all": true,
+  "paths_ignore": []
+}
