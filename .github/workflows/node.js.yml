@@ -31,19 +31,20 @@ jobs:
 
     runs-on: spare  # JAR-749: self-hosted runner (billing-limited hosted CI)
     
-    strategy:
-      matrix:
-        node-version: [22.x]  # JAR-755: 23.x EOL
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
       - name: Checkout
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-      - name: Set up Node
-        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+      - name: Install Node toolchain from mise.toml
+        uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          install_args: node
+      - name: Cache npm downloads
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') || 'nolock' }}
+          restore-keys: |
+            npm-${{ runner.os }}-
       - name: Install dependencies
         run: npm i
       - name: Plan-not-book language guard
