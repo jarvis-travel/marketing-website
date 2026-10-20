@@ -58,7 +58,7 @@ export function AboutPage() {
               privacy first.
             </p>
             <p className="font-semibold text-gray-900">
-              That&rsquo;s how JarvisTravel and the Fatigue Index&trade; were
+              That&rsquo;s how JarvisTravel and the Fatigue Index were
               born.
             </p>
             <p>
