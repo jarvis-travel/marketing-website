@@ -40,9 +40,9 @@ export const ROUTE_META: Record<string, RouteMeta> = {
       'Pick the plan that fits the way you travel. Trip Pass for a single journey, Explore for travelers who go more than once a year.',
   },
   '/about': {
-    title: 'About JarvisTravel: why we built it',
+    title: 'About JarvisTravel: why we started it',
     description:
-      'We started JarvisTravel because planning a trip had turned into a second job. Here is what we are building, and how we run it.',
+      'JarvisTravel started with a trip to Italy. Why we built a trip planner nobody pays to be in, and how we use AI: as one tool, with your privacy first.',
   },
   '/contact': {
     title: 'Contact JarvisTravel',
