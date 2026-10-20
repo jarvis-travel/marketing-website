@@ -81,7 +81,13 @@ export const DAY_DETAIL: AppCaptureImage = {
   phoneFallback: dayDetailBadgePhonePng,
 };
 
-/** A packed day beside its lighter version ("Make this day lighter"), not the Trip Plan the day plan already shows. */
+/**
+ * A packed day just after "Make this day lighter" is applied: rated balanced,
+ * with the "is lighter now" note. The applied result rather than the preview,
+ * whose recorded answer carries an opening-hours caveat (brand owner,
+ * 2026-10-20). web-app's capture run still shoots the preview, so keep these
+ * files through a refresh until JAR-3563 lands.
+ */
 export const LIGHTER_DAY: AppCaptureImage = {
   desktop: srcSet([dayLighter720, 720], [dayLighter960, 960], [dayLighter1440, 1440]),
   phone: srcSet([dayLighterPhone390, 390], [dayLighterPhone780, 780]),
