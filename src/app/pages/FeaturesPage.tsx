@@ -37,7 +37,7 @@ const MOMENTS: Moment[] = [
     soWhat: 'So you fix Tuesday at home, not mid-afternoon in a crowded plaza.',
     capture: {
       image: LIGHTER_DAY,
-      alt: 'The Make this day lighter preview for a week in Rome. Friday goes from packed to balanced: its evening food tour moves to Thursday, which stays balanced. Each day shows its rating now and after, and the tour\'s cost moves with it, so the trip total stays the same.',
+      alt: 'The Make this day lighter preview for a week in Rome. Friday\'s evening food tour moves to Thursday at 8:30 PM, with a note that its opening hours at that time couldn\'t be checked. The two days that change show their ratings now and after: Friday goes from packed to balanced, and Thursday gets a little busier but stays balanced. The tour\'s cost moves with it, so the trip total stays the same.',
     },
   },
   // The day-route moment is off the page for now (JAR-3139, Brent: "lets also
