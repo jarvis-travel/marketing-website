@@ -24,7 +24,7 @@ import { appJoinUrl, appSignInUrl } from '../data/appLink';
 // moment. Touch devices keep the default (Explore highlighted).
 
 const TRIP_PASS_POINTS = [
-  'Full access to plan and execute one trip',
+  'Everything you need to plan and take one trip',
   'Your trip journal stays with you after the trip',
   'Good for travelers who have one trip in mind right now',
 ];
@@ -58,14 +58,11 @@ const ANNUAL_RATE = `${priceOf(ANNUAL)} per ${periodOf(ANNUAL)}${
 }`;
 
 const EXPLORE_POINTS: { key: string; text: ReactNode }[] = [
-  { key: 'access', text: 'Full subscription access' },
-  { key: 'trips', text: 'Best choice for travelers planning more than one trip' },
   {
     key: 'annual',
     text: ANNUAL_OFFER ? (
       <>
-        For a limited time, Explore Annual is <Struck>{priceOf(ANNUAL)}</Struck> {ANNUAL_OFFER} for
-        your first {periodOf(ANNUAL)}. It renews at {ANNUAL_RATE}.
+        Explore Annual renews at {ANNUAL_RATE}.
       </>
     ) : (
       `Explore Annual is ${ANNUAL_RATE}`
@@ -180,7 +177,7 @@ export function PricingPage() {
                   tripActive ? 'text-gray-50' : 'text-gray-900'
                 }`}
               >
-                One trip. Full access. No subscription required.
+                Everything for one trip, with no subscription.
               </p>
               <ul className="space-y-3 mb-8">
                 {TRIP_PASS_POINTS.map((point) => (
@@ -239,8 +236,7 @@ export function PricingPage() {
                   exploreHot ? 'text-gray-50' : 'text-gray-900'
                 }`}
               >
-                The full JarvisTravel subscription for travelers who want
-                ongoing access.
+                For travelers who take more than one trip a year.
               </p>
 
               {/* Billing cadence - two ways to pay for the same subscription. */}
@@ -315,7 +311,7 @@ export function PricingPage() {
                                 exploreHot ? 'text-sky-200' : 'text-gray-500'
                               }`}
                             >
-                              for a limited time, then {priceOf(option.lookupKey)}/{periodOf(option.lookupKey)}
+                              then {priceOf(option.lookupKey)}/{periodOf(option.lookupKey)}
                             </span>
                           </>
                         ) : (
