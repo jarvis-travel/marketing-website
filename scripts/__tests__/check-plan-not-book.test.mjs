@@ -48,13 +48,13 @@ function runGuard() {
  * Write banned copy to a published path, run the guard, always clean up.
  * The filename is obvious on sight so a crashed run leaves no mystery behind.
  */
-function guardSees(relPath) {
+function guardSees(relPath, content = 'Book your flights and hotels with us today.\n') {
   const abs = resolve(ROOT, relPath);
   if (existsSync(abs)) {
     throw new Error(`fixture path ${relPath} already exists; refusing to overwrite`);
   }
   try {
-    writeFileSync(abs, 'Book your flights and hotels with us today.\n');
+    writeFileSync(abs, content);
     return runGuard();
   } finally {
     rmSync(abs, { force: true });
@@ -94,6 +94,32 @@ test('still reads src/', () => {
   }
 });
 
+// JAR-3521. A line opening with "*", "{/*", "//", "/*" or "<!--" was read as a
+// code comment in every file type, so a Markdown bullet and an HTML comment's
+// copy were skipped. In a prose file (.md, .txt, .html) every line is copy now.
+test('reads a "*" bullet in a prose file (was skipped as a comment)', () => {
+  const { flagged } = guardSees('public/__pnb-bullet-fixture.md', '* Book your flights and hotels with us today.\n');
+  if (!flagged) {
+    throw new Error('a "*" bullet in .md was skipped as a comment');
+  }
+});
+
+test('reads inside an HTML comment in a prose .html file', () => {
+  const { flagged } = guardSees('public/__pnb-html-fixture.html', '<!-- Book your flights and hotels with us today. -->\n');
+  if (!flagged) {
+    throw new Error('an HTML comment in .html was skipped');
+  }
+});
+
+// The other half: a "//" line in code is still a comment, so the gate did not
+// widen into code.
+test('still skips a code comment in src/', () => {
+  const { flagged } = guardSees('src/__pnb-code-comment-fixture.ts', '// Book your flights and hotels with us today.\n');
+  if (flagged) {
+    throw new Error('a "//" comment in code was read as copy; the prose gate widened too far');
+  }
+});
+
 // Cleanup is the whole safety story here, since the fixtures live in the real
 // tree rather than a temp dir.
 test('leaves no fixture behind', () => {
@@ -101,6 +127,9 @@ test('leaves no fixture behind', () => {
     'public/__plan-not-book-fixture.txt',
     'public/__plan-not-book-fixture.md',
     'src/__plan-not-book-fixture.ts',
+    'public/__pnb-bullet-fixture.md',
+    'public/__pnb-html-fixture.html',
+    'src/__pnb-code-comment-fixture.ts',
   ]) {
     if (existsSync(resolve(ROOT, p))) {
       throw new Error(`fixture survived the run: ${p}`);

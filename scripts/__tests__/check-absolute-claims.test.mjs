@@ -311,5 +311,37 @@ test('copy after a block comment closes is read', () => {
   assert(flags(`/* A note on one line. */\nexport const L = 'It never sells travel.';`), 'copy after a one-line comment was skipped');
 });
 
+// --- Markdown and text headings and bullets are copy (JAR-3521) ----------
+//
+// isCommentLine read a line opening with "#", "*", "//", "/*" or "{/*" as a
+// comment in EVERY file type, so a Markdown "#" heading or "*" bullet, and
+// every line of a .txt or .html file, was skipped by every rule.
+// public/llms.txt's six "#" headings went unchecked. Comment lines are code
+// only now.
+
+test('a "#" heading in a prose file is read, in each prose extension', () => {
+  for (const file of ['src/Notes.md', 'public/llms.txt', 'index.html']) {
+    withTempDir((d) => {
+      assert(writeAt(d, file, '# We never sell your data.').code === 1, `a "#" heading in ${file} was skipped`);
+    });
+  }
+});
+
+test('a "*" bullet in a prose file is read', () => {
+  for (const file of ['src/Notes.md', 'public/llms.txt']) {
+    withTempDir((d) => {
+      assert(writeAt(d, file, '* We never sell your data.').code === 1, `a "*" bullet in ${file} was skipped`);
+    });
+  }
+});
+
+// The other half: the comment forms still skip in code, so the gate did not
+// widen. And a CSS "#id" selector is read now (no "#" in the code rule); it
+// holds no banned copy here, so it stays clean.
+test('a code comment is still skipped, and a CSS #id selector is not a comment', () => {
+  assert(clean('// We never sell your data.\nconst x = 1;', 'src/Copy.tsx'), 'a // comment in code was read');
+  assert(clean('#hero { color: red; }', 'src/Page.css'), 'a CSS #id selector line was mishandled');
+});
+
 console.log(`\n${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);

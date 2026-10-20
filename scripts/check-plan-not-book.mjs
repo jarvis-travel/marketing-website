@@ -86,7 +86,11 @@ if (existsSync(allowPath)) {
   }
 }
 
-const isCommentLine = (line) => /^\s*(\/\/|\/\*|\*|\{\/\*|<!--)/.test(line);
+// Only code has comment lines; every line of a prose file is copy. In .md a "*"
+// opens a bullet, and .txt and .html (where "<!--" opens an HTML comment) are
+// copy throughout, so their lines are all read (JAR-3521).
+const PROSE_EXTS = new Set(['.md', '.txt', '.html']);
+const isCommentLine = (line, ext) => !PROSE_EXTS.has(ext) && /^\s*(\/\/|\/\*|\*|\{\/\*|<!--)/.test(line);
 
 const warnings = [];
 const walk = (d, out = []) => {
@@ -131,9 +135,10 @@ for (const dir of SCAN_DIRS) {
       warnings.push(`unreadable ${file}: ${e.message}`);
       continue;
     }
+    const ext = file.slice(file.lastIndexOf('.'));
     text.split('\n').forEach((rawLine, i) => {
       const line = fold(rawLine);
-      if (isCommentLine(line)) return; // comments document, they don't advertise
+      if (isCommentLine(line, ext)) return; // comments document, they don't advertise
       for (const { re, why } of BANNED) {
         if (re.test(line) && !allow.some((a) => a.test(line))) {
           hits.push({ file: relative(ROOT, file), line: i + 1, why, text: line.trim().slice(0, 120) });

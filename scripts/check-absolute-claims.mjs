@@ -152,21 +152,28 @@ const loadAllow = () => {
   return allow;
 };
 
-const isCommentLine = (line) => /^\s*(\/\/|\/\*|\*|\{\/\*|#)/.test(line);
+// Only code has comment lines. Every line of a prose file is copy, as segments()
+// reads it: in Markdown a "#" opens a heading and a "*" a bullet (public/llms.txt
+// has six "#" headings), and .txt and .html are copy throughout. That also takes
+// in the comments of an HTML file's <style>/<script> blocks. No "#" in the code
+// rule either: none of the scanned code types comments with it, and a CSS "#id"
+// selector is not a comment (JAR-3521).
+const PROSE_EXTS = new Set(['.md', '.txt', '.html']);
+const isCommentLine = (line, ext) => !PROSE_EXTS.has(ext) && /^\s*(\/\/|\/\*|\*|\{\/\*)/.test(line);
 
 // Which lines are comment: those isCommentLine sees, and the rest of a block
 // comment after the line it opens on, which otherwise read as prose. "Colour
 // follows the surface, never #fff" reached this guard from a JSX comment's
 // second line. A block counts only when it opens a line, as isCommentLine
 // requires, so a "/*" inside a string can't start one.
-const commentLines = (lines) => {
+const commentLines = (lines, ext) => {
   let open = false;
   return lines.map((line) => {
     if (open) {
       open = !line.includes('*/');
       return true;
     }
-    if (!isCommentLine(line)) return false;
+    if (!isCommentLine(line, ext)) return false;
     open = /^\s*\{?\/\*/.test(line) && !line.includes('*/', line.indexOf('/*') + 2);
     return true;
   });
@@ -195,7 +202,6 @@ const stripModuleSpecifier = (line) =>
 
 // Humanly-visible segments: quoted strings and JSX text. For .md/.txt/.html
 // the whole line is copy, so it is passed through as one segment.
-const PROSE_EXTS = new Set(['.md', '.txt', '.html']);
 const segments = (line, ext) => {
   if (PROSE_EXTS.has(ext)) return [line];
   const out = [];
@@ -230,7 +236,7 @@ const segments = (line, ext) => {
 const wrappedHits = (text, ext, allow, rel = '') => {
   const pieces = [];
   const lines = text.split('\n').map(fold);
-  const comment = commentLines(lines);
+  const comment = commentLines(lines, ext);
   lines.forEach((line, i) => {
     if (comment[i]) return;
     for (const seg of segments(line, ext)) {
@@ -338,7 +344,7 @@ if (!isCLI) {
       continue;
     }
     const lines = text.split('\n').map(fold);
-    const comment = commentLines(lines);
+    const comment = commentLines(lines, ext);
     lines.forEach((line, i) => {
       if (comment[i]) return; // comments document, they don't advertise
       for (const seg of segments(line, ext)) {
