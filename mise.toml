@@ -1,8 +1,13 @@
 # mise.toml — JarvisTravel marketing website
-# Pins the Node toolchain for local dev and CI (JAR-748).
-# deploy-droplet.yml uses Node 22.x — keep in sync.
-# node.js.yml + pr-checks.yml ran 23.x (EOL); pr-checks aligned to 22.x here,
-# node.js.yml tracked in JAR-755.
+# The only Node pin, for local dev and CI (JAR-748, JAR-1772). Every workflow
+# installs the toolchain from this file via jdx/mise-action; there are no
+# node-version literals left in .github/workflows.
+#
+# Exact patch, deliberately: `node = "22"` resolves to the newest 22.x at
+# install time, so two CI runs on the same commit could use different builds.
+# Bump this line in its own PR when a patch is wanted.
+# Node 23+ stays excluded: 23.x was EOL (JAR-755), which is why the workflows
+# pinned 22.x in the first place.
 
 [tools]
-node = "22"
+node = "22.23.2"
