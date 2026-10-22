@@ -8,5 +8,9 @@
     "AGENTS.md",
     "**/go.mod",
     "**/go.sum"
-  ]
+  ],
+  "code_coverage": {
+    "ignored": 0,
+    "total": 1568
+  }
 }
