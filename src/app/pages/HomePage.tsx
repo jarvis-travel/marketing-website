@@ -299,6 +299,40 @@ export function HomePage() {
         </div>
       </section>
 
+      {/* Where it runs: the browser, so there is no store listing to look for
+          (JAR-3583, Brent: a section of its own, like the other benefits). */}
+      <section className="bg-white">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 [text-wrap:balance] mb-4">
+            No app to download.
+          </h2>
+          <p className="text-lg text-gray-600 leading-relaxed max-w-xl [text-wrap:pretty] mb-10">
+            JarvisTravel runs in your browser. Join now and start planning, with
+            nothing to install first.
+          </p>
+          <ul className="border-t border-gray-200">
+            <li className="py-6 border-b border-gray-200">
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                Your phone, your laptop, your tablet.
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
+                Sign in on any of them and your trips are there, the same plan on
+                every screen.
+              </p>
+            </li>
+            <li className="py-6 border-b border-gray-200">
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                On your home screen, if you like.
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
+                Add JarvisTravel to your phone&rsquo;s home screen and it opens
+                like an app.
+              </p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
       {/* The invitation. */}
       <section className="relative overflow-hidden bg-slate-900">
         <ContourArcs className="absolute -top-40 -left-48 w-[520px] h-[520px]" />
