@@ -1,0 +1,12 @@
+{
+  "note": "The day-lighter captures show the applied result of Make this day lighter: Friday in Tivoli rated balanced, and the \"Friday is lighter now\" note with Undo. They do not show the preview, whose recorded answer carries an opening-hours caveat. Each file below was checked by eye on 2026-10-23 (JAR-3110). web-app's capture run still shoots the preview until JAR-3563 lands, so copying its output over these files changes their digests and fails lint:captures.",
+  "files": {
+    "src/assets/captures/desktop/day-lighter-light-720.png": "61d0ddbe4450bde279e29ddb447cfea49d0b7724631361b069dc3bfc5a2830b4",
+    "src/assets/captures/desktop/day-lighter-light-720.webp": "e15595ed75395adad8441e6c9a781a2580866b4660d204cfe9ff21cf5fe3985b",
+    "src/assets/captures/desktop/day-lighter-light-960.webp": "c8e74c8552713e0f5df379eb641e3e2fdf6ddc4f066c3382cc0c155a9a6b72e5",
+    "src/assets/captures/desktop/day-lighter-light-1440.webp": "5d92802fde0a09445c0c55bbd4cf25b98e857cd78e0d11f040b2b4398e2aa0ec",
+    "src/assets/captures/mobile/day-lighter-light-390.png": "d9f7a4781a5147dad17921e5962169b69c0332df562aa0304badaf47b5a3e585",
+    "src/assets/captures/mobile/day-lighter-light-390.webp": "a4373294980f5118bfc1a1aa136140a13a6320875a396ff13450bba9b0b76d7b",
+    "src/assets/captures/mobile/day-lighter-light-780.webp": "5b73c82a9ffe47b6d13d50b24b860a6b05c9d7f0f561929ab52b2142c9d53a79"
+  }
+}

@@ -70,6 +70,10 @@ jobs:
       # their masthead at once.
       - name: Email images this site has to serve are present
         run: npm run lint:email-assets
+      # JAR-3110: the capture run still shoots the lighter-day preview, with its
+      # opening-hours caveat (until JAR-3563). Same gate as pr-checks.
+      - name: The lighter-day pictures are the ones checked by eye
+        run: npm run lint:captures
       # Pricing guard — this is the Pages shipping path, so it must carry the
       # same drift gate as the droplet deploy (review deleg_dd2f886e Sec-M1 /
       # Design-F4: previously the guard only gated deploy-droplet, so drifted
