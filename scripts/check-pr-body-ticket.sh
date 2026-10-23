@@ -12,6 +12,10 @@
 # where the work was done, merged, and the owning ticket still read "In Review,
 # no PR" three days later.
 #
+# A note on style: every test uses a herestring, never a pipe into a quiet
+# grep - core's JAR-1608 guard bans that shape (pipefail can read a match as a
+# miss), and this file is linted by it.
+#
 # WHAT THIS CAN SEE: the body's first non-empty line, and whether it is a
 # ticket reference.
 # WHAT IT CANNOT SEE: whether the number is the RIGHT ticket. That is a
@@ -32,7 +36,7 @@ PR_TICKET_SINCE="${PR_TICKET_SINCE:-2026-10-24T00:00:00Z}"
 
 # A malformed cutover would compare as a string, and every PR would then look
 # old enough to be exempt. Refuse rather than fail open.
-if ! printf '%s' "$PR_TICKET_SINCE" | grep -qE '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$'; then
+if ! grep -qE '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$' <<<"$PR_TICKET_SINCE"; then
   echo "::error::check-pr-body-ticket: PR_TICKET_SINCE must be YYYY-MM-DDTHH:MM:SSZ, got '$PR_TICKET_SINCE'"
   exit 2
 fi
@@ -65,7 +69,7 @@ esac
 # quotes the phrase, including one whose fenced example carries it while line 1
 # names the wrong ticket; that is the exact shape this guard exists for.
 first_line="$(printf '%s\n' "$BODY" | sed -e 's/\r$//' | awk 'NF { print; exit }')"
-if printf '%s' "$first_line" | grep -qiE '^No-Ticket: .+'; then
+if grep -qiE '^No-Ticket: .+' <<<"$first_line"; then
   echo "pr-ticket: exempt - line 1 declares No-Ticket"
   exit 0
 fi
@@ -83,7 +87,7 @@ if [ -z "$first" ]; then
   exit 1
 fi
 
-if ! printf '%s' "$first" | grep -qE '^Fixes JAR-[0-9]+$'; then
+if ! grep -qE '^Fixes JAR-[0-9]+$' <<<"$first"; then
   echo "::error::check-pr-body-ticket: PR #$NUMBER's first line is not a ticket reference."
   echo "  got:      $first"
   echo "  expected: Fixes JAR-1234"
