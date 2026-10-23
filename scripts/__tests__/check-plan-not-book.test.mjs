@@ -14,8 +14,9 @@
 // So these cases assert coverage, not regexes: drop banned language into a
 // published file and the guard must fail on it.
 
-import { writeFileSync, rmSync, existsSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { writeFileSync, rmSync, existsSync, mkdtempSync, mkdirSync } from 'node:fs';
+import { resolve, join } from 'node:path';
+import { tmpdir } from 'node:os';
 import { execFileSync } from 'node:child_process';
 
 const ROOT = new URL('../..', import.meta.url).pathname;
@@ -117,6 +118,29 @@ test('still skips a code comment in src/', () => {
   const { flagged } = guardSees('src/__pnb-code-comment-fixture.ts', '// Book your flights and hotels with us today.\n');
   if (flagged) {
     throw new Error('a "//" comment in code was read as copy; the prose gate widened too far');
+  }
+});
+
+// The one failure a text guard must refuse: "I read nothing." An empty corpus
+// (a rename, a moved directory, a partial checkout) produces zero hits and must
+// fail closed, not report a clean sweep (Ryan fleet review F1, mirrored from
+// check-absolute-claims.mjs).
+test('an empty corpus fails closed rather than passing as clean (F1)', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'pnb-'));
+  try {
+    mkdirSync(join(dir, 'src'), { recursive: true }); // present but empty
+    let out, code = 0;
+    try {
+      out = execFileSync('node', [SCRIPT], { cwd: dir, encoding: 'utf8', stdio: 'pipe' });
+    } catch (e) {
+      code = e.status;
+      out = `${e.stdout ?? ''}${e.stderr ?? ''}`;
+    }
+    if (!(code === 1 && /scanned 0 files/.test(out))) {
+      throw new Error(`an empty scan must fail, not pass; got code ${code}:\n${out}`);
+    }
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
   }
 });
 

@@ -89,16 +89,28 @@ if (existsSync(allowPath)) {
 // Only code has comment lines; every line of a prose file is copy. In .md a "*"
 // opens a bullet, and .txt and .html (where "<!--" opens an HTML comment) are
 // copy throughout, so their lines are all read (JAR-3521).
+//
+// "*" stays in the code rule here, unlike check-absolute-claims.mjs: this guard
+// matches per line with no block-comment open-tracker, so a bare "*" is its only
+// handling for a JSDoc "* …" continuation line. Dropping it (to stop a CSS
+// "* { … }" selector hiding copy, as the sibling does) would read every JSDoc
+// continuation as copy. Porting the sibling's open-tracker is a separate change
+// (JAR-3665).
 const PROSE_EXTS = new Set(['.md', '.txt', '.html']);
 const isCommentLine = (line, ext) => !PROSE_EXTS.has(ext) && /^\s*(\/\/|\/\*|\*|\{\/\*|<!--)/.test(line);
 
 const warnings = [];
+// Files or directories that existed but could not be read. These FAIL the run:
+// a corpus the guard cannot read must not report "clean" (mirrors
+// check-absolute-claims.mjs, Ryan fleet review). An oversized skip is a bounded,
+// deliberate skip and stays a warning.
+const readFailures = [];
 const walk = (d, out = []) => {
   let entries;
   try {
     entries = readdirSync(d);
   } catch (e) {
-    warnings.push(`unreadable dir ${d}: ${e.message}`);
+    readFailures.push(`unreadable dir ${d}: ${e.message}`);
     return out;
   }
   for (const name of entries) {
@@ -108,7 +120,7 @@ const walk = (d, out = []) => {
     try {
       st = lstatSync(p); // lstat: never follow symlinks (loop/escape protection)
     } catch (e) {
-      warnings.push(`unreadable ${p}: ${e.message}`);
+      readFailures.push(`unreadable ${p}: ${e.message}`);
       continue;
     }
     if (st.isSymbolicLink()) continue;
@@ -125,6 +137,7 @@ const walk = (d, out = []) => {
 };
 
 const hits = [];
+let scanned = 0;
 for (const dir of SCAN_DIRS) {
   if (!existsSync(join(ROOT, dir))) continue;
   for (const file of walk(join(ROOT, dir))) {
@@ -132,9 +145,10 @@ for (const dir of SCAN_DIRS) {
     try {
       text = readFileSync(file, 'utf8');
     } catch (e) {
-      warnings.push(`unreadable ${file}: ${e.message}`);
+      readFailures.push(`unreadable ${relative(ROOT, file)}: ${e.message}`);
       continue;
     }
+    scanned++;
     const ext = file.slice(file.lastIndexOf('.'));
     text.split('\n').forEach((rawLine, i) => {
       const line = fold(rawLine);
@@ -149,6 +163,22 @@ for (const dir of SCAN_DIRS) {
 }
 
 for (const w of warnings) console.warn(`plan-not-book warning: ${w}`);
+
+// Fail closed before reporting clean: a corpus the guard could not read, or an
+// empty one from a rename / moved directory / partial checkout, each produces
+// zero hits and must not exit 0 (mirrors check-absolute-claims.mjs, Ryan fleet
+// review F1/F2).
+if (readFailures.length) {
+  for (const w of readFailures) console.error(`plan-not-book READ FAILURE — ${w}`);
+  console.error(`plan-not-book check FAILED — ${readFailures.length} file(s)/dir(s) could not be read; a corpus it cannot read is not a clean one.`);
+  process.exit(1);
+}
+if (scanned === 0) {
+  console.error(`plan-not-book check FAILED — scanned 0 files under ${SCAN_DIRS.join(', ')}.`);
+  console.error('A rename, a moved directory, or a partial checkout reads as a clean sweep; refusing instead.');
+  process.exit(1);
+}
+
 if (hits.length) {
   console.error(`plan-not-book check FAILED — ${hits.length} banned-language hit(s):\n`);
   for (const h of hits) console.error(`  ${h.file}:${h.line}  [${h.why}]\n    ${h.text}\n`);
@@ -156,4 +186,4 @@ if (hits.length) {
   console.error('exception (see the cleanup spec §2), add a narrow regex to .plan-not-book-allow.txt.');
   process.exit(1);
 }
-console.log('plan-not-book check passed — no banned travel-booking language found.');
+console.log(`plan-not-book check passed — no banned travel-booking language found (${scanned} file(s) scanned).`);
