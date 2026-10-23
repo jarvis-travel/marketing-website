@@ -26,12 +26,10 @@ export function AboutPage() {
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
           <div className="space-y-6 text-lg text-gray-600 leading-relaxed">
             <p>
-              JarvisTravel started three years ago, with a trip to Italy.
-              Planning it, we kept seeing the same hotels and the same handful
-              of sights on every big travel site. On the maps, we couldn&rsquo;t
-              tell whether a place showed up because it was good or because it
-              paid to be seen. And site after site wanted our details, whether
-              we bought anything or not.
+              JarvisTravel started with a trip to Italy. Planning it, the sites
+              we used kept showing us the same hotels and the same handful of
+              sights, and we couldn&rsquo;t tell why a place was there. And we
+              were tired of handing over our details just to look.
             </p>
             <p>
               We wanted a few weeks in Italy that felt like ours, not shaped by
@@ -48,7 +46,8 @@ export function AboutPage() {
               So we asked: what if a planner could build a trip around you, not
               around whoever paid to show up in search results? What if it could
               balance your days so you don&rsquo;t burn out, and show you what
-              each day will really feel like before you land?
+              each day will really feel like before you land: chill, balanced
+              or packed?
             </p>
             <p>
               When today&rsquo;s AI arrived, we wondered if it could help pull
@@ -64,8 +63,8 @@ export function AboutPage() {
             <p>
               It&rsquo;s still how we use AI. Jarvis drafts your days, and the
               plan stays yours to change. What we send Jarvis is your trip, not
-              who you are: your name, email and login stay out of it. And
-              nothing it suggests is there because someone paid.
+              who you are. And nothing it suggests is there because someone
+              paid.
             </p>
             <p>
               JarvisTravel plans your trip; it doesn&rsquo;t sell you travel.
