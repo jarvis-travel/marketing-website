@@ -7,5 +7,6 @@
     "ignored": 0,
     "total": 802
   },
-  "note": "The lane can also skip a PR for reasons this contract cannot express: drafts and dependabot/* are excluded by the job's if:, a fork PR gets no credentials, and branches: [main] bounds what triggers at all; so an empty paths_ignore means 'no path filter', never 'every diff was reviewed'."
+  "note": "The lane can also skip a PR for reasons this contract cannot express: drafts and dependabot/* are excluded by the job's if:, a fork PR gets no credentials, and branches: [main] bounds what triggers at all; so an empty paths_ignore means 'no path filter', never 'every diff was reviewed'.",
+  "status": "shipped"
 }
