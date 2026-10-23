@@ -177,3 +177,13 @@ Before merging to `main`:
 - Routes are served at the domain root (`/`); the old `/project-insight-website/` GitHub Pages prefix is deprecated
 - React Router is the routing library; use its hooks directly
 - Tailwind CSS is the only styling approach — no CSS modules, no styled-components
+
+## Pull request bodies
+
+Every pull request names the ticket it serves on the **first line of its body**, alone:
+
+```
+Fixes JAR-1234
+```
+
+Linear links a pull request to the first ticket id it can resolve anywhere in the body, and it links it once however many ids follow. An incidental id in the opening paragraph therefore files the PR under the wrong issue and leaves the ticket that owns the work with no PR attached - invisible from both sides. Run `bash scripts/check-pr-body-ticket.sh` locally to check a body; a change that genuinely has no issue says `No-Ticket: <why>` on its own line instead. `JAR-3662`.
