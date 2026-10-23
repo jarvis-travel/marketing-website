@@ -31,7 +31,10 @@ run "bold-wrapped line fails" fail $'**Fixes JAR-1**' alice "$NEW"
 run "leading blank lines still find line 1" pass $'\n\nFixes JAR-9\n\nbody' alice "$NEW"
 run "CRLF line endings pass" pass $'Fixes JAR-9\r\n\r\nbody' alice "$NEW"
 run "bots are exempt" pass $'bump x from 1 to 2' 'dependabot[bot]' "$NEW"
-run "No-Ticket is exempt" pass $'No-Ticket: revert the experiment\n\nbody' alice "$NEW"
+run "No-Ticket on line 1 is exempt" pass $'No-Ticket: revert the experiment\n\nbody' alice "$NEW"
+run "a bare No-Ticket: with no reason fails" fail $'No-Ticket:' alice "$NEW"
+run "No-Ticket below line 1 does NOT exempt" fail $'This went away with JAR-2763\n\nNo-Ticket: example' alice "$NEW"
+run "No-Ticket inside a fenced example does NOT exempt" fail $'This went away with JAR-2763\n\n```\nNo-Ticket: example\n```' alice "$NEW"
 run "pre-cutover PRs are exempt" pass $'old body' alice "$OLD"
 
 # A variable that is UNSET is not the same as one holding an empty string: the
@@ -39,6 +42,11 @@ run "pre-cutover PRs are exempt" pass $'old body' alice "$OLD"
 out="$(env -u PR_BODY PR_AUTHOR=alice PR_CREATED="$NEW" PR_NUMBER=7 bash "$check" 2>&1)"; rc=$?
 if [ "$rc" -eq 2 ]; then pass=$((pass+1)); echo "  ok   an unset body refuses, not passes"
 else fail=$((fail+1)); echo "  FAIL an unset body refuses, not passes (got rc=$rc)"; echo "$out" | sed 's/^/       /'; fi
+
+# A malformed cutover must refuse, not compare as a string and exempt everything.
+out="$(PR_BODY='wrong ticket' PR_AUTHOR=alice PR_CREATED="2026-10-25T00:00:00Z" PR_TICKET_SINCE="yesterday" PR_NUMBER=7 bash "$check" 2>&1)"; rc=$?
+if [ "$rc" -eq 2 ]; then pass=$((pass+1)); echo "  ok   a malformed PR_TICKET_SINCE refuses"
+else fail=$((fail+1)); echo "  FAIL a malformed PR_TICKET_SINCE refuses (got rc=$rc)"; echo "$out" | sed 's/^/       /'; fi
 
 echo
 echo "check-pr-body-ticket self-test: $pass passed, $fail failed"
