@@ -1,0 +1,12 @@
+{
+  "note": "PUBLISHED COPY, from core's config/fi/impact-bands.json. Do not edit here: change core's canonical and re-publish this copy. core's check (config/fi/check-impact-bands.sh) runs on every core PR and daily, and fails core's required job if this copy and core's own rows differ. web-app's check (scripts/check-impact-bands.mjs) runs its own mapFatigueImpact over these rows, so moving a band on one side alone fails the other's CI. The rows are the contract: a stop's fatigue_impact and the intensity band both sides must answer, including unset 0 reading chill rather than balanced (JAR-2803). This repo hosts the copy because it is the one public repo every consumer's CI can read token-free. JAR-2837.",
+  "contract": "fi-impact-bands",
+  "rows": [
+    {"case": "unset reads chill, not balanced (the JAR-2803 correction)", "fatigue_impact": 0, "band": "chill"},
+    {"case": "the top of chill", "fatigue_impact": 3, "band": "chill"},
+    {"case": "the chill/balanced boundary: 4 is balanced", "fatigue_impact": 4, "band": "balanced"},
+    {"case": "the top of balanced", "fatigue_impact": 6, "band": "balanced"},
+    {"case": "the balanced/packed boundary: 7 is packed", "fatigue_impact": 7, "band": "packed"},
+    {"case": "the top of the scale is packed", "fatigue_impact": 9, "band": "packed"}
+  ]
+}
