@@ -1,0 +1,33 @@
+name: PR ticket
+
+# Every pull request names the ticket it serves on line 1 of its body:
+#
+#   Fixes JAR-1234
+#
+# Linear links a PR to the FIRST ticket id it can resolve anywhere in the body,
+# so an incidental id in the opening paragraph files the PR under the wrong
+# issue and leaves the owning ticket with no PR attached - invisible from both
+# sides. Found on design-library#32 / JAR-2797 (JAR-3662).
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  ticket:
+    name: The body names its ticket on line 1
+    runs-on: spare
+    steps:
+      - uses: actions/checkout@v4
+      - name: The first line of the body is a ticket reference
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          PR_CREATED: ${{ github.event.pull_request.created_at }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: bash scripts/check-pr-body-ticket.sh
+      - name: Verify the guard still classifies each outcome
+        run: bash scripts/test-check-pr-body-ticket.sh
