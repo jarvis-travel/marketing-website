@@ -108,7 +108,7 @@ const FEATURES: Feature[] = [
   {
     icon: CloudSun,
     name: 'Weather & flights',
-    desc: 'The forecast and your flights sit inside the plan, so a rainy afternoon or a late flight shows up where you’re already looking.',
+    desc: 'The forecast and your flights sit inside the plan, so a rainy day or a late flight shows up where you’re already looking.',
     voice: 'accent',
   },
 ];
@@ -229,7 +229,7 @@ export function HomePage() {
             </h2>
             <p className="text-lg md:text-xl text-sky-100 leading-relaxed max-w-2xl">
               A long weekend, a staycation, two weeks abroad, a road trip an hour
-              from home. If it&rsquo;s a trip, Jarvis can plan it.
+              from home. Jarvis plans each one the same way.
             </p>
           </div>
         </PhotoBackdrop>

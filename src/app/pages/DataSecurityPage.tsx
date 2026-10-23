@@ -129,7 +129,7 @@ export function DataSecurityPage() {
             Data security
           </p>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-50 leading-tight [text-wrap:balance] max-w-3xl mb-6">
-            Your trip is your business.
+            Your data, your control.
           </h1>
           <p className="text-lg text-sky-100 max-w-xl leading-relaxed [text-wrap:pretty]">
             What we built to protect your trips, and why we built it that way.

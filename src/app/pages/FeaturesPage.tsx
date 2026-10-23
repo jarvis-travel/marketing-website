@@ -92,8 +92,7 @@ export function FeaturesPage() {
               Know how every day will feel.
             </h2>
             <p className="text-lg text-gray-600 leading-relaxed max-w-xl [text-wrap:pretty] mb-2">
-              The Fatigue Index rates each day from 1 to 9: chill, balanced, or
-              packed.
+              The Fatigue Index rates each day chill, balanced, or packed.
             </p>
             {/* Filed; attached to the feature itself, never a site-wide badge.
                 Diarize the provisional's 12-month expiry: the line comes down
