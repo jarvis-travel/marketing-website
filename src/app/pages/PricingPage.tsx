@@ -423,6 +423,20 @@ export function PricingPage() {
           </div>
         </div>
       </section>
+
+      {/* Home's "No app to download." section, in other words, since the site
+          says a line once (JAR-3583). */}
+      <section className="bg-white">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 [text-wrap:balance] mb-4">
+            Nothing to download.
+          </h2>
+          <p className="text-lg text-gray-600 leading-relaxed max-w-xl mx-auto [text-wrap:pretty]">
+            Both plans work in your browser, on your phone or your computer, with
+            nothing to install.
+          </p>
+        </div>
+      </section>
     </div>
   );
 }
