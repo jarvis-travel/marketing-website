@@ -30,6 +30,13 @@ set -euo pipefail
 
 PR_TICKET_SINCE="${PR_TICKET_SINCE:-2026-10-24T00:00:00Z}"
 
+# A malformed cutover would compare as a string, and every PR would then look
+# old enough to be exempt. Refuse rather than fail open.
+if ! printf '%s' "$PR_TICKET_SINCE" | grep -qE '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$'; then
+  echo "::error::check-pr-body-ticket: PR_TICKET_SINCE must be YYYY-MM-DDTHH:MM:SSZ, got '$PR_TICKET_SINCE'"
+  exit 2
+fi
+
 # Refuse on an UNSET input, not an empty one. An empty body is a real PR with
 # nothing in it and fails as a violation; an unset variable means the caller
 # wired this job wrong and the guard is looking at nothing. Defaulting first and
@@ -53,9 +60,13 @@ case "$AUTHOR" in
   *"[bot]"|dependabot|renovate) echo "pr-ticket: $AUTHOR is a bot, no ticket expected"; exit 0 ;;
 esac
 
-# A change with no issue says so, in public.
-if printf '%s\n' "$BODY" | grep -qiE '^[[:space:]]*no-ticket:'; then
-  echo "pr-ticket: exempt - the body carries a No-Ticket: line"
+# A change with no issue says so, in public - on the FIRST line, by the same
+# position rule as "Fixes". Searching the whole body would exempt any PR that
+# quotes the phrase, including one whose fenced example carries it while line 1
+# names the wrong ticket; that is the exact shape this guard exists for.
+first_line="$(printf '%s\n' "$BODY" | sed -e 's/\r$//' | awk 'NF { print; exit }')"
+if printf '%s' "$first_line" | grep -qiE '^No-Ticket: .+'; then
+  echo "pr-ticket: exempt - line 1 declares No-Ticket"
   exit 0
 fi
 
@@ -65,7 +76,7 @@ if [ -n "$CREATED" ] && [ "$CREATED" \< "$PR_TICKET_SINCE" ]; then
   exit 0
 fi
 
-first="$(printf '%s\n' "$BODY" | sed -e 's/\r$//' | awk 'NF { print; exit }')"
+first="$first_line"
 
 if [ -z "$first" ]; then
   echo "::error::check-pr-body-ticket: PR #$NUMBER has an empty body. Start it with a line reading 'Fixes JAR-1234'."
