@@ -13,6 +13,11 @@ name: PR ticket
 # a check the reviewed tree can rewrite is not a check. Until the guard is on
 # the base branch (this PR), there is nothing to run from base, so it falls back
 # to the branch's copy and says so in the log.
+#
+# runs-on is the self-hosted fleet, NOT vars.CI_RUNNER_LABEL: this job holds no
+# secrets and runs one shell script, so it has no reason to ride the vendor
+# migration that check-runner-fleet-staging.sh stages and clears per workflow
+# (JAR-1161). Reading the variable would put it in that queue for nothing.
 
 on:
   pull_request:
