@@ -14,10 +14,12 @@ name: PR ticket
 # the base branch (this PR), there is nothing to run from base, so it falls back
 # to the branch's copy and says so in the log.
 #
-# runs-on is the self-hosted fleet, NOT vars.CI_RUNNER_LABEL: this job holds no
-# secrets and runs one shell script, so it has no reason to ride the vendor
-# migration that check-runner-fleet-staging.sh stages and clears per workflow
-# (JAR-1161). Reading the variable would put it in that queue for nothing.
+# runs-on is the self-hosted fleet, deliberately not the runner-label variable:
+# this job holds no secrets and runs one shell script, so it has no reason to
+# ride the vendor migration that check-runner-fleet-staging.sh stages and clears
+# per workflow (JAR-1161). Reading that variable would put it in the queue for
+# nothing. Note the staging guard matches the variable's NAME anywhere in the
+# file, comments included - see JAR-3663.
 
 on:
   pull_request:
