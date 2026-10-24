@@ -168,6 +168,12 @@ jobs:
       - name: Email images this site has to serve are present
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: npm run lint:email-assets
+      # JAR-3110: web-app's capture run still shoots the lighter-day preview,
+      # which carries an opening-hours caveat (until JAR-3563). A refresh copied
+      # over the checked pictures keeps every name and fails only here.
+      - name: The lighter-day pictures are the ones checked by eye
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
+        run: npm run lint:captures
 
       - name: Brand mark is in sync, and the generator refuses hostile sources
         # Two things: the committed Logo.tsx and favicon.svg must still match
