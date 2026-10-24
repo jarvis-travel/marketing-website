@@ -14,7 +14,9 @@ binding work contract for its subtree.
 ## Purpose
 
 React TypeScript marketing website for JarvisTravel — a standalone SPA deployed
-to the production Droplet (mktg.jarvistravel.com) and GitHub Pages. Serves as the public-facing landing experience: marketing pages for a
+to the production Droplets behind `jarvis-prod-lb`, serving `jarvistravel.com`
+(JAR-3203; the `mktg.jarvistravel.com` name became a 301 to it in JAR-3204) and
+to GitHub Pages. Serves as the public-facing landing experience: marketing pages for a
 pre-launch product (no auth on this site; every "Join Now" opens the app's sign-up, and the pricing page's plan CTAs carry the chosen plan: JAR-3180, which superseded JAR-1692's sign-in).
 
 ## Ownership
@@ -122,7 +124,7 @@ in every template becomes a broken image at once.
 ### Base path & routing
 
 - Routes are served at the domain root (`/`) on both deployments (configured in `vite.config.ts` and `tsconfig.json`)
-- The Droplet deployment serves from mktg.jarvistravel.com/, GitHub Pages from the /project-insight-website/ subdirectory
+- The Droplet deployment serves at the apex `jarvistravel.com` through `jarvis-prod-lb` on both droplets (JAR-3203); `mktg.jarvistravel.com` 301s there (JAR-3204), so it is no longer a serving host. GitHub Pages serves from the /project-insight-website/ subdirectory
 - `tsconfig.json` `baseUrl` and `paths` (`@/*`) — keep in sync with `vite.config.ts` resolve alias
 
 ### UI stack
