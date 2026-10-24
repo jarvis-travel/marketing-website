@@ -1,0 +1,55 @@
+name: PR ticket
+
+# Every pull request names the ticket it serves on line 1 of its body:
+#
+#   Fixes JAR-1234
+#
+# Linear links a PR to the FIRST ticket id it can resolve anywhere in the body,
+# so an incidental id in the opening paragraph files the PR under the wrong
+# issue and leaves the owning ticket with no PR attached - invisible from both
+# sides. Found on design-library#32 / JAR-2797 (JAR-3662).
+#
+# The guard is executed from the BASE commit, not from the branch under review:
+# a check the reviewed tree can rewrite is not a check. Until the guard is on
+# the base branch (this PR), there is nothing to run from base, so it falls back
+# to the branch's copy and says so in the log.
+#
+# runs-on is the self-hosted fleet, deliberately not the runner-label variable:
+# this job holds no secrets and runs one shell script, so it has no reason to
+# ride the vendor migration that check-runner-fleet-staging.sh stages and clears
+# per workflow (JAR-1161). Reading that variable would put it in the queue for
+# nothing. Note the staging guard matches the variable's NAME anywhere in the
+# file, comments included - see JAR-3682.
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  ticket:
+    name: The body names its ticket on line 1
+    runs-on: spare
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: .guard-base
+      - name: The first line of the body is a ticket reference
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          PR_CREATED: ${{ github.event.pull_request.created_at }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ -f .guard-base/scripts/check-pr-body-ticket.sh ]; then
+            bash .guard-base/scripts/check-pr-body-ticket.sh
+          else
+            echo "::warning::the guard is not on the base branch yet - bootstrapping from this branch's copy"
+            bash scripts/check-pr-body-ticket.sh
+          fi
+      - name: Verify the guard still classifies each outcome
+        run: bash scripts/test-check-pr-body-ticket.sh
