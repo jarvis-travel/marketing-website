@@ -161,9 +161,13 @@ const loadAllow = () => {
 // types comments with "#" (a CSS "#id" selector is not a comment), and a bare
 // "*" at line start is a CSS universal selector ("* { … }"), not a comment: a
 // JSDoc "* …" continuation line is already covered as the body of the block its
-// "/*" opened (commentLines' `open` flag below), so dropping "*" from the opener
-// set skips no real comment and stops a "* { content: '…' }" line hiding copy
-// (JAR-3521, the "#" one character over).
+// "/*" opened on a line of its own (commentLines' `open` flag below), so dropping
+// "*" from the opener set skips no real comment and stops a "* { content: '…' }"
+// line hiding copy (JAR-3521, the "#" one character over). One shape it reads as
+// copy is a block comment opened MID-LINE ("const x = 1; /* …"), whose "*"
+// continuation is flagged: that direction only adds a hit and never hides one,
+// and opening on a mid-line "/*" would swallow a file whose glob contains one
+// (src/index.css's @source "./**/*.{js,ts,jsx,tsx}"). The test pins that shape.
 const PROSE_EXTS = new Set(['.md', '.txt', '.html']);
 const isCommentLine = (line, ext) => !PROSE_EXTS.has(ext) && /^\s*(\/\/|\/\*|\{\/\*)/.test(line);
 
@@ -336,11 +340,21 @@ if (!isCLI) {
 } else {
   const allow = loadAllow();
   const hits = [];
+  // A configured root that is not there is a broken checkout, not an empty one.
+  // The zero-file guard below only fires when EVERY root is empty, so a renamed
+  // or moved public/ would drop public/llms.txt from the corpus and still report
+  // a pass (JAR-3521 review).
+  const missingRoots = [...SCAN_FILES, ...SCAN_DIRS].filter((p) => !existsSync(join(ROOT, p)));
+  if (missingRoots.length) {
+    console.error(`absolute-claims check FAILED — scan root(s) not found: ${missingRoots.join(', ')}.`);
+    console.error('A rename, a moved directory, or a partial checkout drops their copy from the corpus; refusing to report a pass.');
+    process.exit(1);
+  }
   // Named root files first, then everything the directory walk finds. One list,
   // so a file cannot be scanned by one code path and skipped by the other.
   const files = [
-    ...SCAN_FILES.map((f) => join(ROOT, f)).filter((f) => existsSync(f)),
-    ...SCAN_DIRS.flatMap((dir) => (existsSync(join(ROOT, dir)) ? walk(join(ROOT, dir)) : [])),
+    ...SCAN_FILES.map((f) => join(ROOT, f)),
+    ...SCAN_DIRS.flatMap((dir) => walk(join(ROOT, dir))),
   ];
 
   let scanned = 0;

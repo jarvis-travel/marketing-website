@@ -129,6 +129,7 @@ test('an empty corpus fails closed rather than passing as clean (F1)', () => {
   const dir = mkdtempSync(join(tmpdir(), 'pnb-'));
   try {
     mkdirSync(join(dir, 'src'), { recursive: true }); // present but empty
+    mkdirSync(join(dir, 'public'), { recursive: true }); // present but empty
     let out, code = 0;
     try {
       out = execFileSync('node', [SCRIPT], { cwd: dir, encoding: 'utf8', stdio: 'pipe' });
@@ -138,6 +139,30 @@ test('an empty corpus fails closed rather than passing as clean (F1)', () => {
     }
     if (!(code === 1 && /scanned 0 files/.test(out))) {
       throw new Error(`an empty scan must fail, not pass; got code ${code}:\n${out}`);
+    }
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+// A missing configured root is a broken checkout, not an empty one. The
+// zero-file guard cannot see it while the other root still contributes files,
+// so a renamed public/ read as a clean sweep (JAR-3521 review).
+test('a missing scan root fails closed even when the other root has copy', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'pnb-'));
+  try {
+    mkdirSync(join(dir, 'src'), { recursive: true });
+    writeFileSync(join(dir, 'src', 'Copy.tsx'), `export const L = 'Explore one trip';`);
+    // no public/
+    let out, code = 0;
+    try {
+      out = execFileSync('node', [SCRIPT], { cwd: dir, encoding: 'utf8', stdio: 'pipe' });
+    } catch (e) {
+      code = e.status;
+      out = `${e.stdout ?? ''}${e.stderr ?? ''}`;
+    }
+    if (!(code === 1 && /scan root\(s\) not found: public/.test(out))) {
+      throw new Error(`an absent scan root must fail the run; got code ${code}:\n${out}`);
     }
   } finally {
     rmSync(dir, { recursive: true, force: true });

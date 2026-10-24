@@ -138,8 +138,17 @@ const walk = (d, out = []) => {
 
 const hits = [];
 let scanned = 0;
+// A configured root that is not there is a broken checkout, not an empty one:
+// the zero-file guard below only fires when EVERY root is empty, so a renamed
+// or moved public/ would drop its copy from the corpus and still report a pass
+// (JAR-3521 review).
+const missingRoots = SCAN_DIRS.filter((dir) => !existsSync(join(ROOT, dir)));
+if (missingRoots.length) {
+  console.error(`plan-not-book check FAILED — scan root(s) not found: ${missingRoots.join(', ')}.`);
+  console.error('A rename, a moved directory, or a partial checkout drops their copy from the corpus; refusing to report a pass.');
+  process.exit(1);
+}
 for (const dir of SCAN_DIRS) {
-  if (!existsSync(join(ROOT, dir))) continue;
   for (const file of walk(join(ROOT, dir))) {
     let text;
     try {

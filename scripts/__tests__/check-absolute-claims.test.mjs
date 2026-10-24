@@ -30,6 +30,11 @@ function withTempDir(fn) {
   const dir = mkdtempSync(join(tmpdir(), 'absclaims-'));
   try {
     mkdirSync(join(dir, 'src'), { recursive: true });
+    // Every configured scan root must exist or the guard refuses to report a
+    // pass (a renamed public/ used to read as an empty one). A case that wants
+    // one absent builds its tree with inBareTempDir instead.
+    mkdirSync(join(dir, 'public'), { recursive: true });
+    writeFileSync(join(dir, 'index.html'), '<html><body>Explore</body></html>');
     return fn(dir);
   } finally {
     rmSync(dir, { recursive: true, force: true });
@@ -240,10 +245,29 @@ test('a malformed allowlist fails the run rather than disabling the gate', () =>
 // to exit 0 — a clean sweep over nothing (Ryan fleet review F1).
 test('an empty corpus fails closed rather than passing as clean (F1)', () => {
   inBareTempDir((d) => {
-    mkdirSync(join(d, 'src'), { recursive: true }); // present but empty; no index.html, no public
+    // The shape a rename, a moved directory or a partial checkout produces: no
+    // src/, no public/, no index.html. The missing-root guard now refuses this
+    // before the zero-file guard can fire, so the assertion is on the property
+    // that matters: an empty corpus never reports a pass. Each guard's own
+    // message is pinned by the tests around this one.
     const r = runIn(d);
-    assert(r.code === 1 && /scanned 0 files/.test(r.out),
+    assert(r.code === 1 && /scan root\(s\) not found|scanned 0 files/.test(r.out),
       `an empty scan must fail, not pass; got code ${r.code}:\n${r.out}`);
+  });
+});
+
+// A missing configured root is a broken checkout, not an empty one: the zero-file
+// guard cannot see it because the other roots still contribute files, so a
+// renamed public/ (where llms.txt and every page's copy lives) read as a clean
+// sweep (JAR-3521 review).
+test('a missing scan root fails closed even when other roots have copy', () => {
+  inBareTempDir((d) => {
+    mkdirSync(join(d, 'src'), { recursive: true });
+    writeFileSync(join(d, 'src', 'Copy.tsx'), `const x = 1;`); // clean, readable copy
+    // no public/, no index.html
+    const r = runIn(d);
+    assert(r.code === 1 && /scan root\(s\) not found: index\.html, public/.test(r.out),
+      `an absent scan root must fail the run; got code ${r.code}:\n${r.out}`);
   });
 });
 
@@ -253,6 +277,7 @@ test('an empty corpus fails closed rather than passing as clean (F1)', () => {
 test('a corpus member that cannot be read fails closed, even beside clean copy (F2)', () => {
   inBareTempDir((d) => {
     mkdirSync(join(d, 'src'), { recursive: true });
+    mkdirSync(join(d, 'public'), { recursive: true });
     writeFileSync(join(d, 'src', 'Copy.tsx'), `const x = 1;`); // clean and scannable
     mkdirSync(join(d, 'index.html')); // a directory where a scanned file is expected → EISDIR on read
     const r = runIn(d);
@@ -355,6 +380,20 @@ test(`a block comment's later lines are not copy`, () => {
 test('copy after a block comment closes is read', () => {
   assert(flags(`/* A note\n   about the line below. */\nexport const L = 'We never sell your data.';`), 'copy after a closed comment was skipped');
   assert(flags(`/* A note on one line. */\nexport const L = 'It never sells travel.';`), 'copy after a one-line comment was skipped');
+});
+
+// A block comment that OPENS MID-LINE is the one shape the "*" rule still reads
+// as copy: commentLines opens a block only when "/*" starts the line, so the
+// continuation lands in the corpus and is flagged. That direction is deliberate:
+// it can only ADD a hit, never hide one. Opening on a mid-line "/*" instead
+// would swallow any file whose glob contains one (src/index.css's
+// @source "./**/*.{js,ts,jsx,tsx}"), so the shape is pinned here rather than
+// "fixed" (JAR-3521 review).
+test('a block comment opened mid-line has its "*" continuation read as copy', () => {
+  const src = `const x = 1; /* Colour follows the surface\n * never #fff\n */\nexport default x;\n`;
+  const r = withTempDir((d) => runCheck(d, src, 'src/Copy.ts'));
+  assert(r.code === 1 && /Copy\.ts:2/.test(r.out),
+    `a mid-line block comment's continuation must be read; got code ${r.code}:\n${r.out}`);
 });
 
 // --- Markdown and text headings and bullets are copy (JAR-3521) ----------
