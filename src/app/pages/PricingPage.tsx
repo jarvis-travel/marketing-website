@@ -7,8 +7,10 @@ import { appJoinUrl, appSignInUrl } from '../data/appLink';
 // Trip Pass is a real single-trip product, not a trial. Explore is the hero
 // offer; Annual and Monthly are billing cadences of ONE subscription, never
 // separate tiers. Quarterly is deliberately not shown (brand-owner call,
-// JAR-430). No future tiers. Bullet copy is the handoff's card language
-// verbatim, except the Explore Annual line, which carries the offer below.
+// JAR-430). No future tiers. Bullet copy follows the handoff's card language,
+// except the Explore Annual line, which carries the offer below, and the Trip
+// Pass bullets, which Brent rewrote in the 2026-10-23 copy review (JAR-3557);
+// that first bullet no longer says the product takes the trip for you.
 //
 // The one offer on the page is Brent's: on 2026-10-14 he asked for the regular
 // annual price struck through, with the Early Access price beside it "for a
@@ -24,7 +26,7 @@ import { appJoinUrl, appSignInUrl } from '../data/appLink';
 // moment. Touch devices keep the default (Explore highlighted).
 
 const TRIP_PASS_POINTS = [
-  'Everything you need to plan and take one trip',
+  'Everything you need to plan one trip',
   'Your trip journal stays with you after the trip',
   'Good for travelers who have one trip in mind right now',
 ];
@@ -177,7 +179,7 @@ export function PricingPage() {
                   tripActive ? 'text-gray-50' : 'text-gray-900'
                 }`}
               >
-                Everything for one trip, with no subscription.
+                One trip, one payment, no subscription.
               </p>
               <ul className="space-y-3 mb-8">
                 {TRIP_PASS_POINTS.map((point) => (
