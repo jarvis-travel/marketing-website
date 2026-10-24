@@ -30,6 +30,11 @@ function withTempDir(fn) {
   const dir = mkdtempSync(join(tmpdir(), 'absclaims-'));
   try {
     mkdirSync(join(dir, 'src'), { recursive: true });
+    // Every configured scan root must exist or the guard refuses to report a
+    // pass (a renamed public/ used to read as an empty one). A case that wants
+    // one absent builds its tree with inBareTempDir instead.
+    mkdirSync(join(dir, 'public'), { recursive: true });
+    writeFileSync(join(dir, 'index.html'), '<html><body>Explore</body></html>');
     return fn(dir);
   } finally {
     rmSync(dir, { recursive: true, force: true });
@@ -49,6 +54,26 @@ function runCheck(dir, source, file = 'src/Copy.tsx') {
 
 const flags = (src, file) => withTempDir((d) => runCheck(d, src, file).code === 1);
 const clean = (src, file) => withTempDir((d) => runCheck(d, src, file).code === 0);
+
+// Spawn the guard in dir without writing any scannable file first, so a test can
+// present it an empty or unreadable corpus. Returns { code, out }.
+function runIn(dir) {
+  try {
+    const out = execSync(`node ${CHECK_SCRIPT}`, { cwd: dir, encoding: 'utf8', stdio: 'pipe' });
+    return { code: 0, out };
+  } catch (e) {
+    return { code: e.status, out: (e.stdout || '') + (e.stderr || '') };
+  }
+}
+
+function inBareTempDir(fn) {
+  const dir = mkdtempSync(join(tmpdir(), 'absclaims-'));
+  try {
+    return fn(dir);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
 
 const assert = (cond, msg) => { if (!cond) throw new Error(msg); };
 
@@ -215,6 +240,52 @@ test('a malformed allowlist fails the run rather than disabling the gate', () =>
   });
 });
 
+// The one failure a text guard must refuse: "I read nothing." An empty corpus
+// (a rename, a moved directory, a partial checkout) produces zero hits and used
+// to exit 0 — a clean sweep over nothing (Ryan fleet review F1).
+test('an empty corpus fails closed rather than passing as clean (F1)', () => {
+  inBareTempDir((d) => {
+    // The shape a rename, a moved directory or a partial checkout produces: no
+    // src/, no public/, no index.html. The missing-root guard now refuses this
+    // before the zero-file guard can fire, so the assertion is on the property
+    // that matters: an empty corpus never reports a pass. Each guard's own
+    // message is pinned by the tests around this one.
+    const r = runIn(d);
+    assert(r.code === 1 && /scan root\(s\) not found|scanned 0 files/.test(r.out),
+      `an empty scan must fail, not pass; got code ${r.code}:\n${r.out}`);
+  });
+});
+
+// A missing configured root is a broken checkout, not an empty one: the zero-file
+// guard cannot see it because the other roots still contribute files, so a
+// renamed public/ (where llms.txt and every page's copy lives) read as a clean
+// sweep (JAR-3521 review).
+test('a missing scan root fails closed even when other roots have copy', () => {
+  inBareTempDir((d) => {
+    mkdirSync(join(d, 'src'), { recursive: true });
+    writeFileSync(join(d, 'src', 'Copy.tsx'), `const x = 1;`); // clean, readable copy
+    // no public/, no index.html
+    const r = runIn(d);
+    assert(r.code === 1 && /scan root\(s\) not found: index\.html, public/.test(r.out),
+      `an absent scan root must fail the run; got code ${r.code}:\n${r.out}`);
+  });
+});
+
+// An unreadable corpus member is also not a clean one: it must fail, even beside
+// files that read cleanly (Ryan fleet review F2). A directory where a scanned
+// root file is expected makes readFileSync throw deterministically.
+test('a corpus member that cannot be read fails closed, even beside clean copy (F2)', () => {
+  inBareTempDir((d) => {
+    mkdirSync(join(d, 'src'), { recursive: true });
+    mkdirSync(join(d, 'public'), { recursive: true });
+    writeFileSync(join(d, 'src', 'Copy.tsx'), `const x = 1;`); // clean and scannable
+    mkdirSync(join(d, 'index.html')); // a directory where a scanned file is expected → EISDIR on read
+    const r = runIn(d);
+    assert(r.code === 1 && /could not be read|READ FAILURE/.test(r.out),
+      `an unreadable corpus member must fail the run; got code ${r.code}:\n${r.out}`);
+  });
+});
+
 // --- "always" (JAR-964) -----------------------------------------------
 //
 // Rule 9 of the copy skill has banned "always" since the JAR-896 sweep and NO
@@ -309,6 +380,64 @@ test(`a block comment's later lines are not copy`, () => {
 test('copy after a block comment closes is read', () => {
   assert(flags(`/* A note\n   about the line below. */\nexport const L = 'We never sell your data.';`), 'copy after a closed comment was skipped');
   assert(flags(`/* A note on one line. */\nexport const L = 'It never sells travel.';`), 'copy after a one-line comment was skipped');
+});
+
+// A block comment that OPENS MID-LINE is the one shape the "*" rule still reads
+// as copy: commentLines opens a block only when "/*" starts the line, so the
+// continuation lands in the corpus and is flagged. That direction is deliberate:
+// it can only ADD a hit, never hide one. Opening on a mid-line "/*" instead
+// would swallow any file whose glob contains one (src/index.css's
+// @source "./**/*.{js,ts,jsx,tsx}"), so the shape is pinned here rather than
+// "fixed" (JAR-3521 review).
+test('a block comment opened mid-line has its "*" continuation read as copy', () => {
+  const src = `const x = 1; /* Colour follows the surface\n * never #fff\n */\nexport default x;\n`;
+  const r = withTempDir((d) => runCheck(d, src, 'src/Copy.ts'));
+  assert(r.code === 1 && /Copy\.ts:2/.test(r.out),
+    `a mid-line block comment's continuation must be read; got code ${r.code}:\n${r.out}`);
+});
+
+// --- Markdown and text headings and bullets are copy (JAR-3521) ----------
+//
+// isCommentLine read a line opening with "#", "*", "//", "/*" or "{/*" as a
+// comment in EVERY file type, so a Markdown "#" heading or "*" bullet, and
+// every line of a .txt or .html file, was skipped by every rule.
+// public/llms.txt's six "#" headings went unchecked. Comment lines are code
+// only now.
+
+// The assertion is on the reported file:line, not just the exit code: a crash
+// also exits 1, so "code === 1" alone cannot tell "the heading was read and
+// flagged" from "the guard blew up" (Ryan fleet review LOW).
+test('a "#" heading in a prose file is read AND reported, in each prose extension', () => {
+  for (const file of ['src/Notes.md', 'public/llms.txt', 'index.html']) {
+    withTempDir((d) => {
+      const r = writeAt(d, file, '# We never sell your data.');
+      const at = new RegExp(`${file.split('/').pop().replace('.', '\\.')}:1\\b`);
+      assert(r.code === 1 && at.test(r.out), `a "#" heading in ${file} was not read-and-reported (code ${r.code}):\n${r.out}`);
+    });
+  }
+});
+
+test('a "*" bullet in a prose file is read AND reported', () => {
+  for (const file of ['src/Notes.md', 'public/llms.txt']) {
+    withTempDir((d) => {
+      const r = writeAt(d, file, '* We never sell your data.');
+      const at = new RegExp(`${file.split('/').pop().replace('.', '\\.')}:1\\b`);
+      assert(r.code === 1 && at.test(r.out), `a "*" bullet in ${file} was not read-and-reported (code ${r.code}):\n${r.out}`);
+    });
+  }
+});
+
+// The other half: the comment forms still skip in code, so the gate did not
+// widen. A CSS "#id" selector is read now (no "#" in the code rule), and so is a
+// CSS "* { … }" universal selector (no "*" either) — both are one character
+// apart from the heading/bullet forms, and neither is a comment (JAR-3521).
+test('a code comment is still skipped; CSS "#id" and "* { }" selectors are not comments', () => {
+  assert(clean('// We never sell your data.\nconst x = 1;', 'src/Copy.tsx'), 'a // comment in code was read');
+  assert(clean('#hero { color: red; }', 'src/Page.css'), 'a CSS #id selector line was mishandled');
+  // A universal selector carrying banned copy must be read, not skipped as a comment.
+  assert(flags(`* { content: 'We never sell your data.'; }`, 'src/Page.css'), 'a CSS "* { }" selector line was skipped as a comment');
+  // A real JSDoc "*" continuation is still a comment, via the block its "/*" opened.
+  assert(clean('/**\n * We never sell your data.\n */\nconst x = 1;', 'src/Doc.ts'), 'a JSDoc "*" continuation was read as copy');
 });
 
 console.log(`\n${passed} passed, ${failed} failed`);

@@ -152,21 +152,38 @@ const loadAllow = () => {
   return allow;
 };
 
-const isCommentLine = (line) => /^\s*(\/\/|\/\*|\*|\{\/\*|#)/.test(line);
+// Only code has comment lines. Every line of a prose file is copy, as segments()
+// reads it: in Markdown a "#" opens a heading and a "*" a bullet (public/llms.txt
+// has six "#" headings), and .txt and .html are copy throughout. That also takes
+// in the comments of an HTML file's <style>/<script> blocks.
+//
+// Neither "#" nor "*" opens a comment in the code rule. None of the scanned code
+// types comments with "#" (a CSS "#id" selector is not a comment), and a bare
+// "*" at line start is a CSS universal selector ("* { … }"), not a comment: a
+// JSDoc "* …" continuation line is already covered as the body of the block its
+// "/*" opened on a line of its own (commentLines' `open` flag below), so dropping
+// "*" from the opener set skips no real comment and stops a "* { content: '…' }"
+// line hiding copy (JAR-3521, the "#" one character over). One shape it reads as
+// copy is a block comment opened MID-LINE ("const x = 1; /* …"), whose "*"
+// continuation is flagged: that direction only adds a hit and never hides one,
+// and opening on a mid-line "/*" would swallow a file whose glob contains one
+// (src/index.css's @source "./**/*.{js,ts,jsx,tsx}"). The test pins that shape.
+const PROSE_EXTS = new Set(['.md', '.txt', '.html']);
+const isCommentLine = (line, ext) => !PROSE_EXTS.has(ext) && /^\s*(\/\/|\/\*|\{\/\*)/.test(line);
 
 // Which lines are comment: those isCommentLine sees, and the rest of a block
 // comment after the line it opens on, which otherwise read as prose. "Colour
 // follows the surface, never #fff" reached this guard from a JSX comment's
 // second line. A block counts only when it opens a line, as isCommentLine
 // requires, so a "/*" inside a string can't start one.
-const commentLines = (lines) => {
+const commentLines = (lines, ext) => {
   let open = false;
   return lines.map((line) => {
     if (open) {
       open = !line.includes('*/');
       return true;
     }
-    if (!isCommentLine(line)) return false;
+    if (!isCommentLine(line, ext)) return false;
     open = /^\s*\{?\/\*/.test(line) && !line.includes('*/', line.indexOf('/*') + 2);
     return true;
   });
@@ -195,7 +212,6 @@ const stripModuleSpecifier = (line) =>
 
 // Humanly-visible segments: quoted strings and JSX text. For .md/.txt/.html
 // the whole line is copy, so it is passed through as one segment.
-const PROSE_EXTS = new Set(['.md', '.txt', '.html']);
 const segments = (line, ext) => {
   if (PROSE_EXTS.has(ext)) return [line];
   const out = [];
@@ -230,7 +246,7 @@ const segments = (line, ext) => {
 const wrappedHits = (text, ext, allow, rel = '') => {
   const pieces = [];
   const lines = text.split('\n').map(fold);
-  const comment = commentLines(lines);
+  const comment = commentLines(lines, ext);
   lines.forEach((line, i) => {
     if (comment[i]) return;
     for (const seg of segments(line, ext)) {
@@ -273,12 +289,17 @@ const wrappedHits = (text, ext, allow, rel = '') => {
 };
 
 const warnings = [];
+// Files or directories that existed but could not be read. Kept apart from
+// warnings because these FAIL the run: a corpus the guard cannot read must not
+// report "clean" (Ryan fleet review F1/F2). An oversized skip is a bounded,
+// deliberate skip and stays a warning.
+const readFailures = [];
 const walk = (d, out = []) => {
   let entries;
   try {
     entries = readdirSync(d);
   } catch (e) {
-    warnings.push(`unreadable dir ${d}: ${e.message}`);
+    readFailures.push(`unreadable dir ${d}: ${e.message}`);
     return out;
   }
   for (const name of entries) {
@@ -288,7 +309,7 @@ const walk = (d, out = []) => {
     try {
       st = lstatSync(p); // lstat: never follow symlinks
     } catch (e) {
-      warnings.push(`unreadable ${p}: ${e.message}`);
+      readFailures.push(`unreadable ${p}: ${e.message}`);
       continue;
     }
     if (st.isSymbolicLink()) continue;
@@ -319,13 +340,24 @@ if (!isCLI) {
 } else {
   const allow = loadAllow();
   const hits = [];
+  // A configured root that is not there is a broken checkout, not an empty one.
+  // The zero-file guard below only fires when EVERY root is empty, so a renamed
+  // or moved public/ would drop public/llms.txt from the corpus and still report
+  // a pass (JAR-3521 review).
+  const missingRoots = [...SCAN_FILES, ...SCAN_DIRS].filter((p) => !existsSync(join(ROOT, p)));
+  if (missingRoots.length) {
+    console.error(`absolute-claims check FAILED — scan root(s) not found: ${missingRoots.join(', ')}.`);
+    console.error('A rename, a moved directory, or a partial checkout drops their copy from the corpus; refusing to report a pass.');
+    process.exit(1);
+  }
   // Named root files first, then everything the directory walk finds. One list,
   // so a file cannot be scanned by one code path and skipped by the other.
   const files = [
-    ...SCAN_FILES.map((f) => join(ROOT, f)).filter((f) => existsSync(f)),
-    ...SCAN_DIRS.flatMap((dir) => (existsSync(join(ROOT, dir)) ? walk(join(ROOT, dir)) : [])),
+    ...SCAN_FILES.map((f) => join(ROOT, f)),
+    ...SCAN_DIRS.flatMap((dir) => walk(join(ROOT, dir))),
   ];
 
+  let scanned = 0;
   for (const file of files) {
     const rel = relative(ROOT, file);
     if (SELF_TEST_FILES.has(rel)) continue;
@@ -334,11 +366,12 @@ if (!isCLI) {
     try {
       text = readFileSync(file, 'utf8');
     } catch (e) {
-      warnings.push(`unreadable ${file}: ${e.message}`);
+      readFailures.push(`unreadable ${rel}: ${e.message}`);
       continue;
     }
+    scanned++;
     const lines = text.split('\n').map(fold);
-    const comment = commentLines(lines);
+    const comment = commentLines(lines, ext);
     lines.forEach((line, i) => {
       if (comment[i]) return; // comments document, they don't advertise
       for (const seg of segments(line, ext)) {
@@ -357,6 +390,22 @@ if (!isCLI) {
   }
 
   for (const w of warnings) console.warn(`absolute-claims warning: ${w}`);
+
+  // Fail closed before reporting clean. The one failure a text guard must never
+  // dress up as success is "I did not read the copy": a corpus it could not read,
+  // or an empty one from a rename / moved directory / partial checkout, each
+  // produces zero hits and would otherwise exit 0 (Ryan fleet review F1/F2).
+  if (readFailures.length) {
+    for (const w of readFailures) console.error(`absolute-claims READ FAILURE — ${w}`);
+    console.error(`absolute-claims check FAILED — ${readFailures.length} file(s)/dir(s) could not be read; a corpus it cannot read is not a clean one.`);
+    process.exit(1);
+  }
+  if (scanned === 0) {
+    console.error(`absolute-claims check FAILED — scanned 0 files under ${SCAN_DIRS.join(', ')} or ${SCAN_FILES.join(', ')}.`);
+    console.error('A rename, a moved directory, or a partial checkout reads as a clean sweep; refusing instead.');
+    process.exit(1);
+  }
+
   if (hits.length) {
     console.error(`absolute-claims check FAILED — ${hits.length} hit(s):\n`);
     for (const h of hits) console.error(`  ${h.file}:${h.line}  [${h.why}]\n    "${h.text}"\n`);
@@ -365,5 +414,5 @@ if (!isCLI) {
     console.error('narrow regex to .absolute-claims-allow.txt and say why in a comment.');
     process.exit(1);
   }
-  console.log('absolute-claims check passed — no absolute or unverifiable claims in copy.');
+  console.log(`absolute-claims check passed — no absolute or unverifiable claims in copy (${scanned} file(s) scanned).`);
 }

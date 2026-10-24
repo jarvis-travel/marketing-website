@@ -14,8 +14,9 @@
 // So these cases assert coverage, not regexes: drop banned language into a
 // published file and the guard must fail on it.
 
-import { writeFileSync, rmSync, existsSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { writeFileSync, rmSync, existsSync, mkdtempSync, mkdirSync } from 'node:fs';
+import { resolve, join } from 'node:path';
+import { tmpdir } from 'node:os';
 import { execFileSync } from 'node:child_process';
 
 const ROOT = new URL('../..', import.meta.url).pathname;
@@ -48,13 +49,13 @@ function runGuard() {
  * Write banned copy to a published path, run the guard, always clean up.
  * The filename is obvious on sight so a crashed run leaves no mystery behind.
  */
-function guardSees(relPath) {
+function guardSees(relPath, content = 'Book your flights and hotels with us today.\n') {
   const abs = resolve(ROOT, relPath);
   if (existsSync(abs)) {
     throw new Error(`fixture path ${relPath} already exists; refusing to overwrite`);
   }
   try {
-    writeFileSync(abs, 'Book your flights and hotels with us today.\n');
+    writeFileSync(abs, content);
     return runGuard();
   } finally {
     rmSync(abs, { force: true });
@@ -94,6 +95,80 @@ test('still reads src/', () => {
   }
 });
 
+// JAR-3521. A line opening with "*", "{/*", "//", "/*" or "<!--" was read as a
+// code comment in every file type, so a Markdown bullet and an HTML comment's
+// copy were skipped. In a prose file (.md, .txt, .html) every line is copy now.
+test('reads a "*" bullet in a prose file (was skipped as a comment)', () => {
+  const { flagged } = guardSees('public/__pnb-bullet-fixture.md', '* Book your flights and hotels with us today.\n');
+  if (!flagged) {
+    throw new Error('a "*" bullet in .md was skipped as a comment');
+  }
+});
+
+test('reads inside an HTML comment in a prose .html file', () => {
+  const { flagged } = guardSees('public/__pnb-html-fixture.html', '<!-- Book your flights and hotels with us today. -->\n');
+  if (!flagged) {
+    throw new Error('an HTML comment in .html was skipped');
+  }
+});
+
+// The other half: a "//" line in code is still a comment, so the gate did not
+// widen into code.
+test('still skips a code comment in src/', () => {
+  const { flagged } = guardSees('src/__pnb-code-comment-fixture.ts', '// Book your flights and hotels with us today.\n');
+  if (flagged) {
+    throw new Error('a "//" comment in code was read as copy; the prose gate widened too far');
+  }
+});
+
+// The one failure a text guard must refuse: "I read nothing." An empty corpus
+// (a rename, a moved directory, a partial checkout) produces zero hits and must
+// fail closed, not report a clean sweep (Ryan fleet review F1, mirrored from
+// check-absolute-claims.mjs).
+test('an empty corpus fails closed rather than passing as clean (F1)', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'pnb-'));
+  try {
+    mkdirSync(join(dir, 'src'), { recursive: true }); // present but empty
+    mkdirSync(join(dir, 'public'), { recursive: true }); // present but empty
+    let out, code = 0;
+    try {
+      out = execFileSync('node', [SCRIPT], { cwd: dir, encoding: 'utf8', stdio: 'pipe' });
+    } catch (e) {
+      code = e.status;
+      out = `${e.stdout ?? ''}${e.stderr ?? ''}`;
+    }
+    if (!(code === 1 && /scanned 0 files/.test(out))) {
+      throw new Error(`an empty scan must fail, not pass; got code ${code}:\n${out}`);
+    }
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+// A missing configured root is a broken checkout, not an empty one. The
+// zero-file guard cannot see it while the other root still contributes files,
+// so a renamed public/ read as a clean sweep (JAR-3521 review).
+test('a missing scan root fails closed even when the other root has copy', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'pnb-'));
+  try {
+    mkdirSync(join(dir, 'src'), { recursive: true });
+    writeFileSync(join(dir, 'src', 'Copy.tsx'), `export const L = 'Explore one trip';`);
+    // no public/
+    let out, code = 0;
+    try {
+      out = execFileSync('node', [SCRIPT], { cwd: dir, encoding: 'utf8', stdio: 'pipe' });
+    } catch (e) {
+      code = e.status;
+      out = `${e.stdout ?? ''}${e.stderr ?? ''}`;
+    }
+    if (!(code === 1 && /scan root\(s\) not found: public/.test(out))) {
+      throw new Error(`an absent scan root must fail the run; got code ${code}:\n${out}`);
+    }
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 // Cleanup is the whole safety story here, since the fixtures live in the real
 // tree rather than a temp dir.
 test('leaves no fixture behind', () => {
@@ -101,6 +176,9 @@ test('leaves no fixture behind', () => {
     'public/__plan-not-book-fixture.txt',
     'public/__plan-not-book-fixture.md',
     'src/__plan-not-book-fixture.ts',
+    'public/__pnb-bullet-fixture.md',
+    'public/__pnb-html-fixture.html',
+    'src/__pnb-code-comment-fixture.ts',
   ]) {
     if (existsSync(resolve(ROOT, p))) {
       throw new Error(`fixture survived the run: ${p}`);
