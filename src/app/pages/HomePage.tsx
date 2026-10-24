@@ -52,7 +52,7 @@ const HEROES: Hero[] = [
   },
   {
     headline: 'Some days should be slow.',
-    sub: 'Jarvis rates each day chill, balanced or packed while you plan, so the busy ones don’t pile up.',
+    sub: 'Jarvis rates each day chill, balanced, or packed while you plan, so the busy ones don’t pile up.',
   },
 ];
 
@@ -79,13 +79,13 @@ const FEATURES: Feature[] = [
   {
     icon: Sparkles,
     name: 'Trip planning',
-    desc: 'Jarvis drafts your days around your pace. You decide; it does the homework.',
+    desc: 'Jarvis drafts your days around your pace. You make the calls.',
     voice: 'accent',
   },
   {
     icon: TrendingUp,
     name: 'The Fatigue Index',
-    desc: 'Every day is rated chill, balanced, or packed before you commit, so the tough days show up while you can still fix them.',
+    desc: 'The tough days show up while you’re still planning, when they’re easy to fix.',
     voice: 'accent',
   },
   {
@@ -97,19 +97,19 @@ const FEATURES: Feature[] = [
   {
     icon: BookOpen,
     name: 'Trip journal',
-    desc: 'Notes, receipts and places become a story worth rereading. Yours to keep.',
+    desc: 'The story of your trip, built from what you did and what you spent, to look back on long after.',
     voice: 'journal',
   },
   {
     icon: MapIcon,
     name: 'The map',
-    desc: 'Your whole trip on one map, numbered by day, with the walk between stops visible.',
+    desc: 'Your whole trip on one map, numbered by day, so you can see how each day fits together.',
     voice: 'accent',
   },
   {
     icon: CloudSun,
     name: 'Weather & flights',
-    desc: 'The forecast and your flights sit inside the plan. Fewer surprises, fewer tabs.',
+    desc: 'The forecast and your flights sit inside the plan, so a rainy day or a late flight shows up where you’re already looking.',
     voice: 'accent',
   },
 ];
@@ -205,8 +205,7 @@ export function HomePage() {
             </h2>
             <p className="text-lg md:text-xl text-sky-100 leading-relaxed max-w-2xl">
               A long weekend, a staycation, two weeks abroad, a road trip an hour
-              from home. Jarvis plans them all: the pace, the budget, the map, the
-              memories.
+              from home. Jarvis plans each one the same way.
             </p>
           </div>
         </PhotoBackdrop>
@@ -220,8 +219,7 @@ export function HomePage() {
               One plan, not twelve tabs.
             </h2>
             <p className="text-lg text-gray-600 leading-relaxed">
-              Everything that makes a trip work, and everything you&rsquo;d
-              rather not juggle, in one place.
+              The days, the money, the map and the journal, together.
             </p>
           </div>
           {/* The claim, shown: the app's own trip screen, the phone in front of the desktop, on a solid plane. */}
@@ -292,7 +290,7 @@ export function HomePage() {
               </h3>
               <p className="text-gray-600 leading-relaxed">
                 Your journal is yours: the notes, the receipts, the places. We
-                do not sell it.
+                don&rsquo;t sell it.
               </p>
             </li>
           </ul>

@@ -21,7 +21,7 @@ export function ContactPage() {
             Get in touch.
           </h1>
           <p className="text-lg text-sky-100 max-w-xl leading-relaxed [text-wrap:pretty]">
-            Ready to plan your next trip? Join now below. For everything else,
+            Ready to plan your next trip? You can join below. For anything else,
             email reaches a person.
           </p>
         </div>
@@ -35,7 +35,7 @@ export function ContactPage() {
               Start planning
             </h2>
             <p className="text-gray-600 leading-relaxed mb-6">
-              Join now and plan your next trip with Jarvis.
+              Plan your next trip with Jarvis.
             </p>
             <a
               href={appJoinUrl()}
@@ -56,10 +56,10 @@ export function ContactPage() {
                 <div>
                   <p className="font-medium text-gray-900">General</p>
                   <a
-                    href="mailto:hello@jarvistravel.com"
+                    href="mailto:help@jarvistravel.com"
                     className="text-sky-600 underline underline-offset-4 decoration-1 hover:text-sky-700"
                   >
-                    hello@jarvistravel.com
+                    help@jarvistravel.com
                   </a>
                 </div>
               </li>

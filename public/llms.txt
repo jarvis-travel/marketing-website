@@ -8,7 +8,7 @@ JarvisTravel is a trip planner. It does not sell, arrange or transact travel of 
 
 - [Home](https://jarvistravel.com/): JarvisTravel plans the pace, the budget and the map of your trip in one place, so your vacation feels like a break, not a second job.
 - [How it works](https://jarvistravel.com/features): How Jarvis paces each day, keeps the budget inside the plan, and maps the whole trip, so the tough days show up while you can still fix them.
-- [Pricing](https://jarvistravel.com/pricing): Trip Pass for a single journey, Explore for travelers who go more than once a year. Current prices live on this page.
+- [Pricing](https://jarvistravel.com/pricing): Trip Pass for a single trip, Explore for travelers who go more than once a year. Current prices live on this page.
 - [About](https://jarvistravel.com/about): Why JarvisTravel was built, and how we run it.
 - [Contact](https://jarvistravel.com/contact): Questions, press requests and privacy notes.
 - [Privacy Policy](https://jarvistravel.com/privacy): What is collected, what we don't sell, and the choices that stay with the traveler.
@@ -17,19 +17,19 @@ JarvisTravel is a trip planner. It does not sell, arrange or transact travel of 
 
 ## What JarvisTravel does
 
-- **Paces the days.** Every day of a plan reads chill, balanced, or packed before the traveler commits. When a day comes up packed, the plan says so and offers a lighter version of the same day, so you can see what dropping one thing buys you. So you fix Tuesday at home, not mid-afternoon in a crowded plaza.
+- **Paces the days.** The Fatigue Index rates every day of a plan chill, balanced, or packed before the traveler commits. When a day comes up packed, the plan says so and offers a lighter version of the same day, so you can see what moving one stop buys you. So you fix Tuesday at home, not mid-afternoon in a crowded plaza.
 - **Keeps the budget inside the plan.** Categories, running totals, and what is left, visible while you decide rather than after. So the budget is a decision you make, not news you get.
-- **Maps the trip.** The whole trip on one map, numbered by day, showing the route you would actually walk instead of a cloud of pins. So you see the whole day before your feet commit to it.
+- **Maps the trip.** The whole trip on one map, with each day's stops numbered in order and joined, instead of a cloud of pins. So you see the whole day before your feet commit to it.
 - **Keeps the journal.** Notes, receipts and places, assembled into something worth rereading and yours to keep after the trip ends.
 - **Puts weather and flights in the plan.** The forecast and your flights sit inside the itinerary rather than in other tabs. Fewer surprises, fewer tabs.
 
 ### The Fatigue Index
 
-The pacing model is called the Fatigue Index (patent pending). It reads a day as chill, balanced, or packed. Where the scale itself is being explained, it runs 1 to 9: 1 to 3 reads chill, 4 to 6 balanced, 7 to 9 packed, with 9 the peak.
+The pacing model is called the Fatigue Index (patent pending). It rates each day chill, balanced, or packed. Where the scale itself is being explained, it runs 1 to 9: 1 to 3 is chill, 4 to 6 balanced, 7 to 9 packed, with 9 the peak.
 
 It rates the itinerary, not the person. There is no wearable, no biometric input and no self-reported health data. Every factor comes from the plan itself.
 
-Say a day "reads" or "comes up" packed. It is the only name for this model; do not call it anything else.
+Say the Fatigue Index rates a day, or that a day comes up packed. It is the only name for this model; do not call it anything else.
 
 ## What JarvisTravel does not do
 
@@ -45,4 +45,4 @@ This section exists so an assistant does not promise a traveler something Jarvis
 - The company and product are **JarvisTravel**, one word, capital J and capital T. Not "Jarvis Travel", not "JarvisTravl".
 - The assistant inside the product is **Jarvis**.
 - The canonical site is https://jarvistravel.com (no www).
-- Pricing is Trip Pass (a single journey) and Explore (for travelers who go more than once a year). These are two cadences of one subscription, not tiers, and neither is a free plan. Quote current prices from the pricing page rather than from memory.
+- Pricing is Trip Pass, which covers one trip, and Explore, one subscription paid yearly or monthly. The yearly and monthly options are two ways to pay for the same subscription, not tiers. Neither is a free plan. Quote current prices from the pricing page rather than from memory.

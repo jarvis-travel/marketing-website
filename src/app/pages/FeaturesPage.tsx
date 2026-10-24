@@ -28,12 +28,12 @@ interface Moment {
 const MOMENTS: Moment[] = [
   {
     name: 'Your days, drafted for you',
-    desc: 'Jarvis puts your days in a sensible order, with the forecast and your budget right there in the plan. Move a stop and the numbers move with it. A long weekend or two weeks abroad, it works the same way.',
+    desc: 'Jarvis puts your days in a sensible order, with the forecast and your budget right there in the plan. Move a stop and the numbers move with it.',
     soWhat: 'So the plan gets finished, and you get your evenings back.',
   },
   {
     name: 'Spot the tough days early',
-    desc: 'When a day comes up packed, you’ll know while you’re still planning, and Jarvis can show you a lighter version of the same day. See what dropping one thing buys you.',
+    desc: 'When a day comes up packed, you’ll know while you’re still planning, and Jarvis can show you a lighter version of the same day. See what moving one stop to another day buys you.',
     soWhat: 'So you fix Tuesday at home, not mid-afternoon in a crowded plaza.',
     capture: {
       image: LIGHTER_DAY,
@@ -92,8 +92,7 @@ export function FeaturesPage() {
               Know how every day will feel.
             </h2>
             <p className="text-lg text-gray-600 leading-relaxed max-w-xl [text-wrap:pretty] mb-2">
-              The Fatigue Index rates each day chill, balanced or packed while
-              you plan.
+              The Fatigue Index rates each day chill, balanced, or packed.
             </p>
             {/* Filed; attached to the feature itself, never a site-wide badge.
                 Diarize the provisional's 12-month expiry: the line comes down
@@ -178,7 +177,7 @@ export function FeaturesPage() {
             <div className="relative">
               <DevicePair
                 image={DAY_DETAIL}
-                alt="A week in Rome in the trip plan. Day one is rated balanced, with a note on why it is full but manageable, and its stops in order from a 9:30 airport arrival."
+                alt="A week in Rome in the trip plan. Day one is rated balanced, with a note on why it is full but manageable, and its stops in order from a 9:30 AM airport arrival."
                 ground="plane"
                 sizes={{ desktop: '(min-width: 1024px) 730px, 80vw', phone: '(min-width: 1024px) 221px, 24vw' }}
               />
@@ -190,7 +189,7 @@ export function FeaturesPage() {
               No numbers: the order is not a sequence the reader needs. */}
           <div className="max-w-3xl mt-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 [text-wrap:balance] mb-8">
-              Jarvis does the heavy lifting.
+              What Jarvis takes off your plate.
             </h2>
             <ul className="border-t border-gray-200 list-none m-0 p-0">
               {MOMENTS.map((moment) => (

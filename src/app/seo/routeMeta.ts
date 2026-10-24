@@ -37,7 +37,7 @@ export const ROUTE_META: Record<string, RouteMeta> = {
   '/pricing': {
     title: 'JarvisTravel pricing: Trip Pass and Explore',
     description:
-      'Pick the plan that fits the way you travel. Trip Pass for a single journey, Explore for travelers who go more than once a year.',
+      'Pick the plan that fits the way you travel. Trip Pass for a single trip, Explore for travelers who go more than once a year.',
   },
   '/about': {
     title: 'About JarvisTravel: why we started it',
@@ -52,7 +52,7 @@ export const ROUTE_META: Record<string, RouteMeta> = {
   '/privacy': {
     title: 'Privacy Policy: JarvisTravel',
     description:
-      'How JarvisTravel handles your data: what we collect, what we do not sell, and the choices that stay yours.',
+      'How JarvisTravel handles your data: what we collect, what we don’t sell, and how to make a privacy request.',
   },
   '/terms': {
     title: 'Terms of Service: JarvisTravel',
