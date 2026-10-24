@@ -42,7 +42,7 @@ export const ROUTE_META: Record<string, RouteMeta> = {
   '/about': {
     title: 'About JarvisTravel: why we started it',
     description:
-      'JarvisTravel started with a trip to Italy. Why we built a trip planner nobody pays to be in, and how we use AI: as one tool, with your privacy first.',
+      'JarvisTravel started with a trip to Italy. Why we built a trip planner nobody can pay to be listed in, and how we use AI: as one tool, with your privacy first.',
   },
   '/contact': {
     title: 'Contact JarvisTravel',
