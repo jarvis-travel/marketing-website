@@ -123,6 +123,31 @@ test('passes present-tense practice', () => {
   assert(clean(`const s = 'Jarvis is sent your trip, not your identity.';`), 'false positive');
 });
 
+// --- a claim on the opening or closing line of a multi-line template ---------
+//
+// The scan ran per line, and a template literal's opening line carries the
+// backtick and the assignment while its closing line carries the backtick and
+// the semicolon, both of which isBareProseLine screens out, so a claim written
+// there escaped. Email and broadcast copy is written in exactly this shape
+// (JAR-3706 item 1). Interior lines were already caught; they still are.
+test('catches a claim on a multi-line template literal opening line', () => {
+  assert(flags('export const s = `Never miss a deal.\nMore to come.`;'), 'opening-line claim passed');
+});
+
+test('catches a claim on a multi-line template literal closing line', () => {
+  assert(flags('export const s = `Plan your trip.\nNever miss a deal.`;'), 'closing-line claim passed');
+});
+
+test('still catches a claim on an interior template line', () => {
+  assert(flags('export const s = `\nNever miss a deal.\n`;'), 'interior-line claim passed');
+});
+
+test('a multi-line template of clean copy, with a code expression, passes', () => {
+  assert(clean('export const s = `Plan ${count} trips.\nWelcome back, traveler.`;'), 'false positive on a clean template');
+  // an identifier like neverSell inside ${…} is code, not copy
+  assert(clean('export const s = `Total ${neverSell ? 1 : 0} today.\nmore here.`;'), 'expression identifier read as copy');
+});
+
 // --- a promise that wrapped across a line break -----------------------
 //
 // Every pattern ran against one line at a time, so a sentence split by a hard

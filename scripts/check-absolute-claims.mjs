@@ -226,6 +226,55 @@ const segments = (line, ext) => {
   return out;
 };
 
+// A template literal's visible text: its literal parts, plus each string inside a
+// ${…} (the expression is code, but its strings can be copy: `${n === 1 ? 'day'
+// : 'days'}`). Mirrors web-app's copy-text.mjs templateText.
+const TMPL_EXPRESSION = /\$\{[^{}]*\}/g;
+const TMPL_QUOTED = /'((?:[^'\\]|\\.)*)'|"((?:[^"\\]|\\.)*)"|`((?:[^`\\]|\\.)*)`/g;
+const templateText = (s) => [
+  s.replace(TMPL_EXPRESSION, ' ').trim(),
+  ...(s.match(TMPL_EXPRESSION) || []).flatMap((e) => (e.match(TMPL_QUOTED) || []).map((q) => q.slice(1, -1))),
+];
+
+// Unescaped backticks on a line, left to right.
+const backticks = (line) => {
+  const at = [];
+  for (let i = 0; i < line.length; i += 1) {
+    if (line[i] === '\\') i += 1;
+    else if (line[i] === '`') at.push(i);
+  }
+  return at;
+};
+
+// The copy a MULTI-line template literal carries on its OPENING and CLOSING
+// lines, which segments() misses: those lines also hold the backtick and the
+// assignment/semicolon that isBareProseLine screens out, and the one-line QUOTED
+// match needs both backticks on the line. Interior lines are plain prose and are
+// already caught by segments()/the wrapped pass, so they are left alone here and
+// never double-reported (JAR-3706 item 1). Comment lines are blanked by the
+// caller, so a stray backtick in a comment cannot corrupt the open/closed state.
+const templateExtras = (lines, ext) => {
+  if (PROSE_EXTS.has(ext)) return lines.map(() => []);
+  let inTemplate = false;
+  return lines.map((line) => {
+    const extra = [];
+    let rest = line;
+    if (inTemplate) {
+      const ticks = backticks(rest);
+      if (ticks.length === 0) return extra; // interior line: owned elsewhere
+      extra.push(...templateText(rest.slice(0, ticks[0]))); // text before the close
+      rest = rest.slice(ticks[0] + 1);
+      inTemplate = false;
+    }
+    const ticks = backticks(rest);
+    if (ticks.length % 2 === 1) {
+      extra.push(...templateText(rest.slice(ticks[ticks.length - 1] + 1))); // text after the open
+      inTemplate = true;
+    }
+    return extra.map((s) => s.trim()).filter((s) => /[A-Za-z]/.test(s));
+  });
+};
+
 // A promise wrapped across a line break matched nothing, because every pattern
 // ran against one line at a time. Plain-text email mirrors are hard-wrapped at
 // about 80 columns, which is exactly where a sentence splits — "…the same
@@ -247,9 +296,12 @@ const wrappedHits = (text, ext, allow, rel = '') => {
   const pieces = [];
   const lines = text.split('\n').map(fold);
   const comment = commentLines(lines, ext);
+  // Multi-line template copy, from the comment-blanked lines so a backtick in a
+  // comment cannot corrupt the open/closed state (JAR-3706 item 1).
+  const tmpl = templateExtras(lines.map((line, i) => (comment[i] ? '' : line)), ext);
   lines.forEach((line, i) => {
     if (comment[i]) return;
-    for (const seg of segments(line, ext)) {
+    for (const seg of [...segments(line, ext), ...tmpl[i]]) {
       const t = seg.replace(/\s+/g, ' ').trim();
       if (t) pieces.push({ text: t, line: i + 1 });
     }
@@ -372,9 +424,10 @@ if (!isCLI) {
     scanned++;
     const lines = text.split('\n').map(fold);
     const comment = commentLines(lines, ext);
+    const tmpl = templateExtras(lines.map((line, i) => (comment[i] ? '' : line)), ext);
     lines.forEach((line, i) => {
       if (comment[i]) return; // comments document, they don't advertise
-      for (const seg of segments(line, ext)) {
+      for (const seg of [...segments(line, ext), ...tmpl[i]]) {
         for (const { re, why, skip } of BANNED) {
           if (skip?.(rel)) continue;
           if (re.test(seg) && !allow.some((a) => a.test(seg))) {
