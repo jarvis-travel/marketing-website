@@ -32,12 +32,12 @@ export function appSignInUrl(): string {
 }
 
 /**
- * Where every Join Now goes: the app's sign-up, carrying the chosen plan when
- * there is one (the pricing page's Join Nows; the other pages' pass none).
+ * Where every Start Planning goes: the app's sign-up, carrying the chosen plan when
+ * there is one (the pricing page's Start Planning buttons; the other pages' pass none).
  *
  * Sign-up, not sign-in. Brent opened direct sign-up on 2026-10-14 (JAR-3180),
  * when this site took over jarvistravel.com from the waitlist, and that
- * superseded his 2026-09-16 decision to send every Join Now to sign-in while
+ * superseded his 2026-09-16 decision to send every Start Planning to sign-in while
  * sign-up was closed (JAR-1692).
  *
  * The app captures `?plan=` on whatever screen a visitor lands on (App.tsx reads

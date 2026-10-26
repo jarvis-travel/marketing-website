@@ -32,7 +32,7 @@ function requireAppOrigin(): Plugin {
       throw new Error(
         `VITE_APP_ORIGIN must be an https:// origin (got "${raw}").\n\n` +
           'Every pricing CTA links to this origin; a scheme-less or http value ' +
-          'ships a Join Now button that goes nowhere. Set it on the deploy build ' +
+          'ships a Start Planning button that goes nowhere. Set it on the deploy build ' +
           'step (see .github/workflows/deploy-droplet.yml) or in a .env file.',
       );
     },

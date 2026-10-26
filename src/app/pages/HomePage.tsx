@@ -140,7 +140,7 @@ export function HomePage() {
               href={appJoinUrl()}
               className="inline-block px-8 py-4 bg-amber-400 text-gray-900 rounded-xs font-semibold hover:bg-amber-300 transition-colors"
             >
-              Join Now
+              Start Planning
             </a>
           </div>
         </PhotoBackdrop>
@@ -305,7 +305,7 @@ export function HomePage() {
             No app to download.
           </h2>
           <p className="text-lg text-gray-600 leading-relaxed max-w-xl [text-wrap:pretty] mb-10">
-            JarvisTravel runs in your browser. Join now and start planning, with
+            JarvisTravel runs in your browser. Start planning, with
             nothing to install first.
           </p>
           <ul className="border-t border-gray-200">
@@ -346,7 +346,7 @@ export function HomePage() {
             href={appJoinUrl()}
             className="inline-block px-10 py-4 bg-amber-400 text-gray-900 rounded-xs font-semibold hover:bg-amber-300 transition-colors"
           >
-            Join Now
+            Start Planning
           </a>
         </div>
       </section>

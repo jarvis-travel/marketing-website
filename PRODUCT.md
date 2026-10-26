@@ -8,7 +8,7 @@ web
 
 ## Users
 
-People planning a real trip: a long weekend, a staycation, two weeks abroad. They are not buying software. They want the trip to feel like a vacation, not a second job. On this site they are deciding whether to sign up, and success is **Join Now: signing up for the app** (confirmed 2026-09-14).
+People planning a real trip: a long weekend, a staycation, two weeks abroad. They are not buying software. They want the trip to feel like a vacation, not a second job. On this site they are deciding whether to sign up, and success is **Start Planning: signing up for the app** (confirmed 2026-09-14).
 
 ## Product Purpose
 
@@ -32,7 +32,7 @@ Inferred from the codebase: visitors arrive on phones and desktops, usually part
 - Prices come only from `src/app/data/pricing.ts`, which mirrors Stripe: Trip Pass for one trip, and Explore as one subscription with annual and monthly cadences. No invented tiers. The one offer is the Early Access price on Explore Annual (Brent, 2026-10-14, JAR-3180): the regular price struck through, the first-year price beside it, and what it renews at, all from Stripe.
 - JarvisTravel plans; it never sells or books travel. No booking language anywhere, enforced by `lint:plan-not-book`.
 - No absolute or forward-looking claims about data, enforced by `lint:absolute-claims`.
-- Join Now is the sign-up call to action. Every Join Now opens the app's sign-up, and Pricing's carry the plan the visitor picked; Pricing's "Sign in" link opens the app's sign-in (JAR-3180). `lint:pricing-ctas` enforces all three.
+- Start Planning is the sign-up call to action. Every Start Planning opens the app's sign-up, and Pricing's carry the plan the visitor picked; Pricing's "Sign in" link opens the app's sign-in (JAR-3180). `lint:pricing-ctas` enforces all three.
 
 ## Brand Commitments
 
