@@ -18,15 +18,31 @@
 // wording replaces it will spread the same way, so the guard is the fix and
 // the copy edit is only the cleanup.
 //
-// Shape deliberately mirrors check-plan-not-book.mjs: same fold, same segment
-// extraction, same fail-closed allowlist, same CLI/import split. Two guards
-// that behave differently are two guards nobody trusts.
+// Shape follows check-plan-not-book.mjs in this repo: same fold, same
+// fail-closed allowlist, same CLI/import split. The segment extractor
+// (fold, segments, templateText, templateExtras, wrappedHits) is modelled on
+// web-app's scripts/lib/copy-text.mjs but is NOT a byte copy of it and NOT yet
+// a shared module, so the five repos still carry five near-copies. Unifying
+// them into one extractor with a divergence self-test is JAR-3766.
+//
+// WHAT THIS CANNOT SEE (stated plainly, because half a guard advertised as a
+// whole one is worse than none):
+//   - A nested template inside a ${…} desyncs the backtick counter, so copy
+//     after it on the same multi-line template can be missed, and a three-line
+//     nesting can invert the open/closed state for the rest of the file. This
+//     lives in web-app's extractor too; fixing it in one repo would re-diverge
+//     the five, so it belongs to the shared-extractor work (JAR-3766).
+//   - A template line that begins like a comment (`*`, `//`, `/*`) is blanked
+//     before the template tracker runs (same as web-app). Also JAR-3766.
+//   - templateText's ${…} stripper is brace-blind, so an interpolation holding
+//     an object literal is only partly removed. Additive (can over-read code as
+//     copy), never under-reads copy. JAR-3766.
 //
 // Allowlist: .absolute-claims-allow.txt (one regex per line, matched against
 // the flagged SEGMENT, case-insensitive). A malformed pattern fails the run.
 
 import { readFileSync, readdirSync, lstatSync, existsSync } from 'node:fs';
-import { basename, join, relative } from 'node:path';
+import { basename, join, relative, extname } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const ROOT = process.cwd();
@@ -228,7 +244,8 @@ const segments = (line, ext) => {
 
 // A template literal's visible text: its literal parts, plus each string inside a
 // ${…} (the expression is code, but its strings can be copy: `${n === 1 ? 'day'
-// : 'days'}`). Mirrors web-app's copy-text.mjs templateText.
+// : 'days'}`). Modelled on web-app's scripts/lib/copy-text.mjs templateText
+// (not a byte copy; see the header's CANNOT list and JAR-3766).
 const TMPL_EXPRESSION = /\$\{[^{}]*\}/g;
 const TMPL_QUOTED = /'((?:[^'\\]|\\.)*)'|"((?:[^"\\]|\\.)*)"|`((?:[^`\\]|\\.)*)`/g;
 const templateText = (s) => [
@@ -246,13 +263,15 @@ const backticks = (line) => {
   return at;
 };
 
-// The copy a MULTI-line template literal carries on its OPENING and CLOSING
-// lines, which segments() misses: those lines also hold the backtick and the
-// assignment/semicolon that isBareProseLine screens out, and the one-line QUOTED
-// match needs both backticks on the line. Interior lines are plain prose and are
-// already caught by segments()/the wrapped pass, so they are left alone here and
-// never double-reported (JAR-3706 item 1). Comment lines are blanked by the
-// caller, so a stray backtick in a comment cannot corrupt the open/closed state.
+// The copy a MULTI-line template literal carries on each of its lines, which
+// segments() misses: the opening and closing lines hold the backtick and the
+// assignment/semicolon that isBareProseLine screens out, and an interior line
+// with an interpolation (`Never miss a ${tour} deal.`) has braces that
+// isBareProseLine also rejects. All three are read here, matching web-app's
+// fileSegments. Plain interior prose with no ${…} is still caught by segments()
+// as well; the /[A-Za-z]/ and trim keep that from double-reporting empties.
+// Comment lines are blanked by the caller, so a stray backtick in a comment
+// cannot corrupt the open/closed state.
 const templateExtras = (lines, ext) => {
   if (PROSE_EXTS.has(ext)) return lines.map(() => []);
   let inTemplate = false;
@@ -261,14 +280,22 @@ const templateExtras = (lines, ext) => {
     let rest = line;
     if (inTemplate) {
       const ticks = backticks(rest);
-      if (ticks.length === 0) return extra; // interior line: owned elsewhere
-      extra.push(...templateText(rest.slice(0, ticks[0]))); // text before the close
+      if (ticks.length === 0) {
+        // Interior line of a multi-line template. Its ${…} strings are copy
+        // that segments() cannot see (no delimiters on this line), so read
+        // them here — matching web-app's fileSegments and design-library #45.
+        // Before this, `Never miss a ${tour} deal.` was read by nothing
+        // (fleet review of #128, HIGH 2).
+        for (const t of templateText(rest)) extra.push(t);
+        return extra.map((s) => s.trim()).filter((s) => /[A-Za-z]/.test(s));
+      }
+      for (const t of templateText(rest.slice(0, ticks[0]))) extra.push(t); // text before the close
       rest = rest.slice(ticks[0] + 1);
       inTemplate = false;
     }
     const ticks = backticks(rest);
     if (ticks.length % 2 === 1) {
-      extra.push(...templateText(rest.slice(ticks[ticks.length - 1] + 1))); // text after the open
+      for (const t of templateText(rest.slice(ticks[ticks.length - 1] + 1))) extra.push(t); // text after the open
       inTemplate = true;
     }
     return extra.map((s) => s.trim()).filter((s) => /[A-Za-z]/.test(s));
@@ -366,7 +393,7 @@ const walk = (d, out = []) => {
     }
     if (st.isSymbolicLink()) continue;
     if (st.isDirectory()) walk(p, out);
-    else if (EXTS.has(p.slice(p.lastIndexOf('.')))) {
+    else if (EXTS.has(extname(p))) {
       if (st.size > MAX_FILE_BYTES) {
         warnings.push(`skipped oversized file ${p} (${st.size} bytes)`);
         continue;
@@ -413,7 +440,7 @@ if (!isCLI) {
   for (const file of files) {
     const rel = relative(ROOT, file);
     if (SELF_TEST_FILES.has(rel)) continue;
-    const ext = file.slice(file.lastIndexOf('.'));
+    const ext = extname(file);
     let text;
     try {
       text = readFileSync(file, 'utf8');

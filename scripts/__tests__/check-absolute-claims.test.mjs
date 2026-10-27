@@ -142,10 +142,20 @@ test('still catches a claim on an interior template line', () => {
   assert(flags('export const s = `\nNever miss a deal.\n`;'), 'interior-line claim passed');
 });
 
+// HIGH 2 (fleet review of #128): an interior template line that carries an
+// interpolation has braces, so isBareProseLine rejects it in segments() and
+// templateExtras used to leave interior lines alone — the claim was read by
+// nothing. Now templateExtras reads interior ${…} lines. Fails pre-fix.
+test('catches a claim on an interior template line that has a ${…}', () => {
+  assert(flags('export const s = `Hi ${name},\nNever miss a ${tour} deal.\n`;'), 'interior ${…} line read by nothing');
+});
+
 test('a multi-line template of clean copy, with a code expression, passes', () => {
   assert(clean('export const s = `Plan ${count} trips.\nWelcome back, traveler.`;'), 'false positive on a clean template');
-  // an identifier like neverSell inside ${…} is code, not copy
-  assert(clean('export const s = `Total ${neverSell ? 1 : 0} today.\nmore here.`;'), 'expression identifier read as copy');
+  // a bare identifier inside ${…} is code, reduced to a space, not copy. Uses
+  // a bare `${never}` (not `${neverSell}`, which can't match \bnever\b anyway,
+  // so it proved nothing about the reduction — fleet review of #128).
+  assert(clean('export const s = `Total ${never} today.\nmore here.`;'), 'expression identifier read as copy');
 });
 
 // --- a promise that wrapped across a line break -----------------------
