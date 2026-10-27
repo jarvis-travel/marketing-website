@@ -248,10 +248,10 @@ test('refuses a hand-written signup href that bypasses appJoinUrl', () => {
   });
 });
 
-// JAR-3180: appJoinUrl's plan became optional, because the other pages' Join
-// Nows call it with none. So a pricing CTA that drops its plan now compiles,
-// opens sign-up, and loses the plan the visitor just picked. Only this guard
-// can see it.
+// JAR-3180: appJoinUrl's plan became optional, because the other pages'
+// "Start Planning" buttons call it with none. So a pricing CTA that drops its
+// plan now compiles, opens sign-up, and loses the plan the visitor just picked.
+// Only this guard can see it.
 test('refuses a pricing Start Planning that drops the plan', () => {
   withRepo({ page: GOOD_PAGE.replace("appJoinUrl('jt_explore_annual')", 'appJoinUrl()') }, (d) => {
     const r = run(d);
@@ -382,6 +382,24 @@ test('watches the About page too (JAR-3673): a Start Planning that misses sign-u
       assert(/AboutPage\.tsx/.test(r.out), `wrong file named: ${r.out}`);
     },
   );
+});
+
+// F1: a file with a correct "Start Planning" CTA and a SECOND one reverted to the
+// old label must fail. The label-keyed checks only see "Start Planning", so the
+// reverted sibling, and its destination, would otherwise ship green.
+test('refuses a file whose second CTA was reverted to "Join Now"', () => {
+  const twoCtas = `import { appJoinUrl } from '../data/appLink';
+export default function P() {
+  return (<div>
+    <a href={appJoinUrl()} className="px-8 py-3.5">Start Planning</a>
+    <a href={appJoinUrl()} className="px-8 py-3.5">Join Now</a>
+  </div>);
+}`;
+  withRepo({ page: GOOD_PAGE, nav: twoCtas }, (dir) => {
+    const r = run(dir);
+    assert(r.code === 1 && /Navigation\.tsx.*Join Now/s.test(r.out),
+      `a partial revert to "Join Now" shipped green: ${r.out}`);
+  });
 });
 
 test('refuses a file whose Start Planning disappeared — a guard watching nothing', () => {

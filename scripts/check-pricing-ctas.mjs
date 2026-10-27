@@ -122,10 +122,26 @@ function ctaTargets(source, file, problems, label = 'Start Planning') {
   return found;
 }
 
+// The old label, as a rendered CTA (`>Join Now<`). The checks below key on the
+// NEW words, so a button reverted to the old ones is invisible to them and its
+// destination is never examined — a one-button revert in a file that still has a
+// correct "Start Planning" would ship green (review F1). So the old words anywhere
+// in a watched file fail the run, which catches the partial revert the label-keyed
+// checks miss.
+const OLD_LABEL = /<[^<>]*>\s*Join\s+Now\s*</i;
+
 export function checkPricingCtas(root = ROOT) {
   const page = readFileSync(join(root, PAGE), 'utf8');
   const pricing = readFileSync(join(root, PRICING), 'utf8');
   const problems = [];
+
+  // A reverted CTA keeps the old words; fail on them in any watched file, so a
+  // partial revert cannot hide behind a sibling correct CTA (review F1).
+  for (const file of [PAGE, ...OFF_PRICING]) {
+    if (OLD_LABEL.test(readFileSync(join(root, file), 'utf8'))) {
+      problems.push(`${file}: a CTA still reads "Join Now" — every signup CTA is "Start Planning" now (JAR-3673). A button reverted to the old words is invisible to the label-keyed checks below, so it is caught here.`);
+    }
+  }
 
   // The lookup keys that actually exist, read from the generated block rather
   // than restated here — a guard with its own copy of the answer is a second

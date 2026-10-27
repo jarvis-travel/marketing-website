@@ -26,7 +26,7 @@ export function Navigation() {
   const currentPath = location.pathname;
   // On Pricing each plan card carries its own Start Planning with that plan chosen, so a
   // nav Start Planning without a plan would compete with them.
-  const showJoinNow = !matchPath('/pricing', currentPath);
+  const showSignupCta = !matchPath('/pricing', currentPath);
 
   return (
     <nav
@@ -74,7 +74,7 @@ export function Navigation() {
               </Link>
             ))}
 
-            {showJoinNow && (
+            {showSignupCta && (
               <a
                 href={appJoinUrl()}
                 className="px-5 py-2.5 bg-amber-400 text-gray-900 rounded-xs font-medium hover:bg-amber-300 transition-colors"
@@ -114,7 +114,7 @@ export function Navigation() {
                 {link.name}
               </Link>
             ))}
-            {showJoinNow && (
+            {showSignupCta && (
               <div className="mt-4 pt-4 border-t border-gray-100 space-y-2">
                 <a
                   href={appJoinUrl()}
