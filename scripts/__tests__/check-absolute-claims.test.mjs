@@ -475,5 +475,26 @@ test('a code comment is still skipped; CSS "#id" and "* { }" selectors are not c
   assert(clean('/**\n * We never sell your data.\n */\nconst x = 1;', 'src/Doc.ts'), 'a JSDoc "*" continuation was read as copy');
 });
 
+// --- one-line templates and single-reporting (re-review #128, MED 1 & 2) ----
+
+test('a one-line template ${…} is not scanned as prose — a type in it is not a claim', () => {
+  // `never` is a TypeScript type here, inside the interpolation, not copy.
+  assert(clean('const s = `Total ${never} deals`;', 'src/x.ts'), 'a one-line template ${…} was read as copy');
+});
+
+test('a bare claim on a one-line template body IS still caught', () => {
+  assert(flags('const s = `We never sell your data`;', 'src/x.ts'), 'a one-line template claim was missed');
+});
+
+test('a plain interior template line is reported once, not twice', () => {
+  // "Never miss a deal." trips exactly one rule (bare "never"), so a count of 2
+  // is the double-report regression, not two rules on one line.
+  const src = 'const s = `Plan your trip.\nNever miss a deal.\nMore soon.`;';
+  const { code, out } = withTempDir((d) => runCheck(d, src, 'src/x.ts'));
+  assert(code === 1, 'the interior claim was not caught');
+  const n = (out.match(/Never miss a deal/gi) || []).length;
+  assert(n === 1, `interior claim reported ${n} time(s), want 1 (double-count regression)`);
+});
+
 console.log(`\n${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);
