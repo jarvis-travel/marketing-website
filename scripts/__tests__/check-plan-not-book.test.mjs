@@ -140,14 +140,16 @@ test('skips a banned phrase on a block comment’s later line (open-tracker)', (
 });
 
 // Dropping "*" closes the bypass: a CSS "* { … }" universal selector carrying
-// banned copy is read, not skipped as a comment.
+// banned copy is read, not skipped as a comment. The output must name the
+// fixture — a crash (any non-zero exit) would otherwise read as a "hit" and pass
+// this test on nothing (the F1-style check, applied to a positive case).
 test('reads a CSS "* { }" universal selector carrying banned copy', () => {
-  const { flagged } = guardSees(
+  const { flagged, output } = guardSees(
     'src/__pnb-universal-fixture.css',
     "* { content: 'Book your flights and hotels'; }\n",
   );
-  if (!flagged) {
-    throw new Error('a CSS "* { }" selector hid banned copy as a comment');
+  if (!flagged || !/__pnb-universal-fixture\.css/.test(output)) {
+    throw new Error(`a CSS "* { }" selector hid banned copy as a comment, or the guard crashed:\n${output}`);
   }
 });
 
@@ -163,14 +165,40 @@ test('still skips a JSDoc "* …" continuation line', () => {
   }
 });
 
-// The tracker closes the block: copy after "*/" is read.
-test('reads copy after a block comment closes', () => {
-  const { flagged } = guardSees(
+// The tracker closes the block: copy after "*/" on the NEXT line is read.
+test('reads copy after a block comment closes on the next line', () => {
+  const { flagged, output } = guardSees(
     'src/__pnb-after-close-fixture.ts',
     "/* A note */\nexport const L = 'Book your flights and hotels today.';\n",
   );
-  if (!flagged) {
-    throw new Error('copy after a closed block comment was skipped');
+  if (!flagged || !/__pnb-after-close-fixture\.ts/.test(output)) {
+    throw new Error(`copy after a closed block comment was skipped, or the guard crashed:\n${output}`);
+  }
+});
+
+// And copy after "*/" on the SAME line as the close is read too — the closing
+// line is no longer returned as wholly comment (JAR-3665 review, M2).
+test('reads copy after a block comment closes on the same line', () => {
+  const { flagged, output } = guardSees(
+    'src/__pnb-same-line-close-fixture.ts',
+    "/* A note\n   still a note. */ export const CTA = 'Book your flights today';\n",
+  );
+  if (!flagged || !/__pnb-same-line-close-fixture\.ts/.test(output)) {
+    throw new Error(`copy after "*/" on the closing line was skipped, or the guard crashed:\n${output}`);
+  }
+});
+
+// A "/*" with no "*/" (a template literal can carry one) parks the tracker to
+// end of file; without a guard that masks every banned line after it and the run
+// exits 0. The run must fail closed instead, naming the unreadable file (JAR-3665
+// review, HIGH). fold() runs first, so a fullwidth "／＊" would park it too.
+test('fails closed on an unterminated block comment rather than masking the rest', () => {
+  const { flagged, output } = guardSees(
+    'src/__pnb-unterminated-fixture.ts',
+    "export const hint = `\n/*\n`;\nexport const L = 'Book your flights and hotels today';\n",
+  );
+  if (!flagged || !/unterminated block comment/.test(output)) {
+    throw new Error(`a parked-open file reported clean instead of failing closed:\n${output}`);
   }
 });
 
@@ -236,6 +264,8 @@ test('leaves no fixture behind', () => {
     'src/__pnb-universal-fixture.css',
     'src/__pnb-jsdoc-fixture.ts',
     'src/__pnb-after-close-fixture.ts',
+    'src/__pnb-same-line-close-fixture.ts',
+    'src/__pnb-unterminated-fixture.ts',
   ]) {
     if (existsSync(resolve(ROOT, p))) {
       throw new Error(`fixture survived the run: ${p}`);

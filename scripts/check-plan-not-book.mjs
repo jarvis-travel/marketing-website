@@ -86,35 +86,48 @@ if (existsSync(allowPath)) {
   }
 }
 
-// Only code has comment lines; every line of a prose file is copy. In .md a "*"
-// opens a bullet, and .txt and .html (where "<!--" opens an HTML comment) are
-// copy throughout, so their lines are all read (JAR-3521).
+// The comment model, mirroring check-absolute-claims.mjs (JAR-3665, JAR-3521).
 //
-// "*" is NOT a comment opener in the code rule (JAR-3665, mirroring
-// check-absolute-claims.mjs): a bare "*" at line start is a CSS universal
-// selector ("* { content: '…' }"), not a comment, so leaving it in let a banned
-// phrase hide inside one. A real JSDoc "* …" continuation is still skipped, as
-// the body of the block its "/*" opened on a line of its own — commentLines'
-// `open` flag below tracks that, which is what lets "*" go without reading every
-// JSDoc continuation as copy.
+// CAN skip, so banned language in them is not flagged: a "//" or "/*" (or JSX
+// "{/*") comment line, and the body lines of a block comment it opened, tracked
+// by `open`.
+// CANNOT, by deliberate choice: "*" at line start (a CSS "* { … }" universal
+// selector, not a comment — dropping it closed that bypass), and "#" (a CSS
+// "#id" selector). A real JSDoc "* …" continuation is still skipped, as the body
+// of the block its "/*" opened, so dropping "*" reads no real comment as copy.
+// "<!--" is NOT a code-comment opener here either, matching the sibling: .html is
+// prose (every line read), and in an ES module "<!--" is not a comment, so
+// keeping it only skipped a line it should read.
+// CANNOT yet (named, not silently wrong): a "/*" with no "*/" leaves the scanner
+// `open`; a template literal can carry such a line and park it to end of file,
+// so a file that ends still `open` fails the run rather than reporting a clean
+// sweep (see `unterminated` below). A balanced "/* … */" INSIDE a template
+// literal is still read as a comment (a false negative), and this guard has no
+// SCAN_FILES, so a root index.html the sibling reads is out of its corpus.
 const PROSE_EXTS = new Set(['.md', '.txt', '.html']);
-const isCommentLine = (line, ext) => !PROSE_EXTS.has(ext) && /^\s*(\/\/|\/\*|\{\/\*|<!--)/.test(line);
+const isCommentLine = (line, ext) => !PROSE_EXTS.has(ext) && /^\s*(\/\/|\/\*|\{\/\*)/.test(line);
 
-// Which lines are comment: those isCommentLine opens, and the rest of a block
+// Which lines are comment: those isCommentLine opens, and the body of a block
 // comment after the line it opens on, which otherwise read as prose. A block
-// counts only when it opens a line, as isCommentLine requires, so a "/*" inside
-// a string can't start one. Ported from check-absolute-claims.mjs (JAR-3665).
+// counts only when it opens a line, so a "/*" inside a string can't start one.
+// Returns the per-line flags and whether the file ended mid-block (`unterminated`),
+// so the scan can fail closed rather than silently skip the parked tail.
 const commentLines = (lines, ext) => {
   let open = false;
-  return lines.map((line) => {
+  const flags = lines.map((line) => {
     if (open) {
-      open = !line.includes('*/');
-      return true;
+      const close = line.indexOf('*/');
+      if (close === -1) return true; // still inside the block
+      open = false;
+      // Copy after the close on the same line must be read. Scanning the whole
+      // line at worst re-reads the comment tail, which adds a hit, never hides one.
+      return line.slice(close + 2).trim() === '';
     }
     if (!isCommentLine(line, ext)) return false;
     open = /^\s*\{?\/\*/.test(line) && !line.includes('*/', line.indexOf('/*') + 2);
     return true;
   });
+  return { flags, unterminated: open };
 };
 
 const warnings = [];
@@ -178,7 +191,15 @@ for (const dir of SCAN_DIRS) {
     scanned++;
     const ext = file.slice(file.lastIndexOf('.'));
     const lines = text.split('\n').map(fold);
-    const comment = commentLines(lines, ext);
+    const { flags: comment, unterminated } = commentLines(lines, ext);
+    // A file that ends inside an unclosed block comment cannot be scanned
+    // reliably: a line starting "/*" with no "*/" (a template literal can carry
+    // one) parks the tracker to end of file and would hide every banned line
+    // after it. A guard that cannot read a file must not report it clean (JAR-3665).
+    if (unterminated) {
+      readFailures.push(`unterminated block comment in ${relative(ROOT, file)}: the scan of it is unreliable`);
+      continue;
+    }
     lines.forEach((line, i) => {
       if (comment[i]) return; // comments document, they don't advertise
       for (const { re, why } of BANNED) {
