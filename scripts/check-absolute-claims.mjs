@@ -171,22 +171,30 @@ const loadAllow = () => {
 const PROSE_EXTS = new Set(['.md', '.txt', '.html']);
 const isCommentLine = (line, ext) => !PROSE_EXTS.has(ext) && /^\s*(\/\/|\/\*|\{\/\*)/.test(line);
 
-// Which lines are comment: those isCommentLine sees, and the rest of a block
+// Which lines are comment: those isCommentLine sees, and the body of a block
 // comment after the line it opens on, which otherwise read as prose. "Colour
 // follows the surface, never #fff" reached this guard from a JSX comment's
 // second line. A block counts only when it opens a line, as isCommentLine
-// requires, so a "/*" inside a string can't start one.
+// requires, so a "/*" inside a string can't start one. Returns the per-line
+// flags and whether the file ended mid-block (`unterminated`), so the scan can
+// fail closed on a "/*" with no "*/" that would otherwise park the tracker to
+// end of file and mask every claim after it (JAR-3665).
 const commentLines = (lines, ext) => {
   let open = false;
-  return lines.map((line) => {
+  const flags = lines.map((line) => {
     if (open) {
-      open = !line.includes('*/');
-      return true;
+      const close = line.indexOf('*/');
+      if (close === -1) return true; // still inside the block
+      open = false;
+      // Copy after the close on the same line must be read; scanning the whole
+      // line at worst re-reads the comment tail, which adds a hit, never hides one.
+      return line.slice(close + 2).trim() === '';
     }
     if (!isCommentLine(line, ext)) return false;
     open = /^\s*\{?\/\*/.test(line) && !line.includes('*/', line.indexOf('/*') + 2);
     return true;
   });
+  return { flags, unterminated: open };
 };
 
 // A line that is nothing but prose. This is how multi-line JSX text looks, and
@@ -246,7 +254,7 @@ const segments = (line, ext) => {
 const wrappedHits = (text, ext, allow, rel = '') => {
   const pieces = [];
   const lines = text.split('\n').map(fold);
-  const comment = commentLines(lines, ext);
+  const { flags: comment } = commentLines(lines, ext);
   lines.forEach((line, i) => {
     if (comment[i]) return;
     for (const seg of segments(line, ext)) {
@@ -371,7 +379,14 @@ if (!isCLI) {
     }
     scanned++;
     const lines = text.split('\n').map(fold);
-    const comment = commentLines(lines, ext);
+    const { flags: comment, unterminated } = commentLines(lines, ext);
+    // A file ending inside an unclosed block comment cannot be scanned reliably
+    // (a template literal can carry a "/*" with no "*/"), so fail closed rather
+    // than mask every claim after it (JAR-3665).
+    if (unterminated) {
+      readFailures.push(`unterminated block comment in ${rel}: the scan of it is unreliable`);
+      continue;
+    }
     lines.forEach((line, i) => {
       if (comment[i]) return; // comments document, they don't advertise
       for (const seg of segments(line, ext)) {

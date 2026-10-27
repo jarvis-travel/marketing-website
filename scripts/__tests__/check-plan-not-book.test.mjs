@@ -121,6 +121,87 @@ test('still skips a code comment in src/', () => {
   }
 });
 
+// JAR-3665. "*" is no longer a comment opener in the code rule (a bare "*" at
+// line start is a CSS universal selector, not a comment), and a commentLines()
+// open-tracker now covers a block comment's 2nd+ lines, so the two copy guards
+// mirror. These pin the three shapes that change.
+
+// The open-tracker: a banned phrase on a block comment's plain continuation
+// line (no "*") is a comment, not copy. Without the tracker that line, which no
+// longer starts with a comment opener, would fall into the corpus.
+test('skips a banned phrase on a block comment’s later line (open-tracker)', () => {
+  const { flagged } = guardSees(
+    'src/__pnb-block-body-fixture.ts',
+    '/* A note\n   book your flights and hotels here\n*/\nexport const L = \'Explore one trip\';\n',
+  );
+  if (flagged) {
+    throw new Error('a block comment’s continuation line was read as copy; the open-tracker is missing');
+  }
+});
+
+// Dropping "*" closes the bypass: a CSS "* { … }" universal selector carrying
+// banned copy is read, not skipped as a comment. The output must name the
+// fixture — a crash (any non-zero exit) would otherwise read as a "hit" and pass
+// this test on nothing (the F1-style check, applied to a positive case).
+test('reads a CSS "* { }" universal selector carrying banned copy', () => {
+  const { flagged, output } = guardSees(
+    'src/__pnb-universal-fixture.css',
+    "* { content: 'Book your flights and hotels'; }\n",
+  );
+  if (!flagged || !/__pnb-universal-fixture\.css/.test(output)) {
+    throw new Error(`a CSS "* { }" selector hid banned copy as a comment, or the guard crashed:\n${output}`);
+  }
+});
+
+// No regression from dropping "*": a real JSDoc "* …" continuation is still a
+// comment, via the block its "/*" opened, so it is not read as copy.
+test('still skips a JSDoc "* …" continuation line', () => {
+  const { flagged } = guardSees(
+    'src/__pnb-jsdoc-fixture.ts',
+    '/**\n * Book your flights and hotels.\n */\nconst x = 1;\n',
+  );
+  if (flagged) {
+    throw new Error('a JSDoc "*" continuation was read as copy; dropping "*" regressed real comments');
+  }
+});
+
+// The tracker closes the block: copy after "*/" on the NEXT line is read.
+test('reads copy after a block comment closes on the next line', () => {
+  const { flagged, output } = guardSees(
+    'src/__pnb-after-close-fixture.ts',
+    "/* A note */\nexport const L = 'Book your flights and hotels today.';\n",
+  );
+  if (!flagged || !/__pnb-after-close-fixture\.ts/.test(output)) {
+    throw new Error(`copy after a closed block comment was skipped, or the guard crashed:\n${output}`);
+  }
+});
+
+// And copy after "*/" on the SAME line as the close is read too — the closing
+// line is no longer returned as wholly comment (JAR-3665 review, M2).
+test('reads copy after a block comment closes on the same line', () => {
+  const { flagged, output } = guardSees(
+    'src/__pnb-same-line-close-fixture.ts',
+    "/* A note\n   still a note. */ export const CTA = 'Book your flights today';\n",
+  );
+  if (!flagged || !/__pnb-same-line-close-fixture\.ts/.test(output)) {
+    throw new Error(`copy after "*/" on the closing line was skipped, or the guard crashed:\n${output}`);
+  }
+});
+
+// A "/*" with no "*/" (a template literal can carry one) parks the tracker to
+// end of file; without a guard that masks every banned line after it and the run
+// exits 0. The run must fail closed instead, naming the unreadable file (JAR-3665
+// review, HIGH). fold() runs first, so a fullwidth "／＊" would park it too.
+test('fails closed on an unterminated block comment rather than masking the rest', () => {
+  const { flagged, output } = guardSees(
+    'src/__pnb-unterminated-fixture.ts',
+    "export const hint = `\n/*\n`;\nexport const L = 'Book your flights and hotels today';\n",
+  );
+  if (!flagged || !/unterminated block comment/.test(output)) {
+    throw new Error(`a parked-open file reported clean instead of failing closed:\n${output}`);
+  }
+});
+
 // The one failure a text guard must refuse: "I read nothing." An empty corpus
 // (a rename, a moved directory, a partial checkout) produces zero hits and must
 // fail closed, not report a clean sweep (Ryan fleet review F1, mirrored from
@@ -179,6 +260,12 @@ test('leaves no fixture behind', () => {
     'public/__pnb-bullet-fixture.md',
     'public/__pnb-html-fixture.html',
     'src/__pnb-code-comment-fixture.ts',
+    'src/__pnb-block-body-fixture.ts',
+    'src/__pnb-universal-fixture.css',
+    'src/__pnb-jsdoc-fixture.ts',
+    'src/__pnb-after-close-fixture.ts',
+    'src/__pnb-same-line-close-fixture.ts',
+    'src/__pnb-unterminated-fixture.ts',
   ]) {
     if (existsSync(resolve(ROOT, p))) {
       throw new Error(`fixture survived the run: ${p}`);

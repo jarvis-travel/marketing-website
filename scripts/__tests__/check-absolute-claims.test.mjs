@@ -396,6 +396,23 @@ test('a block comment opened mid-line has its "*" continuation read as copy', ()
     `a mid-line block comment's continuation must be read; got code ${r.code}:\n${r.out}`);
 });
 
+// JAR-3665 review. A "/*" with no "*/" (a template literal can carry one) parks
+// the tracker to end of file and would mask every claim after it. The run must
+// fail closed, naming the unreadable file.
+test('fails closed on an unterminated block comment rather than masking the rest', () => {
+  const r = withTempDir((d) => runCheck(d, 'export const hint = `\n/*\n`;\nexport const L = "We never sell your data.";\n', 'src/Copy.ts'));
+  assert(r.code === 1 && /unterminated block comment/.test(r.out),
+    `a parked-open file reported clean instead of failing closed; got code ${r.code}:\n${r.out}`);
+});
+
+// Copy after "*/" on the SAME line as the close is read, not returned as wholly
+// comment.
+test('reads copy after "*/" on the closing line', () => {
+  const r = withTempDir((d) => runCheck(d, '/* A note\n   still a note. */ export const L = "We never sell your data.";\n', 'src/Copy.ts'));
+  assert(r.code === 1 && /Copy\.ts:2/.test(r.out),
+    `copy after "*/" on the closing line must be read; got code ${r.code}:\n${r.out}`);
+});
+
 // --- Markdown and text headings and bullets are copy (JAR-3521) ----------
 //
 // isCommentLine read a line opening with "#", "*", "//", "/*" or "{/*" as a
