@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Signup CTA guard. One decision about where "Start Planning" goes, in two halves
-// (Brent, 2026-10-14, JAR-3180: Start Planning opens the app's sign-up. That
+// Signup CTA guard. One decision about where "Start planning" goes, in two halves
+// (Brent, 2026-10-14, JAR-3180: Start planning opens the app's sign-up. That
 // superseded his 2026-09-16 decision to send it to sign-in while sign-up was
 // closed, JAR-1692, which had reversed JAR-1630 for this site):
 //
@@ -22,7 +22,7 @@
 // Two ways that quietly breaks, neither of which the type system sees:
 //
 //   1. A CTA is reverted to a router <Link to="/contact">. The page still
-//      builds, the button still says Start Planning, and every visitor lands on the
+//      builds, the button still says Start planning, and every visitor lands on the
 //      contact page instead of signup. That is invisible in a diff review of a
 //      500-line JSX file and invisible in a screenshot.
 //   2. A CTA is given a hand-written href with a plan string in it. The string
@@ -49,7 +49,7 @@ const SIGN_UP_PATH = '/auth/sign-up';
 const SIGN_IN_CALL = 'appSignInUrl()';
 const JOIN_CALL = 'appJoinUrl()';
 
-// The other files carrying a signup CTA. Every "Start Planning" in these opens the
+// The other files carrying a signup CTA. Every "Start planning" in these opens the
 // app's sign-up with no plan, and THIS LIST IS WHERE THAT DECISION IS RECORDED
 // (JAR-3180; before it, JAR-1692 sent them to sign-in and JAR-1630 to /pricing).
 //
@@ -73,18 +73,14 @@ const OFF_PRICING = [
 ];
 
 /**
- * Every `label` ("Start Planning" unless told otherwise) in `source`, paired with the
+ * Every `label` ("Start planning" unless told otherwise) in `source`, paired with the
  * target of the <a>/<Link> that encloses it. Shared by both halves and by the
  * "Sign in" check rather than written three times: the backward scan below is
  * the subtle part, and a second copy would drift from this one exactly as the
  * CTAs drifted from each other.
  */
-function ctaTargets(source, file, problems, label = 'Start Planning') {
+function ctaTargets(source, file, problems, label = 'Start planning') {
   const labels = [...source.matchAll(new RegExp(`>\\s*${label}\\s*<`, 'g'))];
-  if (labels.length === 0) {
-    problems.push(`${file}: no "${label}" CTA found at all: either the page changed shape or this guard is now watching nothing`);
-    return [];
-  }
 
   const found = [];
   for (const hit of labels) {
@@ -108,10 +104,11 @@ function ctaTargets(source, file, problems, label = 'Start Planning') {
       const closesAfter = closes.filter((c) => c > at).length;
       if (closesAfter <= opensAfter) { open = at; break; }
     }
-    if (open === -1) {
-      problems.push(`${file}: a "${label}" label has no <a> or <Link> before it`);
-      continue;
-    }
+    // A match not inside an open <a>/<Link> is a heading or prose, not a CTA.
+    // Since JAR-3673 the CTA reads "Start planning" in sentence case — the same
+    // words a section heading uses (Contact's "Start planning" h2) — so the text
+    // alone no longer marks a button. Only anchored occurrences are CTAs here.
+    if (open === -1) continue;
     const tag = before.slice(open, hit.index + 1);
     // The whole expression in braces, or the quoted string: appJoinUrl() and
     // appJoinUrl('jt_explore_annual') differ only inside the parentheses, so a
@@ -119,13 +116,20 @@ function ctaTargets(source, file, problems, label = 'Start Planning') {
     const m = tag.match(/(?:href|to)=(?:\{([^}\n]+)\}|["']([^"'\n]+)["'])/);
     found.push({ tag, target: m?.[1] ?? m?.[2] ?? '(none)' });
   }
+
+  // A watched file with no ANCHORED CTA (not merely no label text) means the
+  // page changed shape or this guard is watching nothing. Keyed on `found`, not
+  // the raw matches, so a lone heading carrying the words does not satisfy it.
+  if (found.length === 0) {
+    problems.push(`${file}: no "${label}" CTA found at all: either the page changed shape or this guard is now watching nothing`);
+  }
   return found;
 }
 
 // The old label, as a rendered CTA (`>Join Now<`). The checks below key on the
 // NEW words, so a button reverted to the old ones is invisible to them and its
 // destination is never examined — a one-button revert in a file that still has a
-// correct "Start Planning" would ship green (review F1). So the old words anywhere
+// correct "Start planning" would ship green (review F1). So the old words anywhere
 // in a watched file fail the run, which catches the partial revert the label-keyed
 // checks miss.
 const OLD_LABEL = /<[^<>]*>\s*Join\s+Now\s*</i;
@@ -139,7 +143,7 @@ export function checkPricingCtas(root = ROOT) {
   // partial revert cannot hide behind a sibling correct CTA (review F1).
   for (const file of [PAGE, ...OFF_PRICING]) {
     if (OLD_LABEL.test(readFileSync(join(root, file), 'utf8'))) {
-      problems.push(`${file}: a CTA still reads "Join Now" — every signup CTA is "Start Planning" now (JAR-3673). A button reverted to the old words is invisible to the label-keyed checks below, so it is caught here.`);
+      problems.push(`${file}: a CTA still reads "Join Now" — every signup CTA is "Start planning" now (JAR-3673). A button reverted to the old words is invisible to the label-keyed checks below, so it is caught here.`);
     }
   }
 
@@ -151,26 +155,26 @@ export function checkPricingCtas(root = ROOT) {
     problems.push(`${PRICING}: no lookup keys found — the guard cannot verify anything, so it fails rather than passing vacuously`);
   }
 
-  // Every Start Planning on the pricing page must sit inside an element whose target
+  // Every Start planning on the pricing page must sit inside an element whose target
   // calls appJoinUrl WITH a plan. The plan is optional since JAR-3180, because
-  // the other pages' Start Planning buttons pass none, so a pricing CTA that dropped it would
+  // the other pages' Start planning buttons pass none, so a pricing CTA that dropped it would
   // compile and lose the plan the visitor just picked.
   for (const { tag, target } of ctaTargets(page, PAGE, problems)) {
     if (!tag.includes('appJoinUrl(')) {
-      problems.push(`${PAGE}: a "Start Planning" CTA targets ${target} instead of appJoinUrl(<plan>): visitors land there instead of sign-up`);
+      problems.push(`${PAGE}: a "Start planning" CTA targets ${target} instead of appJoinUrl(<plan>): visitors land there instead of sign-up`);
     } else if (!/appJoinUrl\(\s*[^)\s]/.test(tag)) {
-      problems.push(`${PAGE}: a "Start Planning" CTA calls appJoinUrl() with no plan: the plan the visitor picked here would not arrive selected in the app`);
+      problems.push(`${PAGE}: a "Start planning" CTA calls appJoinUrl() with no plan: the plan the visitor picked here would not arrive selected in the app`);
     }
   }
 
-  // And every Start Planning OUTSIDE it must open the app's sign-up, with no plan.
+  // And every Start planning OUTSIDE it must open the app's sign-up, with no plan.
   // This half fails on a migration, which is the point: see OFF_PRICING above.
   for (const file of OFF_PRICING) {
     const source = readFileSync(join(root, file), 'utf8');
     for (const { tag, target } of ctaTargets(source, file, problems)) {
       if (!tag.includes(JOIN_CALL)) {
         problems.push(
-          `${file}: a "Start Planning" CTA targets ${target}, not ${JOIN_CALL}: every signup CTA outside the pricing page opens the app's sign-up with no plan, by decision (Brent, 2026-10-14, JAR-3180). ` +
+          `${file}: a "Start planning" CTA targets ${target}, not ${JOIN_CALL}: every signup CTA outside the pricing page opens the app's sign-up with no plan, by decision (Brent, 2026-10-14, JAR-3180). ` +
           `If that decision changed, edit OFF_PRICING in this guard in the same commit: this file is where the split is recorded, and a migration that does not touch it is drift.`,
         );
       }
@@ -178,7 +182,7 @@ export function checkPricingCtas(root = ROOT) {
   }
 
   // People who already have an account get a way in from the pricing page, and
-  // it goes to sign-in, not to the sign-up every Start Planning opens.
+  // it goes to sign-in, not to the sign-up every Start planning opens.
   for (const { tag, target } of ctaTargets(page, PAGE, problems, 'Sign in')) {
     if (!tag.includes(SIGN_IN_CALL)) {
       problems.push(`${PAGE}: the "Sign in" link targets ${target}, not ${SIGN_IN_CALL}: people who already have an account would land on sign-up (JAR-3180)`);
@@ -186,12 +190,12 @@ export function checkPricingCtas(root = ROOT) {
   }
 
   // Each destination is spelled in one place, read here from the body of the
-  // helper that builds it: a Start Planning that reads right in its page could still
+  // helper that builds it: a Start planning that reads right in its page could still
   // land on sign-in if appJoinUrl drifted, and "Sign in" on sign-up if
   // appSignInUrl did.
   const appLink = readFileSync(join(root, APP_LINK), 'utf8');
   for (const [helper, want, why] of [
-    ['appJoinUrl', SIGN_UP_PATH, "every Start Planning opens the app's sign-up"],
+    ['appJoinUrl', SIGN_UP_PATH, "every Start planning opens the app's sign-up"],
     ['appSignInUrl', SIGN_IN_PATH, "\"Sign in\" opens the app's sign-in"],
   ]) {
     // From the helper's name to its closing brace at column 0.
@@ -225,6 +229,6 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   // regardless of what the caller aimed it at.
   const problems = checkPricingCtas(process.cwd());
   for (const p of problems) console.error(`  ${p}`);
-  console.log(problems.length ? `\n${problems.length} problem(s)` : "signup CTAs OK: every Start Planning opens the app's sign-up, pricing's carry the chosen plan, and Sign in opens sign-in");
+  console.log(problems.length ? `\n${problems.length} problem(s)` : "signup CTAs OK: every Start planning opens the app's sign-up, pricing's carry the chosen plan, and Sign in opens sign-in");
   process.exit(problems.length ? 1 : 0);
 }

@@ -3,7 +3,7 @@ import { appJoinUrl } from '../data/appLink';
 
 // Contact (JAR-432) - the previous form called setSubmitted(true), transmitted
 // nothing, and told the visitor "Message Sent! We'll get back to you within
-// 24 hours." Every path below is real: Start Planning opens the app's sign-up
+// 24 hours." Every path below is real: Start planning opens the app's sign-up
 // (JAR-3180), and the addresses are the ones already
 // published on this site. A real contact form returns when the form endpoint exists (phase 1 of
 // the redesign plan).
@@ -41,7 +41,7 @@ export function ContactPage() {
               href={appJoinUrl()}
               className="inline-block px-8 py-4 bg-amber-400 text-gray-900 rounded-xs font-semibold hover:bg-amber-300 transition-colors"
             >
-              Start Planning
+              Start planning
             </a>
           </div>
 

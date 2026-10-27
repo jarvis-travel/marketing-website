@@ -42,10 +42,10 @@ const PRICES = `export const PRICES = {
 // case is not about proves nothing. Each is overridable per case.
 const JOIN_CTA = `import { appJoinUrl } from '../data/appLink';
 export default function P() {
-  return <a href={appJoinUrl()} className="px-8 py-3.5">Start Planning</a>;
+  return <a href={appJoinUrl()} className="px-8 py-3.5">Start planning</a>;
 }`;
 
-// The link helper, which the guard reads to see where every Start Planning and the
+// The link helper, which the guard reads to see where every Start planning and the
 // Sign in link really land (JAR-3180). Valid by default, like the CTAs.
 const GOOD_APP_LINK = `const APP_ORIGIN = 'https://app.example';
 export function appSignInUrl() {
@@ -93,11 +93,11 @@ const cta = (target) => `<a
   href={${target}}
   className="mt-auto self-start px-8 py-3.5 rounded-full font-semibold border"
 >
-  Start Planning
+  Start planning
 </a>`;
 
 // The sign-in line for people who already have an account, which the pricing
-// page must carry, pointed at sign-in rather than the sign-up every Start Planning
+// page must carry, pointed at sign-in rather than the sign-up every Start planning
 // opens (JAR-3180).
 const SIGN_IN_LINE = `<p>Already have an account? <a href={appSignInUrl()}>Sign in</a></p>`;
 
@@ -105,8 +105,8 @@ const GOOD_PAGE = `import { appJoinUrl, appSignInUrl } from '../data/appLink';
 export function PricingPage() {
   return (
     <div>
-      <a href={appJoinUrl('jt_trip_pass')} className="px-8 py-3.5">Start Planning</a>
-      <a href={appJoinUrl('jt_explore_annual')} className="px-8 py-3.5">Start Planning</a>
+      <a href={appJoinUrl('jt_trip_pass')} className="px-8 py-3.5">Start planning</a>
+      <a href={appJoinUrl('jt_explore_annual')} className="px-8 py-3.5">Start planning</a>
       ${SIGN_IN_LINE}
     </div>
   );
@@ -137,7 +137,7 @@ export function PricingPage() {
         className="px-8 py-3.5"
       >
         <small><a href="/pricing#faq">see plans</a></small>
-        <span>Start Planning</span>
+        <span>Start planning</span>
       </a>
       ${SIGN_IN_LINE}
     </div>
@@ -150,13 +150,13 @@ export function PricingPage() {
   });
 });
 
-test('refuses a Start Planning reverted to /contact', () => {
+test('refuses a Start planning reverted to /contact', () => {
   withRepo({
     page: `import { Link } from 'react-router-dom';
 export function PricingPage() {
   return (
     <div>
-      <Link to="/contact" className="px-8 py-3.5">Start Planning</Link>
+      <Link to="/contact" className="px-8 py-3.5">Start planning</Link>
     </div>
   );
 }`,
@@ -188,7 +188,7 @@ test('fails closed when PRICES declares no lookup keys', () => {
 });
 
 // MUTATION 4: the page losing its CTAs entirely must not read as clean.
-test('refuses a page with no Start Planning CTA at all', () => {
+test('refuses a page with no Start planning CTA at all', () => {
   withRepo({
     page: `export function PricingPage() {
   return <div>Nothing to see here</div>;
@@ -196,7 +196,7 @@ test('refuses a page with no Start Planning CTA at all', () => {
   }, (d) => {
     const r = run(d);
     assert(r.code === 1, 'guard passed a page with no CTA (vacuous check)');
-    assert(/no "Start Planning" CTA found/.test(r.out), `wrong reason: ${r.out}`);
+    assert(/no "Start planning" CTA found/.test(r.out), `wrong reason: ${r.out}`);
   });
 });
 
@@ -214,7 +214,7 @@ export function PricingPage() {
         className="px-8 py-3.5"
       >
         <article className="card">
-          <span>Start Planning</span>
+          <span>Start planning</span>
         </article>
       </a>
       ${SIGN_IN_LINE}
@@ -237,7 +237,7 @@ test('refuses a hand-written signup href that bypasses appJoinUrl', () => {
     page: `export function PricingPage() {
   return (
     <div>
-      <a href="https://app.jarvistravel.com/auth/sign-up?plan=jt_trip_pass" className="px-8 py-3.5">Start Planning</a>
+      <a href="https://app.jarvistravel.com/auth/sign-up?plan=jt_trip_pass" className="px-8 py-3.5">Start planning</a>
     </div>
   );
 }`,
@@ -249,13 +249,13 @@ test('refuses a hand-written signup href that bypasses appJoinUrl', () => {
 });
 
 // JAR-3180: appJoinUrl's plan became optional, because the other pages'
-// "Start Planning" buttons call it with none. So a pricing CTA that drops its
+// "Start planning" buttons call it with none. So a pricing CTA that drops its
 // plan now compiles, opens sign-up, and loses the plan the visitor just picked.
 // Only this guard can see it.
-test('refuses a pricing Start Planning that drops the plan', () => {
+test('refuses a pricing Start planning that drops the plan', () => {
   withRepo({ page: GOOD_PAGE.replace("appJoinUrl('jt_explore_annual')", 'appJoinUrl()') }, (d) => {
     const r = run(d);
-    assert(r.code === 1, 'guard passed a pricing Start Planning with no plan');
+    assert(r.code === 1, 'guard passed a pricing Start planning with no plan');
     assert(/appJoinUrl\(\) with no plan/.test(r.out), `wrong reason: ${r.out}`);
   });
 });
@@ -267,19 +267,19 @@ test('refuses a pricing Start Planning that drops the plan', () => {
 // stop a revert while permitting a silent migration, and a migration has to
 // be deliberate.
 
-test('refuses an off-pricing Start Planning that carries a plan', () => {
+test('refuses an off-pricing Start planning that carries a plan', () => {
   // No plan was chosen on these pages, so a plan here would hand the app a
   // choice the visitor never made.
   withRepo(
     {
       page: GOOD_PAGE,
       nav: `export default function N() {
-  return <a href={appJoinUrl('jt_explore_annual')} className="px-5 py-2.5">Start Planning</a>;
+  return <a href={appJoinUrl('jt_explore_annual')} className="px-5 py-2.5">Start planning</a>;
 }`,
     },
     (dir) => {
       const r = run(dir);
-      assert(r.code === 1, 'guard permitted an off-pricing Start Planning carrying a plan');
+      assert(r.code === 1, 'guard permitted an off-pricing Start planning carrying a plan');
       assert(/Navigation\.tsx/.test(r.out), `wrong file named: ${r.out}`);
       // Names what it found, not just the function: appJoinUrl and appJoinUrl()
       // are the same word, and the plan is the whole difference.
@@ -291,37 +291,37 @@ test('refuses an off-pricing Start Planning that carries a plan', () => {
   );
 });
 
-test('refuses an off-pricing Start Planning left on sign-in, the superseded decision', () => {
-  // JAR-1692 sent every Start Planning to sign-in while sign-up was closed. Brent
-  // opened sign-up on 2026-10-14 (JAR-3180), so a Start Planning still on sign-in
+test('refuses an off-pricing Start planning left on sign-in, the superseded decision', () => {
+  // JAR-1692 sent every Start planning to sign-in while sign-up was closed. Brent
+  // opened sign-up on 2026-10-14 (JAR-3180), so a Start planning still on sign-in
   // makes a new visitor find the sign-up link themselves.
   withRepo(
     {
       page: GOOD_PAGE,
       home: `export default function H() {
-  return <a href={appSignInUrl()} className="px-8 py-4">Start Planning</a>;
+  return <a href={appSignInUrl()} className="px-8 py-4">Start planning</a>;
 }`,
     },
     (dir) => {
       const r = run(dir);
-      assert(r.code === 1, 'guard permitted a Start Planning still on sign-in');
+      assert(r.code === 1, 'guard permitted a Start planning still on sign-in');
       assert(/HomePage\.tsx/.test(r.out), `wrong file named: ${r.out}`);
       assert(/targets appSignInUrl\(\), not appJoinUrl\(\)/.test(r.out), `the error does not name what it found: ${r.out}`);
     },
   );
 });
 
-test('refuses an off-pricing Start Planning still sent to /pricing, the reversed decision', () => {
+test('refuses an off-pricing Start planning still sent to /pricing, the reversed decision', () => {
   withRepo(
     {
       page: GOOD_PAGE,
       features: `export default function F() {
-  return <Link to="/pricing" className="px-8 py-4">Start Planning</Link>;
+  return <Link to="/pricing" className="px-8 py-4">Start planning</Link>;
 }`,
     },
     (dir) => {
       const r = run(dir);
-      assert(r.code === 1, 'guard permitted a Start Planning still on /pricing');
+      assert(r.code === 1, 'guard permitted a Start planning still on /pricing');
       assert(/FeaturesPage\.tsx/.test(r.out), `wrong file named: ${r.out}`);
       assert(/targets \/pricing/.test(r.out), `the error does not name what it found: ${r.out}`);
     },
@@ -335,7 +335,7 @@ test('refuses an off-pricing CTA pointed at any third destination', () => {
     {
       page: GOOD_PAGE,
       home: `export default function H() {
-  return <Link to="/signup" className="px-8 py-4">Start Planning</Link>;
+  return <Link to="/signup" className="px-8 py-4">Start planning</Link>;
 }`,
     },
     (dir) => {
@@ -347,33 +347,33 @@ test('refuses an off-pricing CTA pointed at any third destination', () => {
   );
 });
 
-test('refuses an off-pricing Start Planning left on /contact', () => {
-  // The loop this guard's current decision closes: Contact's own Start Planning linked
+test('refuses an off-pricing Start planning left on /contact', () => {
+  // The loop this guard's current decision closes: Contact's own Start planning linked
   // to /contact, the page it sits on.
   withRepo(
     {
       page: GOOD_PAGE,
       contact: `export default function C() {
-  return <a href="/contact" className="px-8 py-4">Start Planning</a>;
+  return <a href="/contact" className="px-8 py-4">Start planning</a>;
 }`,
     },
     (dir) => {
       const r = run(dir);
-      assert(r.code === 1, 'guard permitted a Start Planning left on /contact');
+      assert(r.code === 1, 'guard permitted a Start planning left on /contact');
       assert(/ContactPage\.tsx/.test(r.out), `wrong file named: ${r.out}`);
       assert(/targets \/contact/.test(r.out), `the error does not name what it found: ${r.out}`);
     },
   );
 });
 
-test('watches the About page too (JAR-3673): a Start Planning that misses sign-up is caught', () => {
-  // #119 added an About page with a Start Planning CTA; it joined OFF_PRICING in
+test('watches the About page too (JAR-3673): a Start planning that misses sign-up is caught', () => {
+  // #119 added an About page with a Start planning CTA; it joined OFF_PRICING in
   // this change so the guard watches it, not nothing.
   withRepo(
     {
       page: GOOD_PAGE,
       about: `export default function A() {
-  return <a href="/contact" className="px-10 py-4">Start Planning</a>;
+  return <a href="/contact" className="px-10 py-4">Start planning</a>;
 }`,
     },
     (dir) => {
@@ -384,14 +384,14 @@ test('watches the About page too (JAR-3673): a Start Planning that misses sign-u
   );
 });
 
-// F1: a file with a correct "Start Planning" CTA and a SECOND one reverted to the
-// old label must fail. The label-keyed checks only see "Start Planning", so the
+// F1: a file with a correct "Start planning" CTA and a SECOND one reverted to the
+// old label must fail. The label-keyed checks only see "Start planning", so the
 // reverted sibling, and its destination, would otherwise ship green.
 test('refuses a file whose second CTA was reverted to "Join Now"', () => {
   const twoCtas = `import { appJoinUrl } from '../data/appLink';
 export default function P() {
   return (<div>
-    <a href={appJoinUrl()} className="px-8 py-3.5">Start Planning</a>
+    <a href={appJoinUrl()} className="px-8 py-3.5">Start planning</a>
     <a href={appJoinUrl()} className="px-8 py-3.5">Join Now</a>
   </div>);
 }`;
@@ -402,7 +402,38 @@ export default function P() {
   });
 });
 
-test('refuses a file whose Start Planning disappeared — a guard watching nothing', () => {
+// JAR-3673: the CTA now reads "Start planning" in sentence case, the same words
+// a section heading uses (Contact's "Start planning" h2). A heading is not a CTA,
+// so the guard must read it past, not choke on it for lacking an anchor — and a
+// heading must not satisfy the vacuity check that a real CTA exists.
+test('reads a "Start planning" heading past as not-a-CTA, beside a real CTA', () => {
+  const headingPlusCta = `import { appJoinUrl } from '../data/appLink';
+export default function C() {
+  return (<section>
+    <h2>Start planning</h2>
+    <a href={appJoinUrl()} className="px-8 py-3.5">Start planning</a>
+  </section>);
+}`;
+  withRepo({ page: GOOD_PAGE, contact: headingPlusCta }, (dir) => {
+    const r = run(dir);
+    assert(r.code === 0, `a heading beside a valid CTA was rejected: ${r.out}`);
+  });
+});
+
+test('refuses a file whose only "Start planning" is a heading — no anchored CTA', () => {
+  // The heading must not satisfy vacuity: a file that lost its button but kept a
+  // same-worded heading is still watching nothing.
+  withRepo(
+    { page: GOOD_PAGE, about: 'export default function A() { return <h2>Start planning</h2>; }' },
+    (dir) => {
+      const r = run(dir);
+      assert(r.code === 1, 'a lone heading satisfied the CTA vacuity check');
+      assert(/AboutPage\.tsx.*watching nothing/s.test(r.out), `wrong reason: ${r.out}`);
+    },
+  );
+});
+
+test('refuses a file whose Start planning disappeared — a guard watching nothing', () => {
   // The vacuity case. Deleting the CTA rather than migrating it would otherwise
   // pass silently: zero labels means zero violations.
   withRepo(
@@ -418,13 +449,13 @@ test('refuses a file whose Start Planning disappeared — a guard watching nothi
 
 // ── Where the helpers really point, and the pricing sign-in line (JAR-3180) ──
 
-test('refuses a link helper whose Start Planning opens sign-in, the superseded decision', () => {
-  // This case used to refuse sign-up, while every Start Planning went to sign-in
+test('refuses a link helper whose Start planning opens sign-in, the superseded decision', () => {
+  // This case used to refuse sign-up, while every Start planning went to sign-in
   // (JAR-1692). Inverted with the decision: every CTA reads right in its file,
   // and every visitor still lands on sign-in. The drift only the helper can show.
   withRepo({ page: GOOD_PAGE, appLink: GOOD_APP_LINK.replace('/auth/sign-up', '/auth/sign-in') }, (dir) => {
     const r = run(dir);
-    assert(r.code === 1, 'guard passed a Start Planning helper building a sign-in link');
+    assert(r.code === 1, 'guard passed a Start planning helper building a sign-in link');
     assert(/appJoinUrl\(\) builds an app link to \/auth\/sign-in, not \/auth\/sign-up/.test(r.out), `wrong reason: ${r.out}`);
   });
 });
@@ -465,7 +496,7 @@ test('refuses a pricing "Sign in" link that opens sign-up', () => {
   });
 });
 
-test("accepts the shipped routing: every Start Planning to the app's sign-up, pricing's with the plan, Sign in to sign-in", () => {
+test("accepts the shipped routing: every Start planning to the app's sign-up, pricing's with the plan, Sign in to sign-in", () => {
   // The control for every case above. Without it, a guard that failed everything
   // would satisfy every mutation case in this file.
   withRepo({ page: GOOD_PAGE }, (dir) => {

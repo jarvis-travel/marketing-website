@@ -24,8 +24,8 @@ export function Navigation() {
 
   const isLightNav = location.pathname === '/' && !isScrolled;
   const currentPath = location.pathname;
-  // On Pricing each plan card carries its own Start Planning with that plan chosen, so a
-  // nav Start Planning without a plan would compete with them.
+  // On Pricing each plan card carries its own Start planning with that plan chosen, so a
+  // nav Start planning without a plan would compete with them.
   const showSignupCta = !matchPath('/pricing', currentPath);
 
   return (
@@ -79,7 +79,7 @@ export function Navigation() {
                 href={appJoinUrl()}
                 className="px-5 py-2.5 bg-amber-400 text-gray-900 rounded-xs font-medium hover:bg-amber-300 transition-colors"
               >
-                Start Planning
+                Start planning
               </a>
             )}
           </div>
@@ -120,7 +120,7 @@ export function Navigation() {
                   href={appJoinUrl()}
                   className="w-full py-3 bg-amber-400 text-gray-900 rounded-xs font-medium block text-center"
                 >
-                  Start Planning
+                  Start planning
                 </a>
               </div>
             )}

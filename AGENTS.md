@@ -17,7 +17,7 @@ React TypeScript marketing website for JarvisTravel — a standalone SPA deploye
 to the production Droplets behind `jarvis-prod-lb`, serving `jarvistravel.com`
 (JAR-3203; the `mktg.jarvistravel.com` name became a 301 to it in JAR-3204) and
 to GitHub Pages. Serves as the public-facing landing experience: marketing pages for a
-pre-launch product (no auth on this site; every "Start Planning" opens the app's sign-up, and the pricing page's plan CTAs carry the chosen plan: JAR-3180, which superseded JAR-1692's sign-in).
+pre-launch product (no auth on this site; every "Start planning" opens the app's sign-up, and the pricing page's plan CTAs carry the chosen plan: JAR-3180, which superseded JAR-1692's sign-in).
 
 ## Ownership
 
@@ -139,7 +139,7 @@ in every template becomes a broken image at once.
 
 - **SPA** — no server-side rendering. All pages are client-rendered React.
 - **Marketing layout** — `MarketingLayout` in `PageRouter.tsx` wraps all public-facing pages with `<Navigation />` + `<Footer />`. New marketing routes should follow the same pattern.
-- **No auth**: pre-launch marketing site; the simulated client-side auth stack was removed as dead code (JAR-429). Sign-up and sign-in live in the app: every signup CTA reads **Start Planning** (the label: JAR-3673, 2026-10-26) and opens the app's sign-up through `appJoinUrl()` in `appLink.ts`; the pricing page's plan CTAs carry the chosen plan, and the pricing page has a "Sign in" link to the app's sign-in for existing accounts. Where each points was decided by Brent, 2026-10-14, JAR-3180 (which superseded JAR-1692's route to sign-in; that had reversed JAR-1630's route to `/pricing`). `scripts/check-pricing-ctas.mjs` enforces those destinations across the pricing page and the signup-CTA files it names (a hand-maintained list), and fails a CTA reverted to the old label.
+- **No auth**: pre-launch marketing site; the simulated client-side auth stack was removed as dead code (JAR-429). Sign-up and sign-in live in the app: every signup CTA reads **Start planning** (the label: JAR-3673, 2026-10-26) and opens the app's sign-up through `appJoinUrl()` in `appLink.ts`; the pricing page's plan CTAs carry the chosen plan, and the pricing page has a "Sign in" link to the app's sign-in for existing accounts. Where each points was decided by Brent, 2026-10-14, JAR-3180 (which superseded JAR-1692's route to sign-in; that had reversed JAR-1630's route to `/pricing`). `scripts/check-pricing-ctas.mjs` enforces those destinations across the pricing page and the signup-CTA files it names (a hand-maintained list), and fails a CTA reverted to the old label.
 - **Deployment (JAR-3203)** — `deploy-droplet.yml` rsyncs `dist/` to
   `/var/www/jarvistravel-marketing/` on **both** serving droplets behind
   `jarvis-prod-lb` (`DROPLET_HOST`, `DROPLET_HOST_2`); both host-key

@@ -211,7 +211,7 @@ export function PricingPage() {
                   tripActive ? heroAction : quietAction
                 }`}
               >
-                Start Planning
+                Start planning
               </a>
             </div>
 
@@ -402,7 +402,7 @@ export function PricingPage() {
                   exploreHot ? heroAction : quietAction
                 }`}
               >
-                Start Planning
+                Start planning
               </a>
             </div>
           </div>

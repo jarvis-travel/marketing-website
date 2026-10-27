@@ -221,7 +221,7 @@ export function FeaturesPage() {
               href={appJoinUrl()}
               className="inline-block px-8 py-4 bg-amber-400 text-gray-900 rounded-xs font-semibold hover:bg-amber-300 transition-colors"
             >
-              Start Planning
+              Start planning
             </a>
           </div>
         </div>

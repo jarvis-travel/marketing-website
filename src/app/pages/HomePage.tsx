@@ -140,7 +140,7 @@ export function HomePage() {
               href={appJoinUrl()}
               className="inline-block px-8 py-4 bg-amber-400 text-gray-900 rounded-xs font-semibold hover:bg-amber-300 transition-colors"
             >
-              Start Planning
+              Start planning
             </a>
           </div>
         </PhotoBackdrop>
@@ -346,7 +346,7 @@ export function HomePage() {
             href={appJoinUrl()}
             className="inline-block px-10 py-4 bg-amber-400 text-gray-900 rounded-xs font-semibold hover:bg-amber-300 transition-colors"
           >
-            Start Planning
+            Start planning
           </a>
         </div>
       </section>
