@@ -47,7 +47,7 @@ export const ROUTE_META: Record<string, RouteMeta> = {
   '/contact': {
     title: 'Contact JarvisTravel',
     description:
-      'Reach the JarvisTravel team with a question, a press request, or a privacy note. Or join now and start planning your next trip.',
+      'Reach the JarvisTravel team with a question, a press request, or a privacy note. Or start planning your next trip.',
   },
   '/privacy': {
     title: 'Privacy Policy: JarvisTravel',

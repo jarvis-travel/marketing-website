@@ -230,7 +230,7 @@ The system rejects what the brand has already taken out: gradients and glows in 
 A cool navy world on a warm neutral ground, lit by one amber: navy carries the brand, Moonlight carries the reading, and amber carries the action.
 
 ### Primary
-- **Sea Buckthorn Amber** (#FFBF65): The action. It fills Join Now and the skip link, always under a Neverything ink label (10.98:1); on Pricing, only the offer holding the highlight fills its Join Now. On navy it also sets small label type: the page label above a header band's headline, and the highlighted offer's name (7.08:1 on Ateneo Navy). It never fills a band, card or icon.
+- **Sea Buckthorn Amber** (#FFBF65): The action. It fills Start planning and the skip link, always under a Neverything ink label (10.98:1); on Pricing, only the offer holding the highlight fills its Start planning. On navy it also sets small label type: the page label above a header band's headline, and the highlighted offer's name (7.08:1 on Ateneo Navy). It never fills a band, card or icon.
 - **Buckthorn Light** (#FFCC85): The hover fill of the amber action (12.12:1 with ink).
 - **Buckthorn Deep** (#9A5B00): Amber's text voice on white: the quiet offer's name and the saving badge on the quiet pricing card (5.43:1 on white).
 
@@ -253,7 +253,7 @@ A cool navy world on a warm neutral ground, lit by one amber: navy carries the b
 - **Soft Ink** (#4A5560): Body copy and leads on light grounds (6.57:1 on Moonlight, 7.61:1 on white), and resting navigation links.
 - **Muted Ink** (#5C6B77): Small secondary text on light grounds, such as "Patent pending" and price periods on the quiet card (5.49:1 on white, 4.74:1 on Moonlight).
 - **Hairline** (#DAD5CD): The 1px rules: row dividers, card borders, and the edge of a desktop screenshot on a light ground.
-- **Hairline Strong** (#C7C1B8): Resting borders of quiet controls (the quiet Join Now and unselected billing options on white) and the scrollbar thumb.
+- **Hairline Strong** (#C7C1B8): Resting borders of quiet controls (the quiet Start planning and unselected billing options on white) and the scrollbar thumb.
 
 ### Data
 - **Fatigue Index Chill** (#0EA5E9), **Fatigue Index Balanced** (#059669), **Fatigue Index Packed** (#CA8A04) and **Fatigue Index Peak** (#D35446): The app's four color steps, for days rated 1 to 3, 4 to 6, 7 to 8 and 9 (7 to 9 are all packed, and 9 is the peak), mirrored for the scale on How it works. They are data, not chrome.
@@ -345,10 +345,12 @@ Refined and restrained: squared, certain actions inside quiet, soft-cornered con
 
 ### Buttons
 - **Shape:** Squared corners (2px).
-- **Primary:** Sea Buckthorn fill under a Neverything ink label in Label type, with 16px by 32px of padding (40px at the sides on the closing invitation). Every Join Now outside the navigation takes it, except the one in the pricing offer that doesn't hold the highlight, which is Quiet.
+- **Primary:** Sea Buckthorn fill under a Neverything ink label in Label type, with 16px by 32px of padding (40px at the sides on the closing invitation). Every Start planning outside the navigation takes it, except the one in the pricing offer that doesn't hold the highlight, which is Quiet.
 - **Hover / Focus:** The fill lightens to Buckthorn Light over 150ms. Focus draws a 2px outline 3px outside the element, visible at 3:1 or better on its ground: Ateneo Navy on light grounds (9.95:1 on Moonlight), Moonlight on navy (9.95:1 on Ateneo Navy).
-- **Compact:** The navigation's Join Now: the same fill, label color and corners, at 500 weight with 10px by 20px of padding.
+- **Compact:** The navigation's Start planning: the same fill, label color and corners, at 500 weight with 10px by 20px of padding.
 - **Quiet:** The resting action inside the offer that does not hold the highlight, which is what a visitor meets on Trip Pass before touching anything: transparent, with a 1px Ateneo Navy border, an Ateneo Navy label and 14px by 32px of padding. The border reads 11.53:1 on the card. It carries no hover of its own, because entering the offer moves the highlight and turns it into the Primary fill before the pointer reaches the button.
+- **Label case:** Button labels are sentence case, matching The Sentence Headline Rule and the pricing page's "Sign in": "Start planning" and "Sign in", never "Start Planning" (JAR-3673, 2026-10-27). A Title Case label needs its own line here, and an application to "Sign in", before it is used.
+- **One action label:** Every signup CTA reads "Start planning", the two paid pricing CTAs under a price included. Naming the transaction there ("Get Trip Pass", "Start with Explore") was considered and declined: one consistent, unaggressive action label across the site matters more than the per-offer commitment sense the retired "Join Now" carried (Brent, 2026-10-27, JAR-3673).
 
 ### Chips
 - **Saving badge:** Badge type with 2px by 8px of padding, inside the annual billing option and nowhere else. On the navy card it is Sea Buckthorn on an amber wash at 12%, inside a 1px amber border at 30%. On the white card it takes its own Paper White fill inside a 1px Buckthorn Deep border at 40%, which lifts the label off the selected option's 10% navy tint to 5.43:1.
@@ -362,10 +364,10 @@ Refined and restrained: squared, certain actions inside quiet, soft-cornered con
 - **Internal Padding:** 32px for panels and offers; 24px for compact cards in a grid.
 
 ### Navigation
-- **Style:** A fixed bar, 96px tall, holding the JarvisTravel lockup (64px high, never retyped as text), four links 32px apart, and the compact Join Now.
+- **Style:** A fixed bar, 96px tall, holding the JarvisTravel lockup (64px high, never retyped as text), four links 32px apart, and the compact Start planning.
 - **Over the home hero:** Transparent, with the lockup in Moonlight and links in Moonlight at 90% that brighten to full on hover. It turns white after 20px of scroll.
 - **Scrolled, and on every other page:** White at 95% over a 16px backdrop blur, with the navigation shadow. The lockup turns Neverything ink, links rest in Soft Ink and darken to ink on hover, and the current page is Harbor Blue with a 2px underline 4px below.
-- **Mobile (below 768px):** A menu button opens a white panel (16px corners, menu shadow) of rows with 12px corners. The current row takes the palest navy tint with Ateneo Navy text, and a full-width Join Now ends the panel, below a rule.
+- **Mobile (below 768px):** A menu button opens a white panel (16px corners, menu shadow) of rows with 12px corners. The current row takes the palest navy tint with Ateneo Navy text, and a full-width Start planning ends the panel, below a rule.
 - **Footer:** An Ateneo Navy band with 64px of padding. It holds the lockup at 40px in Moonlight, a short description in Navy Mist, and lucide social glyphs (20px, 1.75 stroke), then three link columns titled in Moonlight Label type, with Navy Mist links that brighten on hover. A 1px Moonlight rule at 15% sits above the copyright line (Navy Haze, 14px) and the trademark line (12px, Navy Haze at 80%).
 
 ### The Ledge
