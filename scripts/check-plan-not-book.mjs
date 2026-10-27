@@ -90,14 +90,32 @@ if (existsSync(allowPath)) {
 // opens a bullet, and .txt and .html (where "<!--" opens an HTML comment) are
 // copy throughout, so their lines are all read (JAR-3521).
 //
-// "*" stays in the code rule here, unlike check-absolute-claims.mjs: this guard
-// matches per line with no block-comment open-tracker, so a bare "*" is its only
-// handling for a JSDoc "* …" continuation line. Dropping it (to stop a CSS
-// "* { … }" selector hiding copy, as the sibling does) would read every JSDoc
-// continuation as copy. Porting the sibling's open-tracker is a separate change
-// (JAR-3665).
+// "*" is NOT a comment opener in the code rule (JAR-3665, mirroring
+// check-absolute-claims.mjs): a bare "*" at line start is a CSS universal
+// selector ("* { content: '…' }"), not a comment, so leaving it in let a banned
+// phrase hide inside one. A real JSDoc "* …" continuation is still skipped, as
+// the body of the block its "/*" opened on a line of its own — commentLines'
+// `open` flag below tracks that, which is what lets "*" go without reading every
+// JSDoc continuation as copy.
 const PROSE_EXTS = new Set(['.md', '.txt', '.html']);
-const isCommentLine = (line, ext) => !PROSE_EXTS.has(ext) && /^\s*(\/\/|\/\*|\*|\{\/\*|<!--)/.test(line);
+const isCommentLine = (line, ext) => !PROSE_EXTS.has(ext) && /^\s*(\/\/|\/\*|\{\/\*|<!--)/.test(line);
+
+// Which lines are comment: those isCommentLine opens, and the rest of a block
+// comment after the line it opens on, which otherwise read as prose. A block
+// counts only when it opens a line, as isCommentLine requires, so a "/*" inside
+// a string can't start one. Ported from check-absolute-claims.mjs (JAR-3665).
+const commentLines = (lines, ext) => {
+  let open = false;
+  return lines.map((line) => {
+    if (open) {
+      open = !line.includes('*/');
+      return true;
+    }
+    if (!isCommentLine(line, ext)) return false;
+    open = /^\s*\{?\/\*/.test(line) && !line.includes('*/', line.indexOf('/*') + 2);
+    return true;
+  });
+};
 
 const warnings = [];
 // Files or directories that existed but could not be read. These FAIL the run:
@@ -159,9 +177,10 @@ for (const dir of SCAN_DIRS) {
     }
     scanned++;
     const ext = file.slice(file.lastIndexOf('.'));
-    text.split('\n').forEach((rawLine, i) => {
-      const line = fold(rawLine);
-      if (isCommentLine(line, ext)) return; // comments document, they don't advertise
+    const lines = text.split('\n').map(fold);
+    const comment = commentLines(lines, ext);
+    lines.forEach((line, i) => {
+      if (comment[i]) return; // comments document, they don't advertise
       for (const { re, why } of BANNED) {
         if (re.test(line) && !allow.some((a) => a.test(line))) {
           hits.push({ file: relative(ROOT, file), line: i + 1, why, text: line.trim().slice(0, 120) });
