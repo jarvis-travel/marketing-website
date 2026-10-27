@@ -100,10 +100,20 @@ const BANNED = [
   { re: /\banonymi[sz]ed\b/i, why: 'counsel: the operation is pseudonymisation, not anonymisation' },
 
   // --- attested statuses we do not hold ---
-  { re: /\b(bank[- ]level|military[- ]grade|256[- ]bit)\b/i, why: 'security specific we do not attest' },
+  // bank[- ]grade was the live string; the pattern only had bank[- ]level, so the
+  // sweep AND the guard both walked past it (core#211 review, HIGH 2). Any
+  // <noun>-grade/-level/-class construction is the same unattested claim.
+  { re: /\b(bank|military|enterprise|government)[- ](grade|level|class)\b/i, why: 'security specific we do not attest' },
+  { re: /\b256[- ]bit\b/i, why: 'security specific we do not attest' },
   { re: /\bend[- ]to[- ]end encryption\b/i, why: 'we do not offer E2E encryption' },
   { re: /\b(PCI[- ]?DSS|SOC ?2|ISO ?27001|HIPAA)\b/i, why: 'attested status held by a processor, not by us' },
   { re: /\bfully compliant\b/i, why: 'compliance is not a status we can assert' },
+
+  // --- brand: the Fatigue Index is patent pending, a filing, not a trademark ---
+  // Shared from design-library (BRAND-PASS.md, JAR-898): the ™ "came back twice".
+  // NFKC folds a literal ™ to "TM", so the folded form is matched via TM\b; the
+  // HTML entities survive folding and are matched directly.
+  { re: /Fatigue Index\s*(?:&#8482;|&#x2122;|&trade;|™|TM\b)/i, why: 'Fatigue Index is patent pending, not a trademark' },
 
   // --- competitor claims (Lanham Act §43(a)) ---
   { re: /\bmost (travel|free)\s+(apps|companies|planners|tools)\b/i, why: 'factual assertion about competitors needs substantiation' },
@@ -196,12 +206,48 @@ const isBareProseLine = (line) => {
   const t = line.trim();
   if (t.length === 0) return false;
   const withoutContractions = t.replace(/([A-Za-z])['’]([A-Za-z])/g, '$1$2');
-  if (/[<>{}'"`=;()[\]]/.test(withoutContractions)) return false;
+  // Quotes are prose punctuation by the time a line reaches here: every real
+  // string literal was already pulled out by the `quoted` matcher in
+  // segments(), so a quote left in the remainder is typographic, not a
+  // delimiter. Keeping them in the reject set made a quoted phrase inside a
+  // JSX paragraph disqualify the whole paragraph (core#211 review).
+  const withoutQuotes = withoutContractions.replace(/['"“”‘’]/g, '');
+  if (/[<>{}`=;()[\]]/.test(withoutQuotes)) return false;
   if (!/[A-Za-z]/.test(t)) return false;
   if (/,$/.test(t)) return false;
   if (/^[A-Za-z_$][\w$]*\s*:/.test(t)) return false;
   return t.split(/\s+/).filter((w) => /[A-Za-z]/.test(w)).length >= 2;
 };
+
+// Named and numeric HTML entities, decoded so the prosiness test can read the
+// sentence a human sees. `&apos;` and `&ldquo;` each carry a SEMICOLON and
+// `{query}` carries braces, so without decoding+stripping them the most
+// ordinary JSX paragraph disqualified itself and segments() returned nothing
+// (JAR-962). &lt;/&gt; are deliberately NOT decoded: that would re-introduce
+// the angle brackets the prosiness test screens on.
+const ENTITIES = {
+  amp: '&', apos: "'", quot: '"',
+  lsquo: '‘', rsquo: '’', ldquo: '“', rdquo: '”',
+  mdash: '—', ndash: '–', hellip: '…', nbsp: ' ',
+};
+const decodeEntities = (s) =>
+  s.replace(/&(#x[0-9a-fA-F]+|#[0-9]+|[a-zA-Z]+);/g, (whole, body) => {
+    if (body[0] === '#') {
+      const cp = body[1] === 'x' || body[1] === 'X'
+        ? Number.parseInt(body.slice(2), 16)
+        : Number.parseInt(body.slice(1), 10);
+      if (!Number.isFinite(cp) || cp <= 0 || cp > 0x10ffff) return whole;
+      if (cp === 0x3c || cp === 0x3e) return whole; // angle brackets stay encoded
+      return String.fromCodePoint(cp);
+    }
+    const key = body.toLowerCase();
+    return Object.prototype.hasOwnProperty.call(ENTITIES, key) ? ENTITIES[key] : whole;
+  });
+
+// An HTML comment renders to nothing, so a banned word inside one is not copy.
+// Stripped rather than skipping the line, because a comment can sit beside real
+// copy (core#211 review).
+const stripHtmlComments = (line) => line.replace(/<!--[\s\S]*?-->/g, ' ');
 
 // A module specifier is a path, not copy.
 const stripModuleSpecifier = (line) =>
@@ -211,9 +257,10 @@ const stripModuleSpecifier = (line) =>
     .replace(/(\brequire\s*\(\s*)(['"])[^'"]*\2/g, '$1$2$2');
 
 // Humanly-visible segments: quoted strings and JSX text. For .md/.txt/.html
-// the whole line is copy, so it is passed through as one segment.
+// the whole line is copy (HTML comments stripped, since they render to
+// nothing), passed through as one segment.
 const segments = (line, ext) => {
-  if (PROSE_EXTS.has(ext)) return [line];
+  if (PROSE_EXTS.has(ext)) return [stripHtmlComments(line)];
   const out = [];
   line = stripModuleSpecifier(line);
   const quoted = line.match(/'((?:[^'\\]|\\.)*)'|"((?:[^"\\]|\\.)*)"|`((?:[^`\\]|\\.)*)`/g) || [];
@@ -222,7 +269,16 @@ const segments = (line, ext) => {
   for (const j of jsx) out.push(j.slice(1, -1));
   const tail = line.match(/\}\s*([A-Za-z][^<>{}]*)</g) || [];
   for (const t of tail) out.push(t.replace(/^\}\s*/, '').slice(0, -1));
-  if (isBareProseLine(line)) out.push(line.trim());
+  // Text trailing a self-closing element whose closing tag is on a LATER line
+  // (`<Icon ... /> Never saved`): invisible to the matchers above (no closing
+  // '<', no '}'), so this exact shape shipped a banned claim past the guard
+  // (core#211 review). The gap was in extraction, not the patterns.
+  const afterSelfClosing = line.match(/\/>\s*([^<>{}]+)$/);
+  if (afterSelfClosing) out.push(afterSelfClosing[1].trim());
+  // The bare-prose branch reads the sentence a HUMAN sees: HTML entities
+  // decoded and {expressions} removed (they are code, not copy).
+  const prose = decodeEntities(line).replace(/\{[^{}]*\}/g, ' ');
+  if (isBareProseLine(prose)) out.push(prose.trim().replace(/\s+/g, ' '));
   return out;
 };
 

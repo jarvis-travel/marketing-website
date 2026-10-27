@@ -1,0 +1,481 @@
+{
+  "absolute-claims": [
+    {
+      "name": "catches \"No ads. No data selling. Ever.\"",
+      "ext": ".tsx",
+      "snippet": "export const L = 'No ads. No data selling. Ever.';",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "catches \"We never share your personal information\"",
+      "ext": ".tsx",
+      "snippet": "const t = ['We never share your personal information'];",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "catches \"We never sell your data.\"",
+      "ext": ".tsx",
+      "snippet": "const C = ['We never sell your data.'];",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "catches the AI training claim",
+      "ext": ".tsx",
+      "snippet": "const s = 'Our AI works on your data to help you. It never trains on it.';",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "catches \"does not use your personal data\"",
+      "ext": ".tsx",
+      "snippet": "const s = 'Responsible AI that does not use your personal data.';",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "catches the competitor assertion",
+      "ext": ".tsx",
+      "snippet": "const row = 'Most travel apps sell your data to advertisers';",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "catches PCI DSS Compliant",
+      "ext": ".tsx",
+      "snippet": "const b = 'PCI DSS Compliant';",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "catches bank-level encryption",
+      "ext": ".tsx",
+      "snippet": "const b = 'bank-level encryption';",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "catches anonymized",
+      "ext": ".tsx",
+      "snippet": "const s = 'It learns from anonymized trip patterns.';",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "passes the corrected footer line",
+      "ext": ".tsx",
+      "snippet": "export const L = 'No ads. No data selling.';",
+      "expectLines": []
+    },
+    {
+      "name": "passes present-tense practice 1",
+      "ext": ".tsx",
+      "snippet": "const s = 'We don’t sell your personal information.';",
+      "expectLines": []
+    },
+    {
+      "name": "passes present-tense practice 2",
+      "ext": ".tsx",
+      "snippet": "const s = 'Jarvis is sent your trip, not your identity.';",
+      "expectLines": []
+    },
+    {
+      "name": "catches a promise wrapped across a line break",
+      "ext": ".tsx",
+      "snippet": "<p>\n  Everyone sees the same living plan, always\n  current for everyone.\n</p>",
+      "expectLines": [
+        2
+      ]
+    },
+    {
+      "name": "a break between two sentences is not a promise",
+      "ext": ".tsx",
+      "snippet": "<p>\n  We keep your plan current today.\n  Always read the details.\n</p>",
+      "expectLines": []
+    },
+    {
+      "name": "ordinary English about other apps is not a competitor claim",
+      "ext": ".tsx",
+      "snippet": "const s = 'leaves keys belonging to other apps on the same origin alone';",
+      "expectLines": []
+    },
+    {
+      "name": "comments document, they do not advertise",
+      "ext": ".tsx",
+      "snippet": "// historically this said \"No ads. No data selling. Ever.\"\nconst x = 1;",
+      "expectLines": []
+    },
+    {
+      "name": "identifiers and imports are out of scope",
+      "ext": ".tsx",
+      "snippet": "import { neverSell } from './never-sell';\nconst neverShared = 1;",
+      "expectLines": []
+    },
+    {
+      "name": "a zero-width space does not smuggle the claim through",
+      "ext": ".tsx",
+      "snippet": "const L = 'No ads. No data selling. Ev​er.';",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "a Cyrillic homoglyph does not smuggle the claim through",
+      "ext": ".tsx",
+      "snippet": "const L = 'No ads. No data selling. Еver.';",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "a claim in root index.html is caught",
+      "ext": ".html",
+      "file": "index.html",
+      "snippet": "<meta name=\"description\" content=\"We never sell your data.\">",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "a clean root index.html still passes",
+      "ext": ".html",
+      "file": "index.html",
+      "snippet": "<meta name=\"description\" content=\"No ads. No data selling.\">",
+      "expectLines": []
+    },
+    {
+      "name": "a forward-looking always promise 1",
+      "ext": ".tsx",
+      "snippet": "export const L = 'Your plan is always current.';",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "a forward-looking always promise 2",
+      "ext": ".tsx",
+      "snippet": "export const L = 'Always free, always yours.';",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "a forward-looking always promise 3",
+      "ext": ".tsx",
+      "snippet": "export const L = 'It will always be there.';",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "always about behaviour is not a promise 1",
+      "ext": ".tsx",
+      "snippet": "export const L = 'This always runs before the sync.';",
+      "expectLines": []
+    },
+    {
+      "name": "always about behaviour is not a promise 2",
+      "ext": ".tsx",
+      "snippet": "export const L = 'Always ask before sharing';",
+      "expectLines": []
+    },
+    {
+      "name": "catches always free to view",
+      "ext": ".tsx",
+      "snippet": "export const L = 'Your journals stay yours — always free to view.';",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "catches Bank-grade security",
+      "ext": ".tsx",
+      "snippet": "export const L = 'Bank-grade security keeps you safe.';",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "catches never stored",
+      "ext": ".tsx",
+      "snippet": "export const L = 'Raw coordinates are never stored.';",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "catches never reaches",
+      "ext": ".tsx",
+      "snippet": "export const L = 'Your bank login never reaches JarvisTravel.';",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "catches never guesses",
+      "ext": ".tsx",
+      "snippet": "export const L = 'JarvisTravel never guesses your location.';",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "catches never your balance",
+      "ext": ".tsx",
+      "snippet": "export const L = 'We see charges — never your balance.';",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "present-tense replacement 1",
+      "ext": ".tsx",
+      "snippet": "export const L = 'Your journals stay yours — free to view, even between trips.';",
+      "expectLines": []
+    },
+    {
+      "name": "present-tense replacement 2",
+      "ext": ".tsx",
+      "snippet": "export const L = 'Raw coordinates are not stored.';",
+      "expectLines": []
+    },
+    {
+      "name": "present-tense replacement 3",
+      "ext": ".tsx",
+      "snippet": "export const L = 'Your bank login does not reach JarvisTravel.';",
+      "expectLines": []
+    },
+    {
+      "name": "present-tense replacement 4",
+      "ext": ".tsx",
+      "snippet": "export const L = 'We read your charges to track your trip.';",
+      "expectLines": []
+    },
+    {
+      "name": "text trailing a self-closing tag is copy",
+      "ext": ".tsx",
+      "snippet": "      <Icon className=\"w-4\" aria-hidden=\"true\" /> Never saved · no movement trail",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "the same shape passes when clean",
+      "ext": ".tsx",
+      "snippet": "      <Icon className=\"w-4\" aria-hidden=\"true\" /> Not saved · no movement trail",
+      "expectLines": []
+    },
+    {
+      "name": "a JSX paragraph with an HTML entity is still read",
+      "ext": ".tsx",
+      "snippet": "          We can show what&apos;s nearby. It is never stored and never becomes a movement history.",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "a JSX paragraph with an inline expression is still read",
+      "ext": ".tsx",
+      "snippet": "          A few places match &ldquo;{query}&rdquo;. JarvisTravel never guesses your location.",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "a numeric entity is decoded too",
+      "ext": ".tsx",
+      "snippet": "          We&#39;ll say it plainly: your journal is never sold.",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "shipped replacement wording passes 1",
+      "ext": ".tsx",
+      "snippet": "          We can show what&apos;s nearby. It is not stored and does not become a movement history.",
+      "expectLines": []
+    },
+    {
+      "name": "shipped replacement wording passes 2",
+      "ext": ".tsx",
+      "snippet": "          A few places match &ldquo;{query}&rdquo;. JarvisTravel does not guess your location.",
+      "expectLines": []
+    },
+    {
+      "name": "a possessive plural does not hide the sentence",
+      "ext": ".tsx",
+      "snippet": "          Your travelers&apos; data is never sold to anyone.",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "a quoted phrase inside a paragraph does not hide it",
+      "ext": ".tsx",
+      "snippet": "          We call it &quot;the plan&quot;, and it is never shared.",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "identifiers are not prose 1",
+      "ext": ".tsx",
+      "snippet": "const neverSold = { forever: true };",
+      "expectLines": []
+    },
+    {
+      "name": "identifiers are not prose 2",
+      "ext": ".tsx",
+      "snippet": "  someCall(neverSell, arg);",
+      "expectLines": []
+    },
+    {
+      "name": "identifiers are not prose 3",
+      "ext": ".tsx",
+      "snippet": "  neverSold: true,",
+      "expectLines": []
+    },
+    {
+      "name": "a banned phrase in a string literal is still copy",
+      "ext": ".tsx",
+      "snippet": "  const label = 'never sells travel and never sells you';",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "a banned word inside an HTML comment is not a claim",
+      "ext": ".html",
+      "file": "index.html",
+      "snippet": "<!-- this used to say \"never sell\", retired in JAR-896 -->",
+      "expectLines": []
+    },
+    {
+      "name": "real copy on the same line as a comment is still read",
+      "ext": ".html",
+      "file": "index.html",
+      "snippet": "<p>We never sell your data.</p> <!-- keep this wording -->",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "the Fatigue Index carries no trademark symbol (entity)",
+      "ext": ".html",
+      "file": "index.html",
+      "snippet": "<p>Fatigue Index&#8482; balances your days</p>",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "the Fatigue Index carries no trademark symbol (glyph)",
+      "ext": ".html",
+      "file": "index.html",
+      "snippet": "<p>Fatigue Index™ balances your days</p>",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "the Fatigue Index without a symbol passes",
+      "ext": ".html",
+      "file": "index.html",
+      "snippet": "<p>Fatigue Index balances your days</p>",
+      "expectLines": []
+    }
+  ],
+  "plan-not-book": [
+    {
+      "name": "catches book in a quoted string",
+      "ext": ".ts",
+      "file": "src/t.ts",
+      "snippet": "const msg = \"You can book your trip now!\";",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "catches booking in JSX text",
+      "ext": ".tsx",
+      "file": "src/t.tsx",
+      "snippet": "const el = <p>Booking details here</p>;",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "catches emergency assistance claim",
+      "ext": ".ts",
+      "file": "src/t.ts",
+      "snippet": "const msg = \"We provide emergency assistance.\";",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "catches booking in template literal",
+      "ext": ".ts",
+      "file": "src/t.ts",
+      "snippet": "const msg = `Booking confirmation`;",
+      "expectLines": [
+        1
+      ]
+    },
+    {
+      "name": "passes plan your trip language",
+      "ext": ".ts",
+      "file": "src/t.ts",
+      "snippet": "const msg = \"Plan your trip with JarvisTravel.\";",
+      "expectLines": []
+    },
+    {
+      "name": "passes bookmark (word-boundaried)",
+      "ext": ".ts",
+      "file": "src/t.ts",
+      "snippet": "const msg = \"Add this to your bookmarks.\";",
+      "expectLines": []
+    },
+    {
+      "name": "passes notebook (word-boundaried)",
+      "ext": ".ts",
+      "file": "src/t.ts",
+      "snippet": "const msg = \"Write in your notebook.\";",
+      "expectLines": []
+    },
+    {
+      "name": "skips comment lines",
+      "ext": ".ts",
+      "file": "src/t.ts",
+      "snippet": "// This function handles booking logic\nconst x = 1;",
+      "expectLines": []
+    },
+    {
+      "name": "skips block comment lines",
+      "ext": ".tsx",
+      "file": "src/t.tsx",
+      "snippet": "/*\n * Book a trip here\n */\nconst el = <p>Plan your trip</p>;",
+      "expectLines": []
+    },
+    {
+      "name": "still reads src/",
+      "ext": ".ts",
+      "file": "src/__f.ts",
+      "snippet": "Book your flights and hotels with us today.\n",
+      "expectLines": [
+        1
+      ]
+    }
+  ]
+}
