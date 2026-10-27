@@ -123,6 +123,41 @@ test('passes present-tense practice', () => {
   assert(clean(`const s = 'Jarvis is sent your trip, not your identity.';`), 'false positive');
 });
 
+// --- a claim on the opening or closing line of a multi-line template ---------
+//
+// The scan ran per line, and a template literal's opening line carries the
+// backtick and the assignment while its closing line carries the backtick and
+// the semicolon, both of which isBareProseLine screens out, so a claim written
+// there escaped. Email and broadcast copy is written in exactly this shape
+// (JAR-3706 item 1). Interior lines were already caught; they still are.
+test('catches a claim on a multi-line template literal opening line', () => {
+  assert(flags('export const s = `Never miss a deal.\nMore to come.`;'), 'opening-line claim passed');
+});
+
+test('catches a claim on a multi-line template literal closing line', () => {
+  assert(flags('export const s = `Plan your trip.\nNever miss a deal.`;'), 'closing-line claim passed');
+});
+
+test('still catches a claim on an interior template line', () => {
+  assert(flags('export const s = `\nNever miss a deal.\n`;'), 'interior-line claim passed');
+});
+
+// HIGH 2 (fleet review of #128): an interior template line that carries an
+// interpolation has braces, so isBareProseLine rejects it in segments() and
+// templateExtras used to leave interior lines alone — the claim was read by
+// nothing. Now templateExtras reads interior ${…} lines. Fails pre-fix.
+test('catches a claim on an interior template line that has a ${…}', () => {
+  assert(flags('export const s = `Hi ${name},\nNever miss a ${tour} deal.\n`;'), 'interior ${…} line read by nothing');
+});
+
+test('a multi-line template of clean copy, with a code expression, passes', () => {
+  assert(clean('export const s = `Plan ${count} trips.\nWelcome back, traveler.`;'), 'false positive on a clean template');
+  // a bare identifier inside ${…} is code, reduced to a space, not copy. Uses
+  // a bare `${never}` (not `${neverSell}`, which can't match \bnever\b anyway,
+  // so it proved nothing about the reduction — fleet review of #128).
+  assert(clean('export const s = `Total ${never} today.\nmore here.`;'), 'expression identifier read as copy');
+});
+
 // --- a promise that wrapped across a line break -----------------------
 //
 // Every pattern ran against one line at a time, so a sentence split by a hard
@@ -438,6 +473,27 @@ test('a code comment is still skipped; CSS "#id" and "* { }" selectors are not c
   assert(flags(`* { content: 'We never sell your data.'; }`, 'src/Page.css'), 'a CSS "* { }" selector line was skipped as a comment');
   // A real JSDoc "*" continuation is still a comment, via the block its "/*" opened.
   assert(clean('/**\n * We never sell your data.\n */\nconst x = 1;', 'src/Doc.ts'), 'a JSDoc "*" continuation was read as copy');
+});
+
+// --- one-line templates and single-reporting (re-review #128, MED 1 & 2) ----
+
+test('a one-line template ${…} is not scanned as prose — a type in it is not a claim', () => {
+  // `never` is a TypeScript type here, inside the interpolation, not copy.
+  assert(clean('const s = `Total ${never} deals`;', 'src/x.ts'), 'a one-line template ${…} was read as copy');
+});
+
+test('a bare claim on a one-line template body IS still caught', () => {
+  assert(flags('const s = `We never sell your data`;', 'src/x.ts'), 'a one-line template claim was missed');
+});
+
+test('a plain interior template line is reported once, not twice', () => {
+  // "Never miss a deal." trips exactly one rule (bare "never"), so a count of 2
+  // is the double-report regression, not two rules on one line.
+  const src = 'const s = `Plan your trip.\nNever miss a deal.\nMore soon.`;';
+  const { code, out } = withTempDir((d) => runCheck(d, src, 'src/x.ts'));
+  assert(code === 1, 'the interior claim was not caught');
+  const n = (out.match(/Never miss a deal/gi) || []).length;
+  assert(n === 1, `interior claim reported ${n} time(s), want 1 (double-count regression)`);
 });
 
 console.log(`\n${passed} passed, ${failed} failed`);

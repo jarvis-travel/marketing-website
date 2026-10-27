@@ -18,15 +18,33 @@
 // wording replaces it will spread the same way, so the guard is the fix and
 // the copy edit is only the cleanup.
 //
-// Shape deliberately mirrors check-plan-not-book.mjs: same fold, same segment
-// extraction, same fail-closed allowlist, same CLI/import split. Two guards
-// that behave differently are two guards nobody trusts.
+// Shape follows check-plan-not-book.mjs in this repo: same fold, same
+// fail-closed allowlist, same CLI/import split. The segment extractor
+// (fold, segments, templateText, fileSegments, wrappedHits) is modelled on
+// web-app's scripts/lib/copy-text.mjs but is NOT a byte copy of it and NOT yet
+// a shared module, so the five repos still carry five near-copies. Unifying
+// them into one extractor with a divergence self-test is JAR-3766.
+//
+// WHAT THIS CANNOT SEE (stated plainly, because half a guard advertised as a
+// whole one is worse than none):
+//   - A nested template inside a ${…} desyncs the backtick counter, so copy
+//     after it on the same multi-line template can be missed, and a three-line
+//     nesting can invert the open/closed state for the rest of the file. This
+//     lives in web-app's extractor too; fixing it in one repo would re-diverge
+//     the five, so it belongs to the shared-extractor work (JAR-3766).
+//   - A template line that begins `//` or `/*` is blanked before the template
+//     tracker runs. A `*`-leading line is NOT blanked here (it reads as a
+//     bullet/copy) — design-library blanks it, so the family diverges on this
+//     point; convergence is JAR-3766.
+//   - templateText's ${…} stripper is brace-blind, so an interpolation holding
+//     an object literal is only partly removed. Additive (can over-read code as
+//     copy), never under-reads copy. JAR-3766.
 //
 // Allowlist: .absolute-claims-allow.txt (one regex per line, matched against
 // the flagged SEGMENT, case-insensitive). A malformed pattern fails the run.
 
 import { readFileSync, readdirSync, lstatSync, existsSync } from 'node:fs';
-import { basename, join, relative } from 'node:path';
+import { basename, join, relative, extname } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const ROOT = process.cwd();
@@ -217,13 +235,79 @@ const segments = (line, ext) => {
   const out = [];
   line = stripModuleSpecifier(line);
   const quoted = line.match(/'((?:[^'\\]|\\.)*)'|"((?:[^"\\]|\\.)*)"|`((?:[^`\\]|\\.)*)`/g) || [];
-  for (const q of quoted) out.push(q.slice(1, -1));
+  for (const q of quoted) {
+    // A backtick literal must read the same whether it fits on one line or
+    // spans several: run its body through templateText so a one-line
+    // `${never}` is seen exactly as a multi-line one is, instead of being
+    // scanned raw (so a TS type in the ${…} reads as copy). Otherwise the
+    // verdict depends on where a newline falls (JAR-3706, re-review of #128).
+    if (q[0] === '`') for (const s of templateText(q.slice(1, -1))) out.push(s);
+    else out.push(q.slice(1, -1));
+  }
   const jsx = line.match(/>([^<>{}]+)</g) || [];
   for (const j of jsx) out.push(j.slice(1, -1));
   const tail = line.match(/\}\s*([A-Za-z][^<>{}]*)</g) || [];
   for (const t of tail) out.push(t.replace(/^\}\s*/, '').slice(0, -1));
   if (isBareProseLine(line)) out.push(line.trim());
   return out;
+};
+
+// A template literal's visible text: its literal parts, plus each string inside a
+// ${…} (the expression is code, but its strings can be copy: `${n === 1 ? 'day'
+// : 'days'}`). Modelled on web-app's scripts/lib/copy-text.mjs templateText
+// (not a byte copy; see the header's CANNOT list and JAR-3766).
+const TMPL_EXPRESSION = /\$\{[^{}]*\}/g;
+const TMPL_QUOTED = /'((?:[^'\\]|\\.)*)'|"((?:[^"\\]|\\.)*)"|`((?:[^`\\]|\\.)*)`/g;
+const templateText = (s) => [
+  s.replace(TMPL_EXPRESSION, ' ').trim(),
+  ...(s.match(TMPL_EXPRESSION) || []).flatMap((e) => (e.match(TMPL_QUOTED) || []).map((q) => q.slice(1, -1))),
+];
+
+// Unescaped backticks on a line, left to right.
+const backticks = (line) => {
+  const at = [];
+  for (let i = 0; i < line.length; i += 1) {
+    if (line[i] === '\\') i += 1;
+    else if (line[i] === '`') at.push(i);
+  }
+  return at;
+};
+
+// Every line's visible text for the whole file: segments() per line, PLUS the
+// text of a template literal that SPANS lines, in ONE pass (matching web-app's
+// and design-library's fileSegments). The opening and closing lines of a
+// multi-line template carry the backtick and the assignment/`;` that
+// isBareProseLine rejects, and an interior line with an interpolation
+// (`Never miss a ${tour} deal.`) has braces that isBareProseLine also rejects,
+// so a bare claim on any of them escaped the guard (JAR-3706). Crucially, an
+// interior line returns its templateText ONLY (early return) and segments() is
+// NOT also run on it, so a plain interior line is reported once, not twice
+// (re-review of #128, MED 2). Comment lines are blanked first so a stray
+// backtick in a comment cannot corrupt the open/closed state.
+const fileSegments = (text, ext) => {
+  const lines = text.split('\n').map(fold);
+  const comment = commentLines(lines, ext);
+  const readable = lines.map((line, i) => (comment[i] ? '' : line));
+  if (PROSE_EXTS.has(ext)) return readable.map((line) => (line.trim() ? segments(line, ext) : []));
+  let inTemplate = false;
+  return readable.map((line) => {
+    const segs = [];
+    if (inTemplate) {
+      const ticks = backticks(line);
+      if (ticks.length === 0) return templateText(line).filter((t) => /[A-Za-z]/.test(t));
+      for (const t of templateText(line.slice(0, ticks[0]))) segs.push(t);
+      line = line.slice(ticks[0] + 1);
+      inTemplate = false;
+    }
+    const ticks = backticks(line);
+    if (ticks.length % 2 === 1) {
+      inTemplate = true;
+      for (const t of templateText(line.slice(ticks[ticks.length - 1] + 1))) segs.push(t);
+      line = line.slice(0, ticks[ticks.length - 1]);
+    }
+    if (line.trim()) segs.push(...segments(line, ext));
+    return segs.filter((s) => /[A-Za-z]/.test(s));
+  });
 };
 
 // A promise wrapped across a line break matched nothing, because every pattern
@@ -245,11 +329,8 @@ const segments = (line, ext) => {
 // anywhere in a file silence a real hit two hundred lines away.
 const wrappedHits = (text, ext, allow, rel = '') => {
   const pieces = [];
-  const lines = text.split('\n').map(fold);
-  const comment = commentLines(lines, ext);
-  lines.forEach((line, i) => {
-    if (comment[i]) return;
-    for (const seg of segments(line, ext)) {
+  fileSegments(text, ext).forEach((segs, i) => {
+    for (const seg of segs) {
       const t = seg.replace(/\s+/g, ' ').trim();
       if (t) pieces.push({ text: t, line: i + 1 });
     }
@@ -314,7 +395,7 @@ const walk = (d, out = []) => {
     }
     if (st.isSymbolicLink()) continue;
     if (st.isDirectory()) walk(p, out);
-    else if (EXTS.has(p.slice(p.lastIndexOf('.')))) {
+    else if (EXTS.has(extname(p))) {
       if (st.size > MAX_FILE_BYTES) {
         warnings.push(`skipped oversized file ${p} (${st.size} bytes)`);
         continue;
@@ -361,7 +442,7 @@ if (!isCLI) {
   for (const file of files) {
     const rel = relative(ROOT, file);
     if (SELF_TEST_FILES.has(rel)) continue;
-    const ext = file.slice(file.lastIndexOf('.'));
+    const ext = extname(file);
     let text;
     try {
       text = readFileSync(file, 'utf8');
@@ -370,11 +451,8 @@ if (!isCLI) {
       continue;
     }
     scanned++;
-    const lines = text.split('\n').map(fold);
-    const comment = commentLines(lines, ext);
-    lines.forEach((line, i) => {
-      if (comment[i]) return; // comments document, they don't advertise
-      for (const seg of segments(line, ext)) {
+    fileSegments(text, ext).forEach((segs, i) => {
+      for (const seg of segs) {
         for (const { re, why, skip } of BANNED) {
           if (skip?.(rel)) continue;
           if (re.test(seg) && !allow.some((a) => a.test(seg))) {
