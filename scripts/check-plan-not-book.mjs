@@ -86,7 +86,15 @@ if (existsSync(allowPath)) {
   }
 }
 
-// The comment model, mirroring check-absolute-claims.mjs (JAR-3665, JAR-3521).
+// The comment model, modelled on check-absolute-claims.mjs's `commentLines`
+// tracker and its `isCommentLine` opener set (JAR-3665, JAR-3521).
+//
+// Not full parity: since marketing-website#128 (JAR-3775) the sibling ALSO reads
+// a template literal's TEXT as segments (its `fileSegments`), so a banned word on
+// a template-literal line is read there. This guard does not segment templates;
+// it only decides comment-vs-copy per line and fails closed on an unterminated
+// block (below). Adopting `fileSegments` here to fully mirror is a larger change
+// tracked separately, not this port.
 //
 // CAN skip, so banned language in them is not flagged: a "//" or "/*" (or JSX
 // "{/*") comment line, and the body lines of a block comment it opened, tracked
