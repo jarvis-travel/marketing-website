@@ -62,21 +62,25 @@ export interface Coupon {
   readonly duration: 'once';
 }
 
-// The Early Access coupon (JAR-3180). Brent, 2026-10-14: all users get it for
-// now, and the pricing page shows the regular annual price struck through with
-// the Early Access price beside it. Reconciled with Stripe by check-prices.mjs,
-// like PRICES.
+// The November offer coupon (Brent, 2026-11-10): $30 off the first year of the
+// dedicated November annual Price (jt_explore_annual_nov2026), so the page shows
+// the $59.99 renewal less $30 = $29.99 the first year. The page still strikes the
+// regular $99 annual beside it. Reconciled with Stripe by check-prices.mjs, like
+// PRICES. (Supersedes the JAR-3180 $20 ea_annual coupon; Stripe's display name for
+// this coupon is "Black Friday offer: first year", but the id is the contract.)
 // BEGIN GENERATED COUPON (npm run sync:prices)
-export const EARLY_ACCESS_COUPON: Coupon = { id: 'ea_annual', amountOffCents: 2000, currency: 'usd', duration: 'once' };
+export const EARLY_ACCESS_COUPON: Coupon = { id: 'ea_annual_30off', amountOffCents: 3000, currency: 'usd', duration: 'once' };
 // END GENERATED COUPON
 
 /**
- * The plan the Early Access coupon applies to. That is core's rule, not
- * Stripe's: core applies ea_annual at checkout to Explore Annual only. Nothing
- * here can check it against core, so if core changes which plan gets the coupon,
- * change this with it.
+ * The plan the November offer coupon applies to. That is core's rule, not
+ * Stripe's: core applies ea_annual_30off at checkout to the November annual
+ * Price only. Nothing here can check it against core, so if core changes which
+ * plan gets the coupon, change this with it. The page's struck "regular" price
+ * and the Explore Annual join link stay on jt_explore_annual (the stable API key
+ * core resolves); only the offer math (first year, renewal, badge) reads this key.
  */
-export const EARLY_ACCESS_LOOKUP_KEY: PriceLookupKey = 'jt_explore_annual';
+export const EARLY_ACCESS_LOOKUP_KEY: PriceLookupKey = 'jt_explore_annual_nov2026';
 
 /**
  * Format an amount the way the page shows it: no trailing ".00", because
@@ -134,14 +138,14 @@ export function annualSavingPercent(): number | null {
   return savingAgainstMonthly(PRICES.jt_explore_annual.amountCents);
 }
 
-/** What the Early Access first year saves against twelve months at the monthly
+/** What the November annual RENEWAL saves against twelve months at the monthly
  *  price, as a whole percent, or null when the comparison cannot honestly be
- *  made. While the offer runs, this is the badge's number (Brent, 2026-10-14,
- *  JAR-3180): the first year is what a visitor pays now. The renewal's own
- *  saving is annualSavingPercent. */
+ *  made. This is the badge's number while the offer runs (Brent, 2026-11-10): the
+ *  saving is measured off the $59.99 renewal, never the $29.99 first year, so the
+ *  badge reads the same rule whether or not the coupon is on. (Dec 1, regular $99:
+ *  this falls to annualSavingPercent's 31%.) */
 export function earlyAccessSavingPercent(): number | null {
-  const annual = PRICES[EARLY_ACCESS_LOOKUP_KEY];
-  return savingAgainstMonthly(annual.amountCents - EARLY_ACCESS_COUPON.amountOffCents);
+  return savingAgainstMonthly(PRICES[EARLY_ACCESS_LOOKUP_KEY].amountCents);
 }
 
 /** A year at yearCents against twelve months at the monthly price. */
