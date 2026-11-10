@@ -27,7 +27,7 @@
 // ============================================================================
 
 /** Stable Stripe lookup keys. Shared contract with core — do not rename. */
-export type PriceLookupKey = 'jt_trip_pass' | 'jt_explore_annual' | 'jt_explore_monthly';
+export type PriceLookupKey = 'jt_trip_pass' | 'jt_explore_annual' | 'jt_explore_annual_nov2026' | 'jt_explore_monthly';
 
 export interface Price {
   readonly lookupKey: PriceLookupKey;
@@ -40,8 +40,9 @@ export interface Price {
 
 // BEGIN GENERATED PRICES — npm run sync:prices
 export const PRICES: Readonly<Record<PriceLookupKey, Price>> = {
-  jt_trip_pass: { lookupKey: 'jt_trip_pass', amountCents: 2499, currency: 'usd', interval: null },
+  jt_trip_pass: { lookupKey: 'jt_trip_pass', amountCents: 1999, currency: 'usd', interval: null },
   jt_explore_annual: { lookupKey: 'jt_explore_annual', amountCents: 9900, currency: 'usd', interval: 'year' },
+  jt_explore_annual_nov2026: { lookupKey: 'jt_explore_annual_nov2026', amountCents: 5999, currency: 'usd', interval: 'year' },
   jt_explore_monthly: { lookupKey: 'jt_explore_monthly', amountCents: 1195, currency: 'usd', interval: 'month' },
 };
 // END GENERATED PRICES

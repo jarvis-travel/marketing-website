@@ -44,7 +44,7 @@ if (!Array.isArray(canonical) || canonical.length < 3) {
 const src = readFileSync(PRICING, 'utf8');
 const block = src.match(/BEGIN GENERATED PRICES[\s\S]*?END GENERATED PRICES/);
 if (!block) fail('src/app/data/pricing.ts has no BEGIN/END GENERATED PRICES block to read.');
-const marketingKeys = [...block[0].matchAll(/^\s*(jt_[a-z_]+):/gm)].map((m) => m[1]);
+const marketingKeys = [...block[0].matchAll(/^\s*(jt_[a-z0-9_]+):/gm)].map((m) => m[1]);
 if (marketingKeys.length < 3) {
   fail(
     `extracted ${marketingKeys.length} keys from the pricing.ts PRICES block (want >=3) — ` +
