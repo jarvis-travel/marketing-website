@@ -386,8 +386,8 @@ export function PricingPage() {
                       exploreHot ? 'text-sky-100' : 'text-gray-600'
                     }`}
                   >
-                    Then {priceOf(offerKeyOf(cadence))} per {periodOf(offerKeyOf(cadence))}.
-                    {' '}Ends Nov 30.
+                    Then {priceOf(offerKeyOf(cadence))} per {periodOf(offerKeyOf(cadence))} until
+                    you cancel.{' '}Ends Nov 30.
                   </p>
                 )}
               </div>
