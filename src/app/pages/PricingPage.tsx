@@ -12,11 +12,12 @@ import { appJoinUrl, appSignInUrl } from '../data/appLink';
 // Pass bullets, which Brent rewrote in the 2026-10-23 copy review (JAR-3557);
 // that first bullet no longer says the product takes the trip for you.
 //
-// The one offer on the page is Brent's: on 2026-10-14 he asked for the regular
-// annual price struck through, with the Early Access price beside it "for a
-// limited time" (JAR-3180). All users get the Early Access coupon for now, and
-// it comes off the first year only, so wherever the annual price appears it
-// says "first year" and what it renews at. Monthly and Trip Pass are unchanged.
+// The one offer on the page is Brent's: the regular annual ($99) struck through,
+// with the November offer beside it (JAR-3180, carried into the Nov 2026 pricing
+// launch, Brent 2026-11-10). The offer is a dedicated Price, jt_explore_annual_nov2026
+// ($59.99/yr), sold with a $30-off-first-year coupon: $29.99 the first year, then
+// $59.99/year, ending Nov 30. So the annual price shows the struck regular $99, the
+// $29.99 first year, and what it renews at. Monthly and Trip Pass are unchanged.
 //
 // The highlight travels (brand-owner direction): exactly one card wears the
 // Ateneo treatment at a time. Explore holds it by default; while the visitor
@@ -32,12 +33,22 @@ const TRIP_PASS_POINTS = [
 ];
 
 // Derived from the generated blocks, so neither can disagree with the amounts
-// rendered beside them. SAVING_PCT compares the REGULAR annual price with paying
-// monthly, so the bullet attaches it to the price Explore Annual renews at. The
-// badge sits beside the first-year price, so while the offer runs it shows what
-// that first year saves (Brent, 2026-10-14, JAR-3180).
+// rendered beside them.
+//
+// The November offer (Brent, 2026-11-10) lives on its own Price: the regular
+// annual stays $99 (ANNUAL, struck and also the join link core resolves), while
+// the first year ($29.99) and the renewal ($59.99) come from the November Price
+// (ANNUAL_OFFER_KEY). SAVING_PCT is the regular 31%; BADGE_PCT is what the badge
+// shows: while the offer runs it is the saving off the $59.99 renewal (58%),
+// measured off the renewal and never the $29.99 first year, so Dec 1's regular
+// $99 lands on the same 31% rule. Drop ANNUAL_OFFER_KEY from the annual cadence
+// (and retire the coupon) to end the offer.
+const ANNUAL: PriceLookupKey = 'jt_explore_annual';
+const ANNUAL_OFFER_KEY: PriceLookupKey = 'jt_explore_annual_nov2026';
+const ANNUAL_OFFER = earlyAccessPriceOf(ANNUAL_OFFER_KEY);
+const ANNUAL_RENEWAL_KEY = ANNUAL_OFFER ? ANNUAL_OFFER_KEY : ANNUAL;
 const SAVING_PCT = annualSavingPercent();
-const BADGE_PCT = earlyAccessPriceOf('jt_explore_annual') ? earlyAccessSavingPercent() : SAVING_PCT;
+const BADGE_PCT = ANNUAL_OFFER ? earlyAccessSavingPercent() : SAVING_PCT;
 
 /**
  * A regular price, struck through. Screen readers mostly do not announce a
@@ -53,10 +64,10 @@ function Struck({ children }: { children: string }) {
   );
 }
 
-const ANNUAL: PriceLookupKey = 'jt_explore_annual';
-const ANNUAL_OFFER = earlyAccessPriceOf(ANNUAL);
-const ANNUAL_RATE = `${priceOf(ANNUAL)} per ${periodOf(ANNUAL)}${
-  SAVING_PCT !== null ? `, ${SAVING_PCT}% less than paying monthly` : ''
+// The rate Explore Annual renews at: the November renewal ($59.99, 58% less than
+// monthly) while the offer runs, the regular $99 (31%) once it ends.
+const ANNUAL_RATE = `${priceOf(ANNUAL_RENEWAL_KEY)} per ${periodOf(ANNUAL_RENEWAL_KEY)}${
+  BADGE_PCT !== null ? `, ${BADGE_PCT}% less than paying monthly` : ''
 }`;
 
 const EXPLORE_POINTS: { key: string; text: ReactNode }[] = [
@@ -84,8 +95,17 @@ interface Cadence {
   // ticket exists to kill, one level up (core#36 review, M4). Typed this way,
   // a mismatch is a compile error.
   lookupKey: PriceLookupKey;
+  // The Price the limited offer actually sits on, when it differs from lookupKey
+  // (the November annual is a dedicated Price). Absent means no offer, or that the
+  // offer is on lookupKey itself. The struck "regular" price and the join link
+  // always use lookupKey; only the first-year / renewal / badge read offerKey.
+  offerKey?: PriceLookupKey;
   best?: boolean;
 }
+
+// The Price the offer math reads for a cadence: its offerKey when it has one,
+// otherwise its own lookupKey.
+const offerKeyOf = (c: Cadence): PriceLookupKey => c.offerKey ?? c.lookupKey;
 
 // Cadences of ONE subscription, not separate tiers. Amounts come from
 // src/app/data/pricing.ts, which mirrors Stripe by lookup key — a price change
@@ -93,7 +113,7 @@ interface Cadence {
 // ("per year"/"per month") is derived from the interval via periodOf(), never
 // a parallel string (review deleg_dd2f886e).
 const CADENCES: Cadence[] = [
-  { key: 'annual', label: 'Annual', lookupKey: 'jt_explore_annual', best: true },
+  { key: 'annual', label: 'Annual', lookupKey: 'jt_explore_annual', offerKey: 'jt_explore_annual_nov2026', best: true },
   { key: 'monthly', label: 'Monthly', lookupKey: 'jt_explore_monthly' },
 ];
 
@@ -113,7 +133,7 @@ export function PricingPage() {
   const [cadenceKey, setCadenceKey] = useState<CadenceKey>('annual');
   const cadence = CADENCES.find((c) => c.key === cadenceKey) ?? CADENCES[0];
   // The first-year price when the selected cadence has one (Annual), else null.
-  const offer = earlyAccessPriceOf(cadence.lookupKey);
+  const offer = earlyAccessPriceOf(offerKeyOf(cadence));
 
   // True while the visitor is over (or keyboard-focused inside) Trip Pass.
   const [tripActive, setTripActive] = useState(false);
@@ -249,7 +269,7 @@ export function PricingPage() {
               >
                 {CADENCES.map((option) => {
                   const selected = cadenceKey === option.key;
-                  const optionOffer = earlyAccessPriceOf(option.lookupKey);
+                  const optionOffer = earlyAccessPriceOf(offerKeyOf(option));
                   // Both states give a clear hover fill (Meridian sky tints),
                   // so the unselected cadence responds when the visitor moves
                   // over it - not just a border change.
@@ -313,7 +333,7 @@ export function PricingPage() {
                                 exploreHot ? 'text-sky-200' : 'text-gray-500'
                               }`}
                             >
-                              then {priceOf(option.lookupKey)}/{periodOf(option.lookupKey)}
+                              then {priceOf(offerKeyOf(option))}/{periodOf(offerKeyOf(option))}
                             </span>
                           </>
                         ) : (
@@ -366,8 +386,8 @@ export function PricingPage() {
                       exploreHot ? 'text-sky-100' : 'text-gray-600'
                     }`}
                   >
-                    For a limited time. Renews at {priceOf(cadence.lookupKey)} per{' '}
-                    {periodOf(cadence.lookupKey)}.
+                    Then {priceOf(offerKeyOf(cadence))} per {periodOf(offerKeyOf(cadence))} until
+                    you cancel.{' '}Ends Nov 30.
                   </p>
                 )}
               </div>
