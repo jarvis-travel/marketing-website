@@ -59,6 +59,17 @@ test('passes when pricing.ts carries exactly the canonical set', () => {
   assert.equal(r.code, 0, `expected pass, got:\n${r.out}`);
 });
 
+// The November annual (JAR-4251) is the first key with digits in it. The
+// extractor used to match jt_[a-z_]+ and read the key as absent, which failed
+// with "missing from pricing.ts" while the key was right there — a misleading
+// failure that costs a debugging round trip. Pinned so a narrowed regex fails
+// here, naming the extractor, rather than in CI naming the wrong file.
+test('extracts a key carrying digits (jt_explore_annual_nov2026)', () => {
+  const FOUR = ['jt_trip_pass', 'jt_explore_annual', 'jt_explore_annual_nov2026', 'jt_explore_monthly'];
+  const r = run({ canonical: canonicalJSON(FOUR), pricing: pricingTS(FOUR) });
+  assert.equal(r.code, 0, `expected pass, got:\n${r.out}`);
+});
+
 test('fails naming a canonical key pricing.ts lacks (rename, count stays 3)', () => {
   const r = run({
     canonical: canonicalJSON(['jt_trip_pass', 'jt_explore_annual', 'jt_explore_plus']),

@@ -35,7 +35,8 @@ try {
 if (!Array.isArray(canonical) || canonical.length < 3) {
   fail(
     `contracts/stripe-lookup-keys.json has ${Array.isArray(canonical) ? canonical.length : 0} lookup_keys (want >=3) — ` +
-      'the launch catalogue has three, so a shorter list means the published copy is wrong and this guard would pass vacuously.',
+      'the launch catalogue has three and the November annual makes four, so a shorter list means the published ' +
+      'copy is truncated, which would let this guard pass vacuously.',
   );
 }
 
@@ -44,7 +45,7 @@ if (!Array.isArray(canonical) || canonical.length < 3) {
 const src = readFileSync(PRICING, 'utf8');
 const block = src.match(/BEGIN GENERATED PRICES[\s\S]*?END GENERATED PRICES/);
 if (!block) fail('src/app/data/pricing.ts has no BEGIN/END GENERATED PRICES block to read.');
-const marketingKeys = [...block[0].matchAll(/^\s*(jt_[a-z_]+):/gm)].map((m) => m[1]);
+const marketingKeys = [...block[0].matchAll(/^\s*(jt_[a-z0-9_]+):/gm)].map((m) => m[1]);
 if (marketingKeys.length < 3) {
   fail(
     `extracted ${marketingKeys.length} keys from the pricing.ts PRICES block (want >=3) — ` +
