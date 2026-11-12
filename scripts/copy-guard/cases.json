@@ -9,6 +9,14 @@
       ]
     },
     {
+      "name": "folds uppercase Cyrillic Ѕ→S: 'ЅOC 2 Type II' is the attested-status claim 'SOC 2' (JAR-3766, live compliance hole)",
+      "ext": ".tsx",
+      "snippet": "export const L = 'ЅOC 2 Type II';",
+      "expectLines": [
+        1
+      ]
+    },
+    {
       "name": "catches \"We never share your personal information\"",
       "ext": ".tsx",
       "snippet": "const t = ['We never share your personal information'];",
