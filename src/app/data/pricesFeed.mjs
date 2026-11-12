@@ -132,3 +132,31 @@ export function offerIsLive(offerEndsAt, now) {
   if (!isIsoInstant(offerEndsAt)) return false;
   return Date.parse(offerEndsAt) > now.getTime();
 }
+
+/**
+ * Format integer cents as the page renders money: whole dollars drop the cents
+ * ("$99"), otherwise two places ("$11.95"). The feed's currency is validated as
+ * usd, so USD is fixed. The page passes only validated integers here, so nothing
+ * from the body reaches the DOM as text — only its numbers, reformatted.
+ */
+export function formatMoney(cents) {
+  const whole = cents % 100 === 0;
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: whole ? 0 : 2,
+    maximumFractionDigits: whole ? 0 : 2,
+  }).format(cents / 100);
+}
+
+/**
+ * A year at `yearCents` against twelve months at `monthCents`, as a whole
+ * percent, or null when the comparison can't honestly be made: no/zero monthly
+ * amount, or a year that isn't actually cheaper. Derived from the fetched
+ * amounts so the "Save N%" figure can't drift from the prices beside it.
+ */
+export function savingPercent(yearCents, monthCents) {
+  if (!Number.isFinite(monthCents) || monthCents <= 0) return null;
+  const pct = Math.round((1 - yearCents / (monthCents * 12)) * 100);
+  return pct > 0 ? pct : null;
+}

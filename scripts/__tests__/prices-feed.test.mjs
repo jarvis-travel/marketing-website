@@ -9,7 +9,7 @@
 // reddens only that case, never the whole file (JAR-4286 "Done when").
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { parsePricesFeed, offerIsLive } from '../../src/app/data/pricesFeed.mjs';
+import { parsePricesFeed, offerIsLive, formatMoney, savingPercent } from '../../src/app/data/pricesFeed.mjs';
 
 const contract = JSON.parse(
   readFileSync(new URL('../../contracts/stripe-lookup-keys.json', import.meta.url), 'utf8'),
@@ -146,6 +146,26 @@ test('offerIsLive: true before the end, false at/after it, false for junk', () =
   assert.equal(offerIsLive(ends, new Date(ends)), false, 'exactly at the end is over');
   assert.equal(offerIsLive('Nov 30', new Date('2026-11-20T00:00:00Z')), false);
   assert.equal(offerIsLive(null, new Date('2026-11-20T00:00:00Z')), false);
+});
+
+// ---- formatMoney: whole dollars drop the cents ----
+
+test('formatMoney renders whole dollars without cents, otherwise two places', () => {
+  assert.equal(formatMoney(9900), '$99');
+  assert.equal(formatMoney(1999), '$19.99');
+  assert.equal(formatMoney(1195), '$11.95');
+  assert.equal(formatMoney(2999), '$29.99');
+  assert.equal(formatMoney(5999), '$59.99');
+});
+
+// ---- savingPercent: the "Save N%" figure, derived from the amounts ----
+
+test('savingPercent: 31% regular annual, 58% off the renewal, null when dishonest', () => {
+  assert.equal(savingPercent(9900, 1195), 31); // regular annual vs monthly
+  assert.equal(savingPercent(5999, 1195), 58); // Nov renewal vs monthly
+  assert.equal(savingPercent(9900, 0), null, 'no monthly amount to compare');
+  assert.equal(savingPercent(9900, undefined), null, 'monthly plan absent');
+  assert.equal(savingPercent(20000, 1195), null, 'a year dearer than 12 months is no saving');
 });
 
 console.log(`\nprices-feed: ${passed} passed, ${failed} failed`);

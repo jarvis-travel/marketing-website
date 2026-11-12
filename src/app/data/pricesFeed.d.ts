@@ -28,3 +28,10 @@ export function parsePricesFeed(raw: unknown, allowedKeys: Set<string>): PricesF
 /** Is the offer still on at `now`? True only when `offerEndsAt` is a valid ISO
  *  instant strictly in the future. */
 export function offerIsLive(offerEndsAt: string | null, now: Date): boolean;
+
+/** Format integer cents as the page renders money ("$99", "$11.95"). USD. */
+export function formatMoney(cents: number): string;
+
+/** A year vs twelve months at the monthly price, as a whole percent, or null
+ *  when the comparison can't honestly be made (no/zero monthly, or not cheaper). */
+export function savingPercent(yearCents: number, monthCents: number | undefined): number | null;
