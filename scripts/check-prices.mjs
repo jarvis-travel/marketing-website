@@ -165,7 +165,7 @@ const LIVE = process.argv.includes('--live');
 
 const EXPECTED_ACCOUNT = 'acct_1ToBJsPDaNqc0Lek';
 
-// The three keys this catalogue is defined as having. Asserted as an exact set
+// The four keys this catalogue is defined as having. Asserted as an exact set
 // below, so a key *deleted* from pricing.ts fails here rather than at runtime
 // when priceOf() reaches into undefined.
 const EXPECTED_KEYS = ['jt_trip_pass', 'jt_explore_annual', 'jt_explore_annual_nov2026', 'jt_explore_monthly'];
