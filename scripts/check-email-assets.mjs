@@ -45,9 +45,16 @@ const REQUIRED = {
   'hero-laptop-home.png': 1,
   'hero-phone-journal.png': 1,
   'hero-phone-recap.png': 1,
+  // Resend broadcasts, not design-library templates: Black Friday (Nov 27) and
+  // Cyber Monday (Nov 30) 2026 (JAR-4571). Remove once those have sent and aged out.
+  'bf-receipt.jpg': 1,
+  'bf-stamps.jpg': 1,
+  'cm-board.jpg': 1,
+  'cm-tags.jpg': 1,
 };
 
 const PNG_MAGIC = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+const JPEG_MAGIC = Buffer.from([0xff, 0xd8, 0xff]);
 const problems = [];
 
 if (!existsSync(DIR)) {
@@ -62,8 +69,11 @@ if (!existsSync(DIR)) {
     const bytes = readFileSync(file);
     if (bytes.length === 0) {
       problems.push(`${name} is empty — ${refs} published template(s) load it.`);
-    } else if (!bytes.subarray(0, 8).equals(PNG_MAGIC)) {
-      problems.push(`${name} is not a PNG. Mail clients render it as a broken image.`);
+    } else if (name.endsWith('.jpg')
+      ? !bytes.subarray(0, 3).equals(JPEG_MAGIC)
+      : !bytes.subarray(0, 8).equals(PNG_MAGIC)) {
+      problems.push(`${name} is not a ${name.endsWith('.jpg') ? 'JPEG' : 'PNG'}. `
+        + `Mail clients render it as a broken image.`);
     }
   }
 
@@ -90,5 +100,5 @@ if (problems.length) {
 
 const count = Object.keys(REQUIRED).length;
 const refs = Object.values(REQUIRED).reduce((a, b) => a + b, 0);
-console.log(`check-email-assets: ${count} image(s) present and readable as PNG, `
+console.log(`check-email-assets: ${count} image(s) present and readable as their format, `
   + `carrying ${refs} references from the published templates.`);
