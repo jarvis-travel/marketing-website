@@ -72,7 +72,8 @@ if (!existsSync(DIR)) {
     } else if (name.endsWith('.jpg')
       ? !bytes.subarray(0, 3).equals(JPEG_MAGIC)
       : !bytes.subarray(0, 8).equals(PNG_MAGIC)) {
-      problems.push(`${name} is not the format its name says. Mail clients render it as a broken image.`);
+      problems.push(`${name} is not a ${name.endsWith('.jpg') ? 'JPEG' : 'PNG'}. `
+        + `Mail clients render it as a broken image.`);
     }
   }
 

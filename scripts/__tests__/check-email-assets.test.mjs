@@ -17,13 +17,15 @@ const REQUIRED = [
   'logo-lockup-light.png', 'logo-mark-light.png', 'hero-phone-fi.png',
   'hero-phone-planner.png', 'hero-phone-group.png', 'hero-phone-budget.png',
   'hero-duo-home.png', 'hero-laptop-home.png', 'hero-phone-journal.png',
-  'hero-phone-recap.png',
+  'hero-phone-recap.png', 'bf-receipt.jpg', 'bf-stamps.jpg', 'cm-board.jpg',
+  'cm-tags.jpg',
 ];
 
 const PNG = Buffer.concat([
   Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
   Buffer.from('fixture'),
 ]);
+const JPEG = Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.from('fixture')]);
 
 let passed = 0, failed = 0;
 function test(name, fn) {
@@ -38,7 +40,7 @@ function withRepo({ files = REQUIRED, extra = {}, omitDir = false }, fn) {
     mkdirSync(join(dir, 'scripts'), { recursive: true });
     if (!omitDir) {
       mkdirSync(join(dir, 'public/email'), { recursive: true });
-      for (const f of files) writeFileSync(join(dir, 'public/email', f), PNG);
+      for (const f of files) writeFileSync(join(dir, 'public/email', f), f.endsWith('.jpg') ? JPEG : PNG);
       for (const [f, body] of Object.entries(extra)) {
         writeFileSync(join(dir, 'public/email', f), body);
       }
@@ -74,7 +76,7 @@ test('every referenced image present passes', () => {
   withRepo({}, (dir) => {
     const { code, out } = run(dir);
     assert(code === 0, `expected pass, got ${code}:\n${out}`);
-    assert(/10 image\(s\) present/.test(out), `expected a count in the output:\n${out}`);
+    assert(/14 image\(s\) present/.test(out), `expected a count in the output:\n${out}`);
   });
 });
 
@@ -101,6 +103,14 @@ test('a file that is not a PNG fails, even with the right name', () => {
     const { code, out } = run(dir);
     assert(code === 1, `expected failure, got ${code}`);
     assert(/is not a PNG/.test(out), `expected the type to be caught:\n${out}`);
+  });
+});
+
+test('a .jpg holding PNG bytes fails: each file must be the format its name says', () => {
+  withRepo({ files: REQUIRED.filter((f) => f !== 'cm-tags.jpg'), extra: { 'cm-tags.jpg': PNG } }, (dir) => {
+    const { code, out } = run(dir);
+    assert(code === 1, `expected failure, got ${code}`);
+    assert(/cm-tags\.jpg is not a JPEG/.test(out), `expected the type to be caught:\n${out}`);
   });
 });
 
