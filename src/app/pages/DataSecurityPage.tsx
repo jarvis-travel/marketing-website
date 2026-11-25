@@ -27,6 +27,8 @@ import { Link } from 'react-router-dom';
 
 const BUILT = [
   {
+    // The anchor Home's "How we use AI" link lands on (JAR-4464).
+    id: 'ai',
     name: 'Jarvis gets your trip, not your identity.',
     desc: 'To plan your days, Jarvis needs to know where you’re going, when, your budget and your plans. It doesn’t need to know who you are, so your name, email and login aren’t part of what we send it. The companies whose AI models power Jarvis aren’t allowed to train their own AI on it. What you type is sent as you wrote it, so leave out anything private.',
   },
@@ -89,11 +91,11 @@ const CHOICES = [
 
 const LINK = 'text-sky-600 underline underline-offset-4 decoration-1 hover:text-sky-700';
 
-function DetailList({ items }: { items: { name: string; desc: string }[] }) {
+function DetailList({ items }: { items: { id?: string; name: string; desc: string }[] }) {
   return (
     <ul className="border-t border-gray-200">
       {items.map((item) => (
-        <li key={item.name} className="py-5 border-b border-gray-200">
+        <li key={item.name} id={item.id} className="py-5 border-b border-gray-200 scroll-mt-28">
           <h3 className="font-semibold text-gray-900 mb-1">{item.name}</h3>
           <p className="text-gray-600 leading-relaxed">{item.desc}</p>
         </li>
