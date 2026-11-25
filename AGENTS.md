@@ -97,29 +97,40 @@ core's rule, mirrored by hand as `EARLY_ACCESS_LOOKUP_KEY`.
 5. The daily `pr-checks` schedule (06:00 UTC) catches Stripe-side edits that
    make no PR.
 
-### Email images (`public/email/` — JAR-1879)
+### Email images (`public/email/` — JAR-1879, JAR-4571)
 
-**These are not site assets. No page loads them.** They are the images every
-JarvisTravel email hot-links, by absolute URL at the apex: the masthead in all
-88 published Resend templates, and a hero in 21 of them.
+**These are not site assets. No page loads them.** They are the images
+JarvisTravel email hot-links, by absolute URL: the masthead in all 88 published
+Resend templates, a hero in 21 of them, and the four images the Black Friday
+(Nov 27) and Cyber Monday (Nov 30) 2026 broadcasts load.
 
-They live here because this site is about to become what answers
-`jarvistravel.com`. Measured 2026-09-22: the apex is still the waitlist site,
-which serves them out of its own `public/email/`, while
-`mktg.jarvistravel.com/email/hero-phone-fi.png` answered `200 text/html`, the
-SPA shell. On cutover day, without these files, every masthead and every hero
-in every template becomes a broken image at once.
+They live here because this site is what answers `jarvistravel.com`: measured
+2026-11-24, `jarvistravel.com/email/logo-lockup-light.png` answers `200
+image/png` out of this repo's `dist/`, while any path that is not a file answers
+`200 text/html` — the SPA shell — so a missing image does not look missing from
+the outside. Without these files every masthead and every hero in every template
+becomes a broken image at once.
 
 - `scripts/check-email-assets.mjs` is the gate, on all three shipping paths
-  (`pr-checks`, Pages, Droplet). It fails on a missing, empty or non-PNG file,
-  and on any *extra* file, because `public/` is published verbatim and a stray
-  README would be served at `jarvistravel.com/email/README.md`.
-- The required list is derived from the live templates, not invented; the guard
-  header carries the command that re-derives it.
-- **Sources, not originals.** Heroes come from `design-library/email/heroes/`,
-  generated there by `email/heroes/build.mjs`. Filenames are part of a serving
-  contract (`design-library/email/URL-CONTRACT.md`), so a rename breaks 88
-  templates that cannot be re-pointed without republishing them in Resend.
+  (`pr-checks`, Pages, Droplet). It fails on a missing, empty, truncated or
+  wrong-format file (PNG, or JPEG when the name ends `.jpg` — a three-byte
+  `FF D8 FF` prefix is not accepted as a JPEG), and on any *extra* file, because
+  `public/` is published verbatim and a stray README would be served at
+  `jarvistravel.com/email/README.md`.
+- The template half of the list is derived, not invented; the guard header
+  carries the command that re-derives it. The four broadcast JPEGs
+  (`bf-receipt.jpg`, `bf-stamps.jpg`, `cm-board.jpg`, `cm-tags.jpg`) are not
+  template-derived: they are built by `~/code/reels/email/bf-cm.mjs` and listed
+  by hand in `BROADCAST_IMAGES`, counted against scheduled broadcasts. A
+  delivered broadcast still hot-links them from here, so they are **not** removed
+  on the send date.
+- **Sources, not originals** (the masthead/hero set). Heroes come from
+  `design-library/email/heroes/`, generated there by `email/heroes/build.mjs`.
+  Filenames are part of a serving contract
+  (`design-library/email/URL-CONTRACT.md`), so a rename breaks 88 templates that
+  cannot be re-pointed without republishing them in Resend. The broadcast
+  filenames are just as contractual — they are already inside HTML published in
+  Resend — so a rename there breaks those sends the same way.
 
 ### Base path & routing
 
