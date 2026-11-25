@@ -25,7 +25,13 @@ const PNG = Buffer.concat([
   Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
   Buffer.from('fixture'),
 ]);
-const JPEG = Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.from('fixture')]);
+// SOI, an APP0 segment header, payload, then the end marker: what a real JPEG
+// has and what the guard now requires (three bytes are not enough).
+const JPEG = Buffer.concat([
+  Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10]),
+  Buffer.from('fixture'),
+  Buffer.from([0xff, 0xd9]),
+]);
 
 let passed = 0, failed = 0;
 function test(name, fn) {
@@ -111,6 +117,33 @@ test('a .jpg holding PNG bytes fails: each file must be the format its name says
     const { code, out } = run(dir);
     assert(code === 1, `expected failure, got ${code}`);
     assert(/cm-tags\.jpg is not a JPEG/.test(out), `expected the type to be caught:\n${out}`);
+  });
+});
+
+test('a JPEG that is only a start marker fails: truncation is not an image', () => {
+  withRepo({ files: REQUIRED.filter((f) => f !== 'cm-tags.jpg'),
+    extra: { 'cm-tags.jpg': Buffer.from([0xff, 0xd8, 0xff, 0xe0]) } }, (dir) => {
+    const { code, out } = run(dir);
+    assert(code === 1, `expected failure, got ${code}`);
+    assert(/cm-tags\.jpg is truncated/.test(out), `expected truncation to be named:\n${out}`);
+  });
+});
+
+test('HTML wearing a JPEG header fails — the SPA shell is the failure being guarded', () => {
+  withRepo({ files: REQUIRED.filter((f) => f !== 'cm-tags.jpg'),
+    extra: { 'cm-tags.jpg': Buffer.from('\xff\xd8\xff<!doctype html><html>SPA shell</html>', 'latin1') } },
+    (dir) => {
+      const { code, out } = run(dir);
+      assert(code === 1, `expected failure, got ${code}`);
+      assert(/cm-tags\.jpg is not a JPEG/.test(out), `expected it refused as a JPEG:\n${out}`);
+    });
+});
+
+test('a file whose name matches a prototype key is still unreferenced', () => {
+  withRepo({ extra: { toString: JPEG } }, (dir) => {
+    const { code, out } = run(dir);
+    assert(code === 1, `expected failure, got ${code}`);
+    assert(/toString is not referenced/.test(out), `expected the stray file named:\n${out}`);
   });
 });
 
